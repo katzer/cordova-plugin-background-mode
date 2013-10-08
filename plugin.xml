@@ -54,4 +54,33 @@
     	<header-file src="src/ios/APPBackgroundMode.h" />
     	<source-file src="src/ios/APPBackgroundMode.m" />
     </platform>
+
+    <!-- wp8 -->
+    <platform name="wp8">
+        <config-file target="config.xml" parent="/*">
+            <feature name="BackgroundMode">
+                <param name="wp-package" value="BackgroundMode"/>
+                <!-- Needs to be initialiced onload since the plugin has no callable js interface -->
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <!-- The app is able to run in background through location-tracking mode -->
+        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Tasks/DefaultTask">
+            <BackgroundExecution>
+                <ExecutionType Name="LocationTracking" />
+            </BackgroundExecution>
+        </config-file>
+
+        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
+            <Capability Name="ID_CAP_LOCATION" />
+        </config-file>
+
+        <config-file target="App.xaml" parent="/Application/Application.ApplicationLifetimeObjects">
+            <shell:PhoneApplicationService
+                RunningInBackground="Application_RunningInBackground"/>
+        </config-file>
+
+        <source-file src="src/wp8/BackgroundMode.cs" />
+    </platform>
 </plugin>
