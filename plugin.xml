@@ -41,6 +41,14 @@
         <info>
             If the app crashes after installing the plugin, make sure that your *-Info.plist is valid.
             Do to some bugs in cordova or Plugman please reset all occurences like
+
+            <string>
+
+            </string>
+
+            into
+
+            <string></string>
         </info>
 
     	<header-file src="src/ios/APPBackgroundMode.h" />
