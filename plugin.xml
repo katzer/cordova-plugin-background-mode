@@ -21,14 +21,21 @@
         <config-file target="config.xml" parent="/*">
     		<feature name="BackgroundMode">
     			<param name="ios-package" value="APPBackgroundMode"/>
+                <!-- Needs to be initialiced onload since the plugin has no callable js interface -->
                 <param name="onload" value="true" />
     		</feature>
         </config-file>
 
+        <!-- The app is able to run in background through location-tracking mode -->
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
             <array>
                 <string>location</string>
             </array>
+        </config-file>
+
+        <!-- Hint is displayed to user by first start -->
+        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
+            <string>Is required -for iOS 6 and above- to run the app in background!</string>
         </config-file>
 
     	<header-file src="src/ios/APPBackgroundMode.h" />
