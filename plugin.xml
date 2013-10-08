@@ -76,10 +76,10 @@
             <Capability Name="ID_CAP_LOCATION" />
         </config-file>
 
-        <config-file target="App.xaml" parent="/Application/Application.ApplicationLifetimeObjects">
+<!--         <config-file target="App.xaml" parent="/Application/Application.ApplicationLifetimeObjects">
             <shell:PhoneApplicationService
                 RunningInBackground="Application_RunningInBackground"/>
-        </config-file>
+        </config-file> -->
 
         <source-file src="src/wp8/BackgroundMode.cs" />
     </platform>
