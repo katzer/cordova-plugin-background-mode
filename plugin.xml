@@ -2,7 +2,7 @@
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
         id="de.appplant.cordova.plugin.background-mode"
-        version="0.0.0">
+        version="0.2.0dev">
 
     <name>BackgroundMode</name>
 
@@ -15,4 +15,16 @@
     <engines>
         <engine name="cordova" version=">=3.0.0" />
     </engines>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+    		<feature name="BackgroundMode">
+    			<param name="ios-package" value="APPBackgroundMode"/>
+    		</feature>
+        </config-file>
+
+    	<header-file src="src/ios/APPBackgroundMode.h" />
+    	<source-file src="src/ios/APPBackgroundMode.m" />
+    </platform>
 </plugin>
