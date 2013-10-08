@@ -59,7 +59,7 @@
     <platform name="wp8">
         <config-file target="config.xml" parent="/*">
             <feature name="BackgroundMode">
-                <param name="wp-package" value="BackgroundMode"/>
+                <param name="wp-package" value="APPPlant.Cordova.Plugin.BackgroundMode"/>
                 <!-- Needs to be initialiced onload since the plugin has no callable js interface -->
                 <param name="onload" value="true" />
             </feature>
@@ -75,11 +75,6 @@
         <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
             <Capability Name="ID_CAP_LOCATION" />
         </config-file>
-
-<!--         <config-file target="App.xaml" parent="/Application/Application.ApplicationLifetimeObjects">
-            <shell:PhoneApplicationService
-                RunningInBackground="Application_RunningInBackground"/>
-        </config-file> -->
 
         <source-file src="src/wp8/BackgroundMode.cs" />
     </platform>
