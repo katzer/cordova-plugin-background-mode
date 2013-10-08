@@ -16,19 +16,6 @@
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
-        <info>
-            If the app crashes after installing the plugin, make sure that your *-Info.plist is valid.
-            Do to some bugs in cordova or Plugman please reset all occurences like
-
-            <string>
-
-            </string>
-
-            into
-
-            <string></string>
-        </info>
-
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
@@ -50,6 +37,11 @@
         <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
             <string>Is required -for iOS 6 and above- to run the app in background!</string>
         </config-file>
+
+        <info>
+            If the app crashes after installing the plugin, make sure that your *-Info.plist is valid.
+            Do to some bugs in cordova or Plugman please reset all occurences like
+        </info>
 
     	<header-file src="src/ios/APPBackgroundMode.h" />
     	<source-file src="src/ios/APPBackgroundMode.m" />
