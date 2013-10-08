@@ -21,7 +21,7 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ## Release Notes
-#### Version 0.2.0 (not yet released)
+#### Version 0.2.0 (08.10.2013)
 - Added iOS (>= 5) support<br>
   The plugin turns the app into an location tracking app for the time it runs in the background.
 
