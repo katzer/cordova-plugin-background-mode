@@ -9,6 +9,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Cordova/CDVPlugin.h>
+#import <CoreLocation/CoreLocation.h>
 
 @interface APPBackgroundMode : CDVPlugin
 
@@ -16,5 +17,7 @@
 - (void) activateMode;
 // Deaktiviert den Hintergrundmodus
 - (void) deactivateMode;
+
+@property (nonatomic, strong) CLLocationManager* locationManager;
 
 @end

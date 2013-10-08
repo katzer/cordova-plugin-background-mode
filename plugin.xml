@@ -25,6 +25,13 @@
     		</feature>
         </config-file>
 
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+            <key>UIBackgroundModes</key>
+            <array>
+                <string>location</string>
+            </array>
+        </config-file>
+
     	<header-file src="src/ios/APPBackgroundMode.h" />
     	<source-file src="src/ios/APPBackgroundMode.m" />
     </platform>
