@@ -34,7 +34,8 @@
         </config-file> -->
 
         <!-- Hint is displayed to user by first start -->
-        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
+        <config-file target="*-Info.plist" parent="CFBundleIdentifier">
+            <key>NSLocationUsageDescription</key>
             <string>Is required -for iOS 6 and above- to run the app in background!</string>
         </config-file>
 
