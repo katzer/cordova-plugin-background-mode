@@ -22,7 +22,25 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 
 ## Release Notes
 #### Version 0.2.0 (not yet released)
-- Added iOS support
+- Added iOS support<br>
+  The plugin turns the app into a location tracking app for the time it runs in the background.
 
 ## Using the plugin
 The plugin comes without a js interface. Simply add the plugin to your project and the app will run while in background mode.
+
+## Quirks
+
+### The app crashes under iOS
+If the app crashes after installing the plugin, make sure that your `*-Info.plist` is valid.
+Do to some bugs in cordova or Plugman please reset all occurences like
+```xml
+<key>NSMainNibFile</key>
+<string>
+
+</string>
+```
+into
+```xml
+<key>NSMainNibFile</key>
+<string></string>
+```
