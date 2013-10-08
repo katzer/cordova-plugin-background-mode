@@ -27,11 +27,11 @@
         </config-file>
 
         <!-- The app is able to run in background through location-tracking mode -->
-        <config-file target="*-Info.plist" parent="UIBackgroundModes">
+<!--         <config-file target="*-Info.plist" parent="UIBackgroundModes">
             <array>
                 <string>location</string>
             </array>
-        </config-file>
+        </config-file> -->
 
         <!-- Hint is displayed to user by first start -->
  <!--        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
