@@ -21,18 +21,43 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ## Release Notes
+#### Version 0.2.1 (not yet released)
+- Added js interface to manually enable/disable the background mode.
+
 #### Version 0.2.0 (08.10.2013)
 - Added iOS (>= 5) support<br>
   The plugin turns the app into an location tracking app for the time it runs in the background.
 
 ## Using the plugin
-The plugin comes without a js interface. Simply add the plugin to your project and the app will run while in background mode.
+Simply add the plugin to your project and the app will run while in background mode.
+
+The plugin creates the object ```window.plugin.notification.backgroundMode``` with two methods:
+
+### enable()
+The method enables the background mode. The mode is activated once the app has entered the background and will be deactivated after the app has entered the foreground.<br>
+Please be aware, to activate the background mode the app needs to be in foreground.
 
 **iOS 5-6**<br>
 The app still runs in background, even if the location service is not active.
 
 **iOS 7**<br>
 The location service needs to be enabled.
+
+```javascript
+/**
+ * Enables the background mode. The app will not pause while in background.
+ */
+window.plugin.backgroundMode.enable();
+```
+
+### disable()
+The method disables the background mode. If the mode is disabled while the app is running in the background, the app will be paused immediately.
+```javascript
+/**
+ * Disables the background mode. The app will pause in background as usual.
+ */
+window.plugin.backgroundMode.disable();
+```
 
 ## Quirks
 
@@ -45,7 +70,7 @@ Do to some bugs in cordova or Plugman please reset all occurences like
 
 </string>
 ```
-into
+to
 ```xml
 <key>NSMainNibFile</key>
 <string></string>
