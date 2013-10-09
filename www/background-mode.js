@@ -8,11 +8,14 @@
  */
 
 var BackgroundMode = function () {
-
+    // Registriert die Listener für die (sleep/resume) Events
+    cordova.exec(null, null, 'BackgroundMode', 'observeLifeCycle', []);
 };
 
 BackgroundMode.prototype = {
     /**
+     * @public
+     *
      * Aktiviert den Hintergrundmodus.
      */
     activate: function () {
@@ -20,9 +23,11 @@ BackgroundMode.prototype = {
     },
 
     /**
+     * @public
+     *
      * Deaktiviert den Hintergrundmodus
      */
-    deactivate: function (badge) {
+    deactivate: function () {
         cordova.exec(null, null, 'BackgroundMode', 'deactivate', []);
     }
 };

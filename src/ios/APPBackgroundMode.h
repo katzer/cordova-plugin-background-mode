@@ -11,7 +11,9 @@
 #import <Cordova/CDVPlugin.h>
 #import <CoreLocation/CoreLocation.h>
 
-@interface APPBackgroundMode : CDVPlugin
+@interface APPBackgroundMode : CDVPlugin {
+    BOOL _activated;
+}
 
 // Aktiviert den Hintergrundmodus
 - (void) activate:(CDVInvokedUrlCommand *)command;
