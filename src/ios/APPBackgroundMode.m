@@ -55,8 +55,6 @@
 }
 
 /**
- * @obj-c-interface
- *
  * Aktiviert den Hintergrundmodus.
  */
 - (void) enableMode
@@ -65,8 +63,6 @@
 }
 
 /**
- * @obj-c-interface
- *
  * Deaktiviert den Hintergrundmodus.
  */
 - (void) disableMode
