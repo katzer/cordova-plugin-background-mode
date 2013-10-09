@@ -17,7 +17,7 @@
     </engines>
 
     <js-module src="www/background-mode.js" name="BackgroundMode">
-        <clobbers target="plugin.notification.backgroundMode" />
+        <clobbers target="plugin.backgroundMode" />
     </js-module>
 
     <!-- ios -->
@@ -62,7 +62,7 @@
     <platform name="wp8">
         <config-file target="config.xml" parent="/*">
             <feature name="BackgroundMode">
-                <param name="wp-package" value="APPPlant.Cordova.Plugin.BackgroundMode"/>
+                <param name="wp-package" value="BackgroundMode"/>
                 <param name="onload" value="true" />
             </feature>
         </config-file>
