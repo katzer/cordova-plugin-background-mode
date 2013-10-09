@@ -11,7 +11,7 @@ var BackgroundMode = function () {
 
 };
 
-Badge.prototype = {
+BackgroundMode.prototype = {
     /**
      * Aktiviert den Hintergrundmodus.
      */
