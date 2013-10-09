@@ -2,7 +2,7 @@
 
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
         id="de.appplant.cordova.plugin.background-mode"
-        version="0.2.0">
+        version="0.2.1">
 
     <name>BackgroundMode</name>
 
@@ -17,7 +17,7 @@
     </engines>
 
     <js-module src="www/background-mode.js" name="BackgroundMode">
-        <clobbers target="plugin.notification.BackgroundMode" />
+        <clobbers target="plugin.notification.backgroundMode" />
     </js-module>
 
     <!-- ios -->
@@ -25,7 +25,6 @@
         <config-file target="config.xml" parent="/*">
     		<feature name="BackgroundMode">
     			<param name="ios-package" value="APPBackgroundMode"/>
-                <!-- Needs to be initialiced onload since the plugin has no callable js interface -->
                 <param name="onload" value="true" />
     		</feature>
         </config-file>
@@ -64,7 +63,6 @@
         <config-file target="config.xml" parent="/*">
             <feature name="BackgroundMode">
                 <param name="wp-package" value="APPPlant.Cordova.Plugin.BackgroundMode"/>
-                <!-- Needs to be initialiced onload since the plugin has no callable js interface -->
                 <param name="onload" value="true" />
             </feature>
         </config-file>

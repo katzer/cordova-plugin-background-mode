@@ -21,7 +21,7 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ## Release Notes
-#### Version 0.2.1 (not yet released)
+#### Version 0.2.1 (09.10.2013)
 - Added js interface to manually enable/disable the background mode.
 
 #### Version 0.2.0 (08.10.2013)
@@ -29,7 +29,7 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
   The plugin turns the app into an location tracking app for the time it runs in the background.
 
 ## Using the plugin
-Simply add the plugin to your project and the app will run while in background mode.
+Simply add the plugin to your project and the app will run while in background.
 
 The plugin creates the object ```window.plugin.notification.backgroundMode``` with two methods:
 

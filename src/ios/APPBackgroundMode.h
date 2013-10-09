@@ -12,13 +12,13 @@
 #import <CoreLocation/CoreLocation.h>
 
 @interface APPBackgroundMode : CDVPlugin {
-    BOOL _activated;
+    BOOL _enabled;
 }
 
 // Aktiviert den Hintergrundmodus
-- (void) activate:(CDVInvokedUrlCommand *)command;
+- (void) enable:(CDVInvokedUrlCommand *)command;
 // Deaktiviert den Hintergrundmodus
-- (void) deactivate:(CDVInvokedUrlCommand *)command;
+- (void) disable:(CDVInvokedUrlCommand *)command;
 
 @property (nonatomic, strong) CLLocationManager* locationManager;
 

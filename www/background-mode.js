@@ -18,8 +18,8 @@ BackgroundMode.prototype = {
      *
      * Aktiviert den Hintergrundmodus.
      */
-    activate: function () {
-        cordova.exec(null, null, 'BackgroundMode', 'activate', []);
+    enable: function () {
+        cordova.exec(null, null, 'BackgroundMode', 'enable', []);
     },
 
     /**
@@ -27,8 +27,8 @@ BackgroundMode.prototype = {
      *
      * Deaktiviert den Hintergrundmodus
      */
-    deactivate: function () {
-        cordova.exec(null, null, 'BackgroundMode', 'deactivate', []);
+    disable: function () {
+        cordova.exec(null, null, 'BackgroundMode', 'disable', []);
     }
 };
 

@@ -14,9 +14,9 @@
 // Registriert die Listener für die (sleep/resume) Events
 - (void) observeLifeCycle:(CDVInvokedUrlCommand *)command;
 // Aktiviert den Hintergrundmodus
-- (void) activateMode;
+- (void) enableMode;
 // Deaktiviert den Hintergrundmodus
-- (void) deactivateMode;
+- (void) disableMode;
 
 @end
 
@@ -39,9 +39,9 @@
  *
  * Aktiviert den Hintergrundmodus.
  */
-- (void) activate:(CDVInvokedUrlCommand *)command
+- (void) enable:(CDVInvokedUrlCommand *)command
 {
-    [self activateMode];
+    [self enableMode];
 }
 
 /**
@@ -49,9 +49,9 @@
  *
  * Deaktiviert den Hintergrundmodus.
  */
-- (void) deactivate:(CDVInvokedUrlCommand *)command
+- (void) disable:(CDVInvokedUrlCommand *)command
 {
-    [self deactivateMode];
+    [self disableMode];
 }
 
 /**
@@ -59,9 +59,9 @@
  *
  * Aktiviert den Hintergrundmodus.
  */
-- (void) activateMode
+- (void) enableMode
 {
-    _activated = true;
+    _enabled = true;
 }
 
 /**
@@ -69,9 +69,9 @@
  *
  * Deaktiviert den Hintergrundmodus.
  */
-- (void) deactivateMode
+- (void) disableMode
 {
-    _activated = false;
+    _enabled = false;
 }
 
 /**
@@ -79,22 +79,22 @@
  */
 - (void) pluginInitialize
 {
-    [self activateMode];
+    [self enableMode];
 
     if (&UIApplicationDidEnterBackgroundNotification && &UIApplicationWillEnterForegroundNotification) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startUpdatingLocation) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopUpdatingLocation) name:UIApplicationWillEnterForegroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(activateMode) name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deactivateMode) name:UIApplicationWillEnterForegroundNotification object:nil];
     } else {
-        [self startUpdatingLocation];
+        [self activateMode];
     }
 }
 
 /**
  * Startet das Aktualisieren des Standpunktes.
  */
-- (void) startUpdatingLocation
+- (void) activateMode
 {
-    if (_activated == false) {
+    if (_enabled == false) {
         return;
     };
 
@@ -115,7 +115,7 @@
 /**
  * Beendet das Aktualisieren des Standpunktes.
  */
-- (void) stopUpdatingLocation
+- (void) deactivateMode
 {
     if (locationManager) {
         // Beendet das Aktualisieren des Standpunktes
