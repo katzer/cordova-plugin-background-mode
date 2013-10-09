@@ -14,9 +14,9 @@
 @interface APPBackgroundMode : CDVPlugin
 
 // Aktiviert den Hintergrundmodus
-- (void) activateMode;
+- (void) activate:(CDVInvokedUrlCommand *)command;
 // Deaktiviert den Hintergrundmodus
-- (void) deactivateMode;
+- (void) deactivate:(CDVInvokedUrlCommand *)command;
 
 @property (nonatomic, strong) CLLocationManager* locationManager;
 

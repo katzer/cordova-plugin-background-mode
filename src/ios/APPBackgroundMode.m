@@ -9,11 +9,44 @@
 
 #import "APPBackgroundMode.h"
 
+@interface APPBackgroundMode (PrivateMethods)
+
+// Aktiviert den Hintergrundmodus
+- (void) activateMode;
+// Deaktiviert den Hintergrundmodus
+- (void) deactivateMode;
+
+@end
+
 @implementation APPBackgroundMode
 
 @synthesize locationManager;
 
-// Aktiviert den Hintergrundmodus
+/**
+ * @js-interface
+ *
+ * Aktiviert den Hintergrundmodus.
+ */
+- (void) activate:(CDVInvokedUrlCommand *)command
+{
+    [self activateMode];
+}
+
+/**
+ * @js-interface
+ *
+ * Deaktiviert den Hintergrundmodus.
+ */
+- (void) deactivate:(CDVInvokedUrlCommand *)command
+{
+    [self deactivateMode];
+}
+
+/**
+ * @obj-c-interface
+ *
+ * Aktiviert den Hintergrundmodus.
+ */
 - (void) activateMode
 {
     if (!locationManager) {
@@ -30,7 +63,11 @@
     [locationManager startUpdatingLocation];
 }
 
-// Deaktiviert den Hintergrundmodus
+/**
+ * @obj-c-interface
+ *
+ * Deaktiviert den Hintergrundmodus.
+ */
 - (void) deactivateMode
 {
     if (locationManager) {
@@ -38,7 +75,9 @@
     };
 }
 
-// Registriert sich für die (sleep/resume) Events und startet bzw. stoppt die Geo-Lokalisierung
+/**
+ * Registriert die Listener für die (sleep/resume) Events und startet bzw. stoppt die Geo-Lokalisierung.
+ */
 - (void) pluginInitialize
 {
     if (&UIApplicationDidEnterBackgroundNotification && &UIApplicationWillEnterForegroundNotification) {

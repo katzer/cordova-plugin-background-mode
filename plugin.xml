@@ -16,6 +16,10 @@
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
+    <js-module src="www/background-mode.js" name="BackgroundMode">
+        <clobbers target="plugin.notification.BackgroundMode" />
+    </js-module>
+
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
