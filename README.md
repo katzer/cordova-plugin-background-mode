@@ -31,7 +31,7 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ## Using the plugin
 Simply add the plugin to your project and the app will run while in background.
 
-The plugin creates the object ```window.plugin.notification.backgroundMode``` with two methods:
+The plugin creates the object ```window.plugin.backgroundMode``` with two methods:
 
 ### enable()
 The method enables the background mode. The mode is activated once the app has entered the background and will be deactivated after the app has entered the foreground.<br>
