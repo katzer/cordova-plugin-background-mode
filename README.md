@@ -22,7 +22,7 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ## Release Notes
-#### Version 0.4.0 (not yet released)
+#### Version 0.4.0 (10.10.2013)
 - Added WP8 support<br>
   The plugin turns the app into an location tracking app *(for the time it runs in the background)*.
 
