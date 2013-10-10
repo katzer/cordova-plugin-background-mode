@@ -7,6 +7,7 @@ by Sebastián Katzer ([github.com/katzer](https://github.com/katzer))
 
 ## Supported Platforms
 - **iOS** (>=5)
+- **WP8**
 
 ## Adding the Plugin to your project
 Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
@@ -21,6 +22,10 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ## Release Notes
+#### Version 0.2.1 (not yet released)
+- Added WP8 support<br>
+  The plugin turns the app into an location tracking app *(for the time it runs in the background)*.
+
 #### Version 0.2.1 (09.10.2013)
 - Added js interface to manually enable/disable the background mode.
 
@@ -36,12 +41,6 @@ The plugin creates the object ```window.plugin.backgroundMode``` with two method
 ### enable()
 The method enables the background mode. The mode is activated once the app has entered the background and will be deactivated after the app has entered the foreground.<br>
 Please be aware, to activate the background mode the app needs to be in foreground.
-
-**iOS 5-6**<br>
-The app still runs in background, even if the location service is not active.
-
-**iOS 7**<br>
-The location service needs to be enabled.
 
 ```javascript
 /**
@@ -74,4 +73,39 @@ to
 ```xml
 <key>NSMainNibFile</key>
 <string></string>
+```
+
+### Location tracking under iOS
+**iOS 5-6**<br>
+The app still runs in background, even if the location service is not actived.
+
+**iOS 7**<br>
+The location service needs to be enabled.
+
+### Optimization under WP8
+By default the plugin will track for geo updates while the application is in background and foreground. To stop tracking in foreground, the `MainPage.xaml.cs` file needs the following 2 methods:
+```c#
+namespace your.own.namespace
+{
+    public partial class MainPage : PhoneApplicationPage
+    {
+        /// </summary>
+        /// The page (the app) will enter the background and the background mode
+        /// needs to be activated.
+        /// </summary>
+        protected override void OnNavigatingFrom(System.Windows.Navigation.NavigatingCancelEventArgs e)
+        {
+            Cordova.Extension.Commands.BackgroundMode.Activate();
+        }
+
+        /// </summary>
+        /// The page (the app) will enter the foreground and the background mode
+        /// needs to be deactivated.
+        /// </summary>
+        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            Cordova.Extension.Commands.BackgroundMode.Deactivate();
+        }
+    }
+}
 ```
