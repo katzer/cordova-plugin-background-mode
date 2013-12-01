@@ -22,6 +22,9 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ## Release Notes
+#### Version 0.4.1 (not yet released)
+- Release under the LGPL 2.1 license.
+
 #### Version 0.4.0 (10.10.2013)
 - Added WP8 support<br>
   The plugin turns the app into an location tracking app *(for the time it runs in the background)*.
@@ -133,3 +136,7 @@ ren platforms\wp8\cordova\version.bat platforms\wp8\cordova\version
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## License
+
+This software is released under the [LGPL 2.1 License](http://opensource.org/licenses/LGPL-2.1).
