@@ -58,33 +58,20 @@ The method disables the background mode. If the mode is disabled while the app i
 window.plugin.backgroundMode.disable();
 ```
 
-## Quirks
+## Platform specifics
 
-### The app crashes under iOS
-If the app crashes after installing the plugin, make sure that your `*-Info.plist` is valid.
-Do to some bugs in cordova or Plugman please reset all occurences like
-```xml
-<key>NSMainNibFile</key>
-<string>
-
-</string>
-```
-to
-```xml
-<key>NSMainNibFile</key>
-<string></string>
-```
-
-### Location tracking under iOS
+### Location tracking on iOS
 **iOS 5-6**<br>
 The app still runs in background, even if the location service is not actived.
 
 **iOS 7**<br>
 The location service needs to be enabled.
 
-### Optimization under WP8
+### Optimization on WP8
 By default the plugin will track for geo updates while the application is in background and foreground. To stop tracking in foreground, the `MainPage.xaml.cs` file needs the following 2 methods:
 ```c#
+// MainPage.xaml.cs
+
 namespace your.own.namespace
 {
     public partial class MainPage : PhoneApplicationPage
@@ -108,6 +95,23 @@ namespace your.own.namespace
         }
     }
 }
+```
+
+## Quirks
+
+### The app crashes on iOS
+If the app crashes after installing the plugin, make sure that your `*-Info.plist` is valid.
+Do to some bugs in cordova or Plugman please reset all occurences like
+```xml
+<key>NSMainNibFile</key>
+<string>
+
+</string>
+```
+to
+```xml
+<key>NSMainNibFile</key>
+<string></string>
 ```
 
 ### TypeError: Cannot read property 'currentVersion' of null
