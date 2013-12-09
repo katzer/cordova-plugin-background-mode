@@ -32,7 +32,7 @@ namespace Cordova.Extension.Commands
         /// </summary>
         /// Flag gibt an, ob die App im Hintergrund wach gehalten werden soll
         /// </summary>
-        private static bool isEnabled = true;
+        private static bool IsEnabled = true;
 
         /// </summary>
         /// Lokalisiert das Smartphone
@@ -71,7 +71,7 @@ namespace Cordova.Extension.Commands
         /// </summary>
         public static void Enable ()
         {
-            isEnabled = true;
+            IsEnabled = true;
         }
 
         /// </summary>
@@ -79,7 +79,7 @@ namespace Cordova.Extension.Commands
         /// </summary>
         public static void Disable ()
         {
-            isEnabled = false;
+            IsEnabled = false;
 
             Deactivate();
         }
@@ -98,7 +98,7 @@ namespace Cordova.Extension.Commands
         /// </summary>
         public static void Activate ()
         {
-            if (Geolocator == null && isEnabled && IsServiceAvailable())
+            if (Geolocator == null && IsEnabled && IsServiceAvailable())
             {
                 Geolocator = new Geolocator();
 
