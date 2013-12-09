@@ -23,7 +23,8 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 
 ## Release Notes
 #### Version 0.4.1 (not yet released)
-- Release under the LGPL 2.1 license.
+- Release under the Apache 2.0 license.
+- [enhancement:] Location tracking is only activated on WP8 if the location service is available.
 
 #### Version 0.4.0 (10.10.2013)
 - Added WP8 support<br>
@@ -139,4 +140,4 @@ ren platforms\wp8\cordova\version.bat platforms\wp8\cordova\version
 
 ## License
 
-This software is released under the [LGPL 2.1 License](http://opensource.org/licenses/LGPL-2.1).
+This software is released under the [Apache 2.0 License](http://opensource.org/licenses/Apache-2.0).

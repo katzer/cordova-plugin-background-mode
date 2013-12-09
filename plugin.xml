@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    id="de.appplant.cordova.plugin.background-mode"
-    version="0.4.1dev">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="de.appplant.cordova.plugin.background-mode"
+        version="0.4.1dev">
 
     <name>BackgroundMode</name>
 
     <description>A bunch of background mode plugins for Cordova 3.x.x</description>
+    <repo>https://github.com/katzer/cordova-plugin-background-mode.git</repo>
     <keywords>background, ios, windows phone 8, wp8</keywords>
-    <license>LGPL v2.1 License</license>
+    <license>Apache 2.0</license>
 
-    <author>Sebastián Katzer (github.com/katzer)</author>
+    <author>Sebastián Katzer</author>
 
     <engines>
         <engine name="cordova" version=">=3.0.0" />
