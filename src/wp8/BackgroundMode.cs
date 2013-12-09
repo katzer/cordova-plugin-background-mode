@@ -86,7 +86,7 @@ namespace Cordova.Extension.Commands
         /// </summary>
         public static void Activate ()
         {
-            if (Geolocator == null && isEnabled)
+            if (Geolocator == null && isEnabled && IsServiceAvailable())
             {
                 Geolocator = new Geolocator();
 
@@ -109,5 +109,13 @@ namespace Cordova.Extension.Commands
         }
 
         private static void geolocator_PositionChanged (Geolocator sender, PositionChangedEventArgs args) {}
+
+        /// </summary>
+        /// Gibt an, ob der Lokalisierungsdienst verfügbar ist
+        /// </summary>
+        private static bool IsServiceAvailable()
+        {
+            return !(Geolocator.LocationStatus == PositionStatus.Disabled || Geolocator.LocationStatus == PositionStatus.NotAvailable);
+        }
     }
 }
