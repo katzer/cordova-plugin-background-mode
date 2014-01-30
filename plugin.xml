@@ -25,10 +25,10 @@
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
-    		<feature name="BackgroundMode">
-    			<param name="ios-package" value="APPBackgroundMode"/>
+            <feature name="BackgroundMode">
+                <param name="ios-package" value="APPBackgroundMode" onload="true" />
                 <param name="onload" value="true" />
-    		</feature>
+            </feature>
         </config-file>
 
         <!-- The app is able to run in background through location-tracking mode -->
@@ -43,15 +43,15 @@
             <string>Is required -for iOS 6 and above- to run the app in background!</string>
         </config-file>
 
-    	<header-file src="src/ios/APPBackgroundMode.h" />
-    	<source-file src="src/ios/APPBackgroundMode.m" />
+        <header-file src="src/ios/APPBackgroundMode.h" />
+        <source-file src="src/ios/APPBackgroundMode.m" />
     </platform>
 
     <!-- wp8 -->
     <platform name="wp8">
         <config-file target="config.xml" parent="/*">
             <feature name="BackgroundMode">
-                <param name="wp-package" value="BackgroundMode"/>
+                <param name="wp-package" value="BackgroundMode" onload="true" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
