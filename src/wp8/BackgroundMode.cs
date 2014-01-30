@@ -1,5 +1,5 @@
 /*
-    Copyright 2013 appPlant UG
+    Copyright 2013-2014 appPlant UG
 
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -127,7 +127,9 @@ namespace Cordova.Extension.Commands
         /// </summary>
         private static bool IsServiceAvailable()
         {
-            return !(Geolocator.LocationStatus == PositionStatus.Disabled || Geolocator.LocationStatus == PositionStatus.NotAvailable);
+            Geolocator geolocator = (Geolocator == null) ? new Geolocator() : Geolocator;
+
+            return !(geolocator.LocationStatus == PositionStatus.Disabled || geolocator.LocationStatus == PositionStatus.NotAvailable);
         }
     }
 }
