@@ -7,6 +7,7 @@ by Sebastián Katzer ([github.com/katzer](https://github.com/katzer))
 
 ## Supported Platforms
 - **iOS** (>=5)
+- **Android**
 - **WP8**
 
 ## Adding the Plugin to your project
@@ -26,6 +27,9 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ## Release Notes
+#### Version 0.5.0 (13.02.2014)
+- Added Android support.
+
 #### Version 0.4.1 (13.02.2014)
 - Release under the Apache 2.0 license.
 - [enhancement:] Location tracking is only activated on WP8 if the location service is available.
