@@ -11,8 +11,12 @@ by Sebastián Katzer ([github.com/katzer](https://github.com/katzer))
 
 ## Adding the Plugin to your project
 Through the [Command-line Interface](http://cordova.apache.org/docs/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface):
-```
+```bash
+# from master:
 cordova plugin add https://github.com/katzer/cordova-plugin-background-mode.git
+
+# last version:
+cordova plugin add de.appplant.cordova.plugin.background-mode
 ```
 
 ## Removing the Plugin from your project
@@ -22,9 +26,10 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ## Release Notes
-#### Version 0.4.1 (not yet released)
+#### Version 0.4.1 (13.02.2014)
 - Release under the Apache 2.0 license.
 - [enhancement:] Location tracking is only activated on WP8 if the location service is available.
+- [bigfix:] Nullpointer exception on WP8.
 
 #### Version 0.4.0 (10.10.2013)
 - Added WP8 support<br>
@@ -119,7 +124,7 @@ to
 ```
 
 ### TypeError: Cannot read property 'currentVersion' of null
-Along with Cordova 3.2 and Windows Phone 8 the `version.bat` script has to be renamed to `version`.
+The error occurs while trying to install the plugin from master. As a workaround the **version.bat** script has to be renamed to **version**.
 
 On Mac or Linux
 ```
