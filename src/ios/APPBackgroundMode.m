@@ -115,7 +115,9 @@
 #endif
 
     // Empfängt nur Nachrichten, wenn sich die Position um 1km geändert hat
-    locationManager.distanceFilter = 1000;
+    locationManager.distanceFilter  = 1000;
+    // Koordinaten sollen bis auf 1km genau bestimmt werden
+    locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
     // Startet das Aktualisieren des Standpunktes
     [locationManager startUpdatingLocation];
 }
