@@ -98,6 +98,9 @@ The app still runs in background, even if the location service is not actived.
 **iOS 7**<br>
 The location service needs to be enabled.
 
+**AppStore**<br>
+Warning: if you use this plugin but your app does not require any persistent geolocation (eg you do nothing with the geolocation values), your app will be rejected by the AppStore review team (there is at least one predecedent).
+
 ### Optimization on WP8
 By default the plugin will track for geo updates while the application is in background and foreground. To stop tracking in foreground, the `MainPage.xaml.cs` file needs the following 2 methods:
 ```c#
