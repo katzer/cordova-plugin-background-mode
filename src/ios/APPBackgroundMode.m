@@ -114,6 +114,11 @@
     locationManager.activityType = CLActivityTypeFitness;
 #endif
 
+    // Check for iOS 8 and request "alwaysauthorization" if it is
+    if ([locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [locationManager requestAlwaysAuthorization];
+    }
+
     // Empfängt nur Nachrichten, wenn sich die Position um 1km geändert hat
     locationManager.distanceFilter  = 1000;
     // Koordinaten sollen bis auf 1km genau bestimmt werden
