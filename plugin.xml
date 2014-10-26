@@ -14,10 +14,12 @@
 
     <author>Sebastián Katzer</author>
 
+    <!-- cordova -->
     <engines>
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
+    <!-- js -->
     <js-module src="www/background-mode.js" name="BackgroundMode">
         <clobbers target="plugin.backgroundMode" />
     </js-module>
@@ -49,9 +51,37 @@
 
     <!-- android -->
     <platform name="android">
-        <config-file target="config.xml" parent="/*">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="BackgroundMode" >
+                <param name="android-package"
+                      value="de.appplant.cordova.plugin.background.BackgroundMode"/>
+            </feature>
+        </config-file>
+
+        <config-file target="res/xml/config.xml" parent="/*">
             <preference name="KeepRunning" value="true" />
         </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <!--
+             * Puts the service in a foreground state, where the system considers
+             * it to be something the user is actively aware of and thus not a
+             * candidate for killing when low on memory.
+            -->
+            <service
+                android:name="de.appplant.cordova.plugin.background.ForegroundService"
+                android:enabled="true" />
+
+        </config-file>
+
+        <source-file
+            src="src/android/BackgroundMode.java"
+            target-dir="src/de/appplant/cordova/plugin/background" />
+
+        <source-file
+            src="src/android/ForegroundService.java"
+            target-dir="src/de/appplant/cordova/plugin/background" />
+
     </platform>
 
     <!-- wp8 -->

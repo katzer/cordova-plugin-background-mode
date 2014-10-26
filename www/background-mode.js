@@ -46,4 +46,6 @@ BackgroundMode.prototype = {
 
 var plugin = new BackgroundMode();
 
+document.addEventListener("backbutton", function () {}, false);
+
 module.exports = plugin;
