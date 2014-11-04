@@ -17,9 +17,15 @@
     KIND, either express or implied.  See the License for the
     specific language governing permissions and limitations
     under the License.
-*/
+ */
 
 package de.appplant.cordova.plugin.background;
+
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -28,12 +34,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
-
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaPlugin;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -47,7 +47,7 @@ public class BackgroundMode extends CordovaPlugin {
     static JSONObject settings = new JSONObject();
 
     // Used to (un)bind the service to with the activity
-    private ServiceConnection connection = new ServiceConnection() {
+    private final ServiceConnection connection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
@@ -77,7 +77,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     @Override
     public boolean execute (String action, JSONArray args,
-                            CallbackContext callback) throws JSONException {
+            CallbackContext callback) throws JSONException {
 
         if (action.equalsIgnoreCase("observeLifeCycle")) {
             // Nothing to do here
@@ -85,7 +85,8 @@ public class BackgroundMode extends CordovaPlugin {
         }
 
         if (action.equalsIgnoreCase("configure")) {
-            settings = args.getJSONObject(0);
+            setSettings(args.getJSONObject(0));
+
             return true;
         }
 
@@ -155,6 +156,20 @@ public class BackgroundMode extends CordovaPlugin {
     }
 
     /**
+     * Update the settings and maybe the notification.
+     *
+     * @param settings
+     */
+    private void setSettings(JSONObject settings) {
+        this.settings = settings;
+
+        if (inBackground) {
+            stopService();
+            startService();
+        }
+    }
+
+    /**
      * Bind the activity to a background service and put them into foreground
      * state.
      */
@@ -164,8 +179,9 @@ public class BackgroundMode extends CordovaPlugin {
         Intent intent = new Intent(
                 context, ForegroundService.class);
 
-        if (isDisabled)
+        if (isDisabled) {
             return;
+        }
 
         context.bindService(
                 intent, connection, Context.BIND_AUTO_CREATE);

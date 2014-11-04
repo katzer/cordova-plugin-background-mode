@@ -128,11 +128,11 @@ public class ForegroundService extends Service {
                 .getLaunchIntentForPackage(pkgName);
 
         Notification.Builder notification = new Notification.Builder(context)
-        .setContentTitle(settings.optString("title", ""))
-        .setContentText(settings.optString("text", ""))
-        .setTicker(settings.optString("ticker", ""))
-        .setOngoing(true)
-        .setSmallIcon(getIconResId());
+            .setContentTitle(settings.optString("title", ""))
+            .setContentText(settings.optString("text", ""))
+            .setTicker(settings.optString("ticker", ""))
+            .setOngoing(true)
+            .setSmallIcon(getIconResId());
 
         if (intent != null && settings.optBoolean("resume")) {
 
