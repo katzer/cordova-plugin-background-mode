@@ -33,6 +33,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -41,6 +42,9 @@ public class BackgroundMode extends CordovaPlugin {
 
     // Flag indicates if the plugin is enabled or disabled
     private boolean isDisabled = false;
+
+    // Settings for the notification
+    static JSONObject settings;
 
     // Used to (un)bind the service to with the activity
     private ServiceConnection connection = new ServiceConnection() {
@@ -77,6 +81,11 @@ public class BackgroundMode extends CordovaPlugin {
 
         if (action.equalsIgnoreCase("observeLifeCycle")) {
             // Nothing to do here
+            return true;
+        }
+
+        if (action.equalsIgnoreCase("configure")) {
+            settings = args.getJSONObject(0);
             return true;
         }
 

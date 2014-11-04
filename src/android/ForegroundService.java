@@ -32,6 +32,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -126,15 +129,18 @@ public class ForegroundService extends Service {
         PendingIntent contentIntent = PendingIntent.getActivity(
                 context, NOTIFICATION_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        String title = "App is running in background";
+        JSONObject settings = BackgroundMode.settings;
 
         Notification.Builder notification = new Notification.Builder(context)
-                .setContentTitle(title)
-                .setContentText(title)
-                .setTicker(title)
+                .setContentTitle(settings.optString("title"))
+                .setContentText(settings.optString("text"))
+                .setTicker(settings.optString("ticker"))
                 .setOngoing(true)
-                .setSmallIcon(getIconResId())
-                .setContentIntent(contentIntent);
+                .setSmallIcon(getIconResId());
+
+        if (settings.optBoolean("resume")) {
+            notification.setContentIntent(contentIntent);
+        }
 
         if (Build.VERSION.SDK_INT < 16) {
             // Build notification for HoneyComb to ICS

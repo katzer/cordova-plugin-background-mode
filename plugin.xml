@@ -21,6 +21,7 @@
 
     <!-- js -->
     <js-module src="www/background-mode.js" name="BackgroundMode">
+        <clobbers target="cordova.plugins.backgroundMode" />
         <clobbers target="plugin.backgroundMode" />
     </js-module>
 

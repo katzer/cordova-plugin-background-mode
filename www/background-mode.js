@@ -19,33 +19,86 @@
     under the License.
 */
 
-var BackgroundMode = function () {
+var exec = require('cordova/exec'),
+    channel = require('cordova/channel');
+
+
+// Override back button action to prevent being killed
+document.addEventListener('backbutton', function () {}, false);
+
+channel.deviceready.subscribe( function () {
     // Registriert die Listener für die (sleep/resume) Events
     cordova.exec(null, null, 'BackgroundMode', 'observeLifeCycle', []);
+
+    exports.configure();
+});
+
+
+/**
+ * List of all available options with their default value.
+ *
+ * @return {Object}
+ */
+exports.getDefaults = function () {
+    return {
+        title:  'App is running in background',
+        text:   'Doing heavy tasks.',
+        ticker: 'App is running in background',
+        resume: true
+    };
 };
 
-BackgroundMode.prototype = {
-    /**
-     * @public
-     *
-     * Aktiviert den Hintergrundmodus.
-     */
-    enable: function () {
-        cordova.exec(null, null, 'BackgroundMode', 'enable', []);
-    },
+/**
+ * Activates the background mode. When activated the application
+ * will be prevented from going to sleep while in background
+ * for the next time.
+ */
+exports.enable = function () {
+    cordova.exec(null, null, 'BackgroundMode', 'enable', []);
+};
 
-    /**
-     * @public
-     *
-     * Deaktiviert den Hintergrundmodus
-     */
-    disable: function () {
-        cordova.exec(null, null, 'BackgroundMode', 'disable', []);
+/**
+ * Deactivates the background mode. When deactivated the application
+ * will not stay awake while in background.
+ */
+exports.disable = function () {
+    cordova.exec(null, null, 'BackgroundMode', 'disable', []);
+};
+
+/**
+ * Configures the notification settings for Android.
+ * Will be merged with the defaults.
+ *
+ * @param {Object} options
+ *      Dict with key/value pairs
+ */
+exports.configure = function (options) {
+    var settings = this.mergeWithDefaults(options || {});
+
+    cordova.exec(null, null, 'BackgroundMode', 'configure', [settings]);
+};
+
+/**
+ * @private
+ *
+ * Merge settings with default values.
+ *
+ * @param {Object} options
+ *      The custom options
+ *
+ * @return {Object}
+ *      Default values merged
+ *      with custom values
+ */
+exports.mergeWithDefaults = function (options) {
+    var defaults = this.getDefaults();
+
+    for (var key in defaults) {
+        if (!options.hasOwnProperty(key)) {
+            options[key] = defaults[key];
+            continue;
+        }
     }
+
+    return options;
 };
-
-var plugin = new BackgroundMode();
-
-document.addEventListener("backbutton", function () {}, false);
-
-module.exports = plugin;
