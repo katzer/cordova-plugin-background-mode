@@ -81,7 +81,11 @@ exports.configure = function (options) {
 
     cordova.exec(null, null, 'BackgroundMode', 'configure', [settings]);
 
-    settings.enable ? this.enable() : this.disable();
+    if (settings.enable) {
+        this.enable();
+    } else {
+        this.disable();
+    }
 };
 
 /**
