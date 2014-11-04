@@ -44,7 +44,7 @@ public class BackgroundMode extends CordovaPlugin {
     private boolean isDisabled = false;
 
     // Settings for the notification
-    static JSONObject settings;
+    static JSONObject settings = new JSONObject();
 
     // Used to (un)bind the service to with the activity
     private ServiceConnection connection = new ServiceConnection() {
