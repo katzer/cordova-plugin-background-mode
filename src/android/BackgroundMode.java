@@ -158,10 +158,11 @@ public class BackgroundMode extends CordovaPlugin {
     /**
      * Update the settings and maybe the notification.
      *
-     * @param settings
+     * @param newSettings
+     *      The new settings
      */
-    private void setSettings(JSONObject settings) {
-        this.settings = settings;
+    private void setSettings(JSONObject newSettings) {
+        settings = newSettings;
 
         if (inBackground) {
             stopService();
