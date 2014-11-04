@@ -44,7 +44,8 @@ exports.getDefaults = function () {
         title:  'App is running in background',
         text:   'Doing heavy tasks.',
         ticker: 'App is running in background',
-        resume: true
+        resume: true,
+        enable: true
     };
 };
 
@@ -79,6 +80,8 @@ exports.configure = function (options) {
         return;
 
     cordova.exec(null, null, 'BackgroundMode', 'configure', [settings]);
+
+    settings.enable ? this.enable() : this.disable();
 };
 
 /**
