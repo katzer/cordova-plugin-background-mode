@@ -20,18 +20,18 @@
 */
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
+#import <AudioToolbox/AudioToolbox.h>
 #import <Cordova/CDVPlugin.h>
-#import <CoreLocation/CoreLocation.h>
 
-@interface APPBackgroundMode : CDVPlugin {
-    BOOL _enabled;
+@interface APPBackgroundMode : CDVPlugin  {
+    AVAudioPlayer *audioPlayer;
+    BOOL enabled;
 }
 
-// Aktiviert den Hintergrundmodus
+// Activate the background mode
 - (void) enable:(CDVInvokedUrlCommand *)command;
-// Deaktiviert den Hintergrundmodus
+// Deactivate the background mode
 - (void) disable:(CDVInvokedUrlCommand *)command;
-
-@property (nonatomic, strong) CLLocationManager* locationManager;
 
 @end

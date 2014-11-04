@@ -21,116 +21,140 @@
 
 #import "APPBackgroundMode.h"
 
-@interface APPBackgroundMode (PrivateMethods)
-
-// Registriert die Listener für die (sleep/resume) Events
-- (void) observeLifeCycle:(CDVInvokedUrlCommand *)command;
-// Aktiviert den Hintergrundmodus
-- (void) enableMode;
-// Deaktiviert den Hintergrundmodus
-- (void) disableMode;
-
-@end
-
 @implementation APPBackgroundMode
 
-@synthesize locationManager;
+#pragma mark -
+#pragma mark Initialization methods
 
 /**
- * @js-interface
- *
- * Registriert die Listener für die (sleep/resume) Events.
- */
-- (void) observeLifeCycle:(CDVInvokedUrlCommand *)command
-{
-    // Methode pluginInitialize wird aufgerufen, falls Instanz erstellt wurde
-}
-
-/**
- * @js-interface
- *
- * Aktiviert den Hintergrundmodus.
- */
-- (void) enable:(CDVInvokedUrlCommand *)command
-{
-    [self enableMode];
-}
-
-/**
- * @js-interface
- *
- * Deaktiviert den Hintergrundmodus.
- */
-- (void) disable:(CDVInvokedUrlCommand *)command
-{
-    [self disableMode];
-}
-
-/**
- * Aktiviert den Hintergrundmodus.
- */
-- (void) enableMode
-{
-    _enabled = true;
-}
-
-/**
- * Deaktiviert den Hintergrundmodus.
- */
-- (void) disableMode
-{
-    _enabled = false;
-}
-
-/**
- * Registriert die Listener für die (sleep/resume) Events und startet bzw. stoppt die Geo-Lokalisierung.
+ * Initialize the plugin.
  */
 - (void) pluginInitialize
 {
-    [self enableMode];
+    [self enable:NULL];
+    [self configureAudioPlayer];
+    [self configureAudioSession];
+}
+
+/**
+ * Register the listener for pause and resume events.
+ */
+- (void) observeLifeCycle:(CDVInvokedUrlCommand *)command
+{
+    NSNotificationCenter* listener = [NSNotificationCenter defaultCenter];
 
     if (&UIApplicationDidEnterBackgroundNotification && &UIApplicationWillEnterForegroundNotification) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(activateMode) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deactivateMode) name:UIApplicationWillEnterForegroundNotification object:nil];
+
+        [listener addObserver:self
+                     selector:@selector(keepAwake)
+                         name:UIApplicationDidEnterBackgroundNotification
+                       object:nil];
+
+        [listener addObserver:self
+                     selector:@selector(stopKeepingAwake)
+                         name:UIApplicationWillEnterForegroundNotification
+                       object:nil];
+
+        [listener addObserver:self
+                     selector:@selector(handleAudioSessionInterruption:)
+                         name:AVAudioSessionInterruptionNotification
+                       object:nil];
+
     } else {
-        [self activateMode];
+        [self keepAwake];
+    }
+}
+
+#pragma mark -
+#pragma mark Interface methods
+
+/**
+ * Enable the mode to stay awake
+ * when switching to background for the next time.
+ */
+- (void) enable:(CDVInvokedUrlCommand *)command
+{
+    enabled = YES;
+}
+
+/**
+ * Disable the background mode
+ * and stop being active in background.
+ */
+- (void) disable:(CDVInvokedUrlCommand *)command
+{
+    enabled = NO;
+
+    [self stopKeepingAwake];
+}
+
+#pragma mark -
+#pragma mark Core methods
+
+/**
+ * Keep the app awake.
+ */
+- (void) keepAwake {
+    if (enabled) {
+        [audioPlayer play];
     }
 }
 
 /**
- * Startet das Aktualisieren des Standpunktes.
+ * Let the app going to sleep.
  */
-- (void) activateMode
-{
-    if (_enabled == false) {
-        return;
-    };
-
-    if (!locationManager) {
-        locationManager = [[CLLocationManager alloc] init];
-    };
-
-#ifdef __IPHONE_6_0
-    locationManager.activityType = CLActivityTypeFitness;
-#endif
-
-    // Empfängt nur Nachrichten, wenn sich die Position um 1km geändert hat
-    locationManager.distanceFilter  = 1000;
-    // Koordinaten sollen bis auf 1km genau bestimmt werden
-    locationManager.desiredAccuracy = kCLLocationAccuracyKilometer;
-    // Startet das Aktualisieren des Standpunktes
-    [locationManager startUpdatingLocation];
+- (void) stopKeepingAwake {
+    [audioPlayer pause];
 }
 
 /**
- * Beendet das Aktualisieren des Standpunktes.
+ * Configure the audio player.
  */
-- (void) deactivateMode
-{
-    if (locationManager) {
-        // Beendet das Aktualisieren des Standpunktes
-        [locationManager stopUpdatingLocation];
-    };
+- (void) configureAudioPlayer {
+    NSString* path = [[NSBundle mainBundle] pathForResource:@"silent"
+                                                     ofType:@"wav"];
+
+    NSURL* url = [NSURL fileURLWithPath:path];
+
+
+    audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url
+                                                         error:NULL];
+
+    // Silent
+    audioPlayer.volume = 0;
+    // Infinite
+    audioPlayer.numberOfLoops = -1;
+};
+
+/**
+ * Configure the audio session.
+ */
+- (void) configureAudioSession {
+    AVAudioSession* session = [AVAudioSession
+                               sharedInstance];
+
+    // Play music even in background and dont stop playing music
+    // even another app starts playing sound
+    [session setCategory:AVAudioSessionCategoryPlayback
+             withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                   error:NULL];
+
+    [session setActive:YES error:NULL];
+};
+
+/**
+ * Handle audio session interruption.
+ */
+- (void) handleAudioSessionInterruption:(NSNotification*)notification {
+    NSNumber* receivedType = [notification.userInfo
+                              valueForKey:AVAudioSessionInterruptionTypeKey];
+
+    NSNumber* expectedType = [NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded];
+
+    if ([receivedType isEqualToNumber:expectedType]) {
+        [self configureAudioSession];
+        [self keepAwake];
+    }
 }
 
 @end

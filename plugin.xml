@@ -33,17 +33,14 @@
             </feature>
         </config-file>
 
-        <!-- The app is able to run in background through location-tracking mode -->
+        <!-- The app is able to run in background through audio mode -->
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
             <array>
-                <string>location</string>
+                <string>audio</string>
             </array>
         </config-file>
 
-        <!-- Hint is displayed to user by first start -->
-        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
-            <string>Is required -for iOS 6 and above- to run the app in background!</string>
-        </config-file>
+        <resource-file src="res/silent.wav" />
 
         <header-file src="src/ios/APPBackgroundMode.h" />
         <source-file src="src/ios/APPBackgroundMode.m" />
