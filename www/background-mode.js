@@ -26,10 +26,10 @@ var exec = require('cordova/exec'),
 // Override back button action to prevent being killed
 document.addEventListener('backbutton', function () {}, false);
 
-channel.deviceready.subscribe( function () {
+channel.deviceready.subscribe(function () {
     // Registriert die Listener für die (sleep/resume) Events
     cordova.exec(null, null, 'BackgroundMode', 'observeLifeCycle', []);
-
+    // Set the default settings
     exports.configure();
 });
 
@@ -74,6 +74,9 @@ exports.disable = function () {
  */
 exports.configure = function (options) {
     var settings = this.mergeWithDefaults(options || {});
+
+    if (device.platform != 'Android')
+        return;
 
     cordova.exec(null, null, 'BackgroundMode', 'configure', [settings]);
 };
