@@ -17,10 +17,16 @@
     KIND, either express or implied.  See the License for the
     specific language governing permissions and limitations
     under the License.
-*/
+ */
 
 package de.appplant.cordova.plugin.background;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.json.JSONObject;
+
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -30,14 +36,6 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Puts the service in a foreground state, where the system considers it to be
@@ -92,6 +90,7 @@ public class ForegroundService extends Service {
             @Override
             public void run() {
                 handler.post(new Runnable() {
+                    @Override
                     public void run() {
                         // Nothing to do here
                         // Log.d("BackgroundMode", "" + new Date().getTime());
@@ -119,26 +118,27 @@ public class ForegroundService extends Service {
      *      A local ongoing notification which pending intent is bound to the
      *      main activity.
      */
+    @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
     private Notification makeNotification() {
-        Context context = getApplicationContext();
-        String pkgName  = context.getPackageName();
-        Intent intent   = context.getPackageManager()
+        JSONObject settings = BackgroundMode.settings;
+        Context context     = getApplicationContext();
+        String pkgName      = context.getPackageName();
+        Intent intent       = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(
-                context, NOTIFICATION_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        JSONObject settings = BackgroundMode.settings;
-
         Notification.Builder notification = new Notification.Builder(context)
-                .setContentTitle(settings.optString("title"))
-                .setContentText(settings.optString("text"))
-                .setTicker(settings.optString("ticker"))
-                .setOngoing(true)
-                .setSmallIcon(getIconResId());
+        .setContentTitle(settings.optString("title", ""))
+        .setContentText(settings.optString("text", ""))
+        .setTicker(settings.optString("ticker", ""))
+        .setOngoing(true)
+        .setSmallIcon(getIconResId());
 
-        if (settings.optBoolean("resume")) {
+        if (intent != null && settings.optBoolean("resume")) {
+
+            PendingIntent contentIntent = PendingIntent.getActivity(
+                    context, NOTIFICATION_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
             notification.setContentIntent(contentIntent);
         }
 
