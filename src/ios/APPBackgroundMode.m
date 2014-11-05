@@ -143,18 +143,10 @@
 };
 
 /**
- * Handle audio session interruption.
+ * Restart playing sound when interrupted by phone calls.
  */
 - (void) handleAudioSessionInterruption:(NSNotification*)notification {
-    NSNumber* receivedType = [notification.userInfo
-                              valueForKey:AVAudioSessionInterruptionTypeKey];
-
-    NSNumber* expectedType = [NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded];
-
-    if ([receivedType isEqualToNumber:expectedType]) {
-        [self configureAudioSession];
-        [self keepAwake];
-    }
+    [self keepAwake];
 }
 
 @end
