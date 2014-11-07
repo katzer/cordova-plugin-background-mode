@@ -43,6 +43,10 @@ public class BackgroundMode extends CordovaPlugin {
     // Flag indicates if the plugin is enabled or disabled
     private boolean isDisabled = false;
 
+    // Flag indicates if the service is bind
+    private boolean isBind = false;
+
+
     // Settings for the notification
     static JSONObject settings = new JSONObject();
 
@@ -188,6 +192,8 @@ public class BackgroundMode extends CordovaPlugin {
                 intent, connection, Context.BIND_AUTO_CREATE);
 
         context.startService(intent);
+
+        isBind = true;
     }
 
     /**
@@ -200,7 +206,12 @@ public class BackgroundMode extends CordovaPlugin {
         Intent intent = new Intent(
                 context, ForegroundService.class);
 
-        context.unbindService(connection);
+        if (isBind) {
+            context.unbindService(connection);
+        }
+
         context.stopService(intent);
+
+        isBind = false;
     }
 }
