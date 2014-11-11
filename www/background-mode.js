@@ -76,10 +76,9 @@ exports.disable = function () {
 exports.configure = function (options) {
     var settings = this.mergeWithDefaults(options || {});
 
-    if (device.platform != 'Android')
-        return;
-
-    cordova.exec(null, null, 'BackgroundMode', 'configure', [settings]);
+    if (device.platform == 'Android') {
+        cordova.exec(null, null, 'BackgroundMode', 'configure', [settings]);
+    }
 
     if (settings.enable) {
         this.enable();
