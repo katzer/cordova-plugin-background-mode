@@ -185,7 +185,7 @@ public class BackgroundMode extends CordovaPlugin {
         Intent intent = new Intent(
                 context, ForegroundService.class);
 
-        if (isDisabled) {
+        if (isDisabled || isBind) {
             return;
         }
 
