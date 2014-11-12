@@ -46,9 +46,8 @@ public class BackgroundMode extends CordovaPlugin {
     // Flag indicates if the service is bind
     private boolean isBind = false;
 
-
     // Settings for the notification
-    static JSONObject settings = new JSONObject();
+    protected static JSONObject settings = new JSONObject();
 
     // Used to (un)bind the service to with the activity
     private final ServiceConnection connection = new ServiceConnection() {
@@ -120,7 +119,6 @@ public class BackgroundMode extends CordovaPlugin {
         startService();
     }
 
-
     /**
      * Called when the activity will start interacting with the user.
      *
@@ -134,6 +132,9 @@ public class BackgroundMode extends CordovaPlugin {
         stopService();
     }
 
+    /**
+     * Called when the activity will be destroyed.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
