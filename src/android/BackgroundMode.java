@@ -41,7 +41,7 @@ public class BackgroundMode extends CordovaPlugin {
     private boolean inBackground = false;
 
     // Flag indicates if the plugin is enabled or disabled
-    private boolean isDisabled = false;
+    private boolean isDisabled = true;
 
     // Flag indicates if the service is bind
     private boolean isBind = false;
@@ -61,7 +61,6 @@ public class BackgroundMode extends CordovaPlugin {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.w("BackgroundMode", "Service disrupted");
-            //stopService();
         }
     };
 

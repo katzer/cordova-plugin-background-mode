@@ -31,7 +31,7 @@
  */
 - (void) pluginInitialize
 {
-    [self enable:NULL];
+    [self disable:NULL];
     [self configureAudioPlayer];
     [self configureAudioSession];
 }
@@ -61,6 +61,7 @@
                        object:nil];
 
     } else {
+        [self enable:NULL];
         [self keepAwake];
     }
 }
