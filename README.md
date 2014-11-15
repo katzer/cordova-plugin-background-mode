@@ -8,7 +8,6 @@ by Sebastián Katzer ([github.com/katzer](https://github.com/katzer))
 
 ## Supported Platforms
 - **iOS** (>=5)
-- **Android**
 - **WP8**
 
 
