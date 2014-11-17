@@ -106,6 +106,11 @@
  * Let the app going to sleep.
  */
 - (void) stopKeepingAwake {
+
+    if (TARGET_IPHONE_SIMULATOR) {
+        NSLog(@"BackgroundMode: On simulator apps never pause in background!");
+    }
+
     [audioPlayer pause];
 }
 
