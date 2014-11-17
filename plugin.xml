@@ -7,9 +7,14 @@
 
     <name>BackgroundMode</name>
 
-    <description>A bunch of background mode plugins for Cordova 3.x.x</description>
+    <description>
+        Cordova plugin to prevent the app from going to sleep in background.
+    </description>
+
     <repo>https://github.com/katzer/cordova-plugin-background-mode.git</repo>
-    <keywords>background, ios, windows phone 8, wp8, android</keywords>
+
+    <keywords>appplant, background, ios, wp8, android</keywords>
+
     <license>Apache 2.0</license>
 
     <author>Sebastián Katzer</author>
@@ -34,8 +39,7 @@
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="BackgroundMode">
-                <param name="ios-package" value="APPBackgroundMode" onload="true" />
-                <param name="onload" value="true" />
+                <param name="ios-package" value="APPBackgroundMode" />
             </feature>
         </config-file>
 
