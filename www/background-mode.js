@@ -19,7 +19,7 @@
     under the License.
 */
 
-var exec = require('cordova/exec'),
+var exec    = require('cordova/exec'),
     channel = require('cordova/channel');
 
 
@@ -27,10 +27,13 @@ var exec = require('cordova/exec'),
 document.addEventListener('backbutton', function () {}, false);
 
 channel.deviceready.subscribe(function () {
-    // Registriert die Listener für die (sleep/resume) Events
-    cordova.exec(null, null, 'BackgroundMode', 'observeLifeCycle', []);
     // Set the default settings
     exports.configure();
+
+    // Only enable WP8 by default
+    if (['WinCE', 'Win32NT'].indexOf(device.platform)) {
+        exports.enable();
+    }
 });
 
 

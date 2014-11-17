@@ -81,14 +81,9 @@ public class BackgroundMode extends CordovaPlugin {
     public boolean execute (String action, JSONArray args,
             CallbackContext callback) throws JSONException {
 
-        if (action.equalsIgnoreCase("observeLifeCycle")) {
-            // Nothing to do here
-            return true;
-        }
-
         if (action.equalsIgnoreCase("configure")) {
             setSettings(args.getJSONObject(0));
-
+            updateNotifcation();
             return true;
         }
 
@@ -160,15 +155,20 @@ public class BackgroundMode extends CordovaPlugin {
     }
 
     /**
-     * Update the settings and maybe the notification.
+     * Update the settings for the notification.
      *
      * @param newSettings
      *      The new settings
      */
     private void setSettings(JSONObject newSettings) {
         settings = newSettings;
+    }
 
-        if (inBackground) {
+    /**
+     * Update the notification.
+     */
+    private void updateNotifcation() {
+        if (isBind) {
             stopService();
             startService();
         }

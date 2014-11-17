@@ -85,15 +85,6 @@ namespace Cordova.Extension.Commands
         }
 
         /// </summary>
-        /// @js-interface
-        /// Registriert die Listener für die (sleep/resume) Events
-        /// </summary>
-        public void observeLifeCycle (string args)
-        {
-            // Konstruktor wird aufgerufen, falls Instanz erstellt wurde
-        }
-
-        /// </summary>
         /// Startet das Aktualisieren des Standpunktes
         /// </summary>
         public static void Activate ()

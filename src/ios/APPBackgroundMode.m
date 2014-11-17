@@ -34,12 +34,13 @@
     [self disable:NULL];
     [self configureAudioPlayer];
     [self configureAudioSession];
+    [self observeLifeCycle];
 }
 
 /**
  * Register the listener for pause and resume events.
  */
-- (void) observeLifeCycle:(CDVInvokedUrlCommand *)command
+- (void) observeLifeCycle
 {
     NSNotificationCenter* listener = [NSNotificationCenter defaultCenter];
 
