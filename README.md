@@ -98,7 +98,7 @@ To prevent the app from being paused while in background, the `backroundMode.ena
 - To activate the background mode the app needs to be in foreground.
 
 ```javascript
-window.plugin.backgroundMode.enable();
+cordova.plugins.backgroundMode.enable();
 ```
 
 ### Pause the app while in background
@@ -108,7 +108,7 @@ The background mode can be disabled through the `backgroundMode.disable` interfa
 - Once the background mode has been disabled, the app will be paused when in background.
 
 ```javascript
-window.plugin.backgroundMode.disable();
+cordova.plugins.backgroundMode.disable();
 ```
 
 
@@ -147,38 +147,6 @@ By default the app will come to foreground when taping on the notification. That
 cordova.plugins.backgroundMode.configure({
     resume: false
 })
-```
-
-
-### WP8 Optimization
-By default the plugin will track for geo updates while the application is in background and foreground. To stop tracking in foreground, the `MainPage.xaml.cs` file needs the following 2 methods:
-
-```c#
-// MainPage.xaml.cs
-
-namespace your.own.namespace
-{
-    public partial class MainPage : PhoneApplicationPage
-    {
-        /// </summary>
-        /// The page (the app) will enter the background and the background mode
-        /// needs to be activated.
-        /// </summary>
-        protected override void OnNavigatingFrom(System.Windows.Navigation.NavigatingCancelEventArgs e)
-        {
-            Cordova.Extension.Commands.BackgroundMode.Activate();
-        }
-
-        /// </summary>
-        /// The page (the app) will enter the foreground and the background mode
-        /// needs to be deactivated.
-        /// </summary>
-        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
-        {
-            Cordova.Extension.Commands.BackgroundMode.Deactivate();
-        }
-    }
-}
 ```
 
 
