@@ -25,7 +25,6 @@ The plugin focuses on enterprise-only distribution and may not compliant with al
 4. [Using the plugin](#using-the-plugin)
 5. [Examples](#examples)
 6. [Platform specifics](#platform-specifics)
-7. [Quirks](#quirks)
 
 
 ## Supported Platforms
@@ -147,26 +146,6 @@ By default the app will come to foreground when taping on the notification. That
 cordova.plugins.backgroundMode.configure({
     resume: false
 })
-```
-
-
-## Quirks
-
-### iOS Crash
-If the app crashes after installing the plugin, make sure that your `*-Info.plist` is valid and reset all occurences of blank strings
-
-```xml
-<key>NSMainNibFile</key>
-<string>
-
-</string>
-```
-
-to
-
-```xml
-<key>NSMainNibFile</key>
-<string></string>
 ```
 
 
