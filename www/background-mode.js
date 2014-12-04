@@ -31,7 +31,7 @@ channel.deviceready.subscribe(function () {
     exports.configure();
 
     // Only enable WP8 by default
-    if (['WinCE', 'Win32NT'].indexOf(device.platform)) {
+    if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
         exports.enable();
     }
 });
