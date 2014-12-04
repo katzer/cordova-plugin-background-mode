@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <title>Hello World</title>
+
+        <style type="text/css">
+        .button {
+            -moz-box-shadow:inset 0px 1px 0px 0px #caefab;
+            -webkit-box-shadow:inset 0px 1px 0px 0px #caefab;
+            box-shadow:inset 0px 1px 0px 0px #caefab;
+            background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77d42a), color-stop(1, #5cb811) );
+            background:-moz-linear-gradient( center top, #77d42a 5%, #5cb811 100% );
+            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77d42a', endColorstr='#5cb811');
+            background-color:#77d42a;
+            -webkit-border-top-left-radius:10px;
+            -moz-border-radius-topleft:10px;
+            border-top-left-radius:10px;
+            -webkit-border-top-right-radius:10px;
+            -moz-border-radius-topright:10px;
+            border-top-right-radius:10px;
+            -webkit-border-bottom-right-radius:10px;
+            -moz-border-radius-bottomright:10px;
+            border-bottom-right-radius:10px;
+            -webkit-border-bottom-left-radius:10px;
+            -moz-border-radius-bottomleft:10px;
+            border-bottom-left-radius:10px;
+            text-indent:0px;
+            border:1px solid #268a16;
+            display:inline-block;
+            color:#306108;
+            font-family:Arial;
+            font-size:15px;
+            font-weight:bold;
+            font-style:normal;
+            min-height:30px;
+            max-height:42px;
+            line-height:30px;
+            width:100%;
+            margin:10px 0 0 0;
+            text-transform:none;
+            text-decoration:none;
+            text-align:center;
+            text-shadow:1px 1px 0px #aade7c;
+        }
+        .button:active {
+            background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #5cb811), color-stop(1, #77d42a) );
+            background:-moz-linear-gradient( center top, #5cb811 5%, #77d42a 100% );
+            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#5cb811', endColorstr='#77d42a');
+            background-color:#5cb811;
+        }
+        .button .hint {
+            font-size:10px;
+            position:relative;
+            top:-15px;
+        }
+        </style>
+    </head>
+    <body ontouchstart="">
+        <div class="app">
+            <h1>BackgroundMode Plugin</h1>
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
+
+            <a href="#" class="button" onclick="enable()">Enable Background Mode<br/><span class="hint">backgroundMode.enable()</span></a>
+            <a href="#" class="button" onclick="disable()">Disable Background Mode<br/><span class="hint">backgroundMode.disable()</span></a>
+            <a href="#" class="button" onclick="configure1()">Configure Android Notification<br/><span class="hint">backgroundMode.configure({ text:'...'})</span></a>
+            <a href="#" class="button" onclick="configure2()">Configure Android Notification<br/><span class="hint">backgroundMode.configure({ resume:false })</span></a>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+
+        <script type="text/javascript">
+            app.initialize();
+
+            counter = 0;
+            startedAt = new Date();
+
+            setInterval(function () {
+                console.log('Running since ' + ((new Date() - startedAt) / 1000) + ' sec');
+            }, 1000);
+
+            disable = function () {
+                cordova.plugins.backgroundMode.disable();
+            };
+            enable = function () {
+                cordova.plugins.backgroundMode.enable();
+            };
+            configure1 = function () {
+                cordova.plugins.backgroundMode.configure({
+                    text: 'App is running in background ' + (++counter)
+                });
+            };
+            configure2 = function () {
+                cordova.plugins.backgroundMode.configure({
+                    resume: false
+                });
+            };
+        </script>
+    </body>
+</html>
