@@ -27,7 +27,7 @@ var exec    = require('cordova/exec'),
 document.addEventListener('backbutton', function () {}, false);
 
 channel.deviceready.subscribe(function () {
-    // Set the default settings
+    // Set the current settings
     exports.configure();
 
     // Only enable WP8 by default
@@ -38,18 +38,16 @@ channel.deviceready.subscribe(function () {
 
 
 /**
- * List of all available options with their default value.
- *
- * @return {Object}
+ * List of all available options with their current value.
  */
-exports.getDefaults = function () {
-    return {
+exports.currentOptions = (
+    {
         title:  'App is running in background',
         text:   'Doing heavy tasks.',
         ticker: 'App is running in background',
         resume: true
-    };
-};
+    }
+);
 
 /**
  * Activates the background mode. When activated the application
@@ -70,13 +68,13 @@ exports.disable = function () {
 
 /**
  * Configures the notification settings for Android.
- * Will be merged with the defaults.
+ * Will be merged with the current.
  *
  * @param {Object} options
  *      Dict with key/value pairs
  */
 exports.configure = function (options) {
-    var settings = this.mergeWithDefaults(options || {});
+    var settings = this.mergeWithCurrent(options || {});
 
     if (device.platform == 'Android') {
         cordova.exec(null, null, 'BackgroundMode', 'configure', [settings]);
@@ -86,24 +84,24 @@ exports.configure = function (options) {
 /**
  * @private
  *
- * Merge settings with default values.
+ * Merge settings with current values.
  *
  * @param {Object} options
  *      The custom options
  *
  * @return {Object}
- *      Default values merged
+ *      Current values merged
  *      with custom values
  */
-exports.mergeWithDefaults = function (options) {
-    var defaults = this.getDefaults();
+exports.mergeWithCurrent = function (options) {
 
-    for (var key in defaults) {
-        if (!options.hasOwnProperty(key)) {
-            options[key] = defaults[key];
+	
+	for (var key in this.currentOptions) {
+        if (options.hasOwnProperty(key)) {
+            this.currentOptions[key] = options[key];
             continue;
         }
     }
 
-    return options;
+    return this.currentOptions;
 };
