@@ -50,20 +50,25 @@ cordova plugin add de.appplant.cordova.plugin.background-mode --searchpath path
 or to use the last stable version:
 ```bash
 # ~~ stable version ~~
-cordova plugin add de.appplant.cordova.plugin.background-mode@0.5.0
+cordova plugin add de.appplant.cordova.plugin.background-mode@0.6.0
+```
+
+To remove the plug-in, run the following command:
+```bash
+cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ### PhoneGap Build
 Add the following xml to your config.xml to always use the latest version of this plugin:
 ```xml
-<gap:plugin name="de.appplant.cordova.plugin.background-mode" version="0.5.0" />
+<gap:plugin name="de.appplant.cordova.plugin.background-mode" version="0.6.0" />
 ```
 
 More informations can be found [here][PGB_plugin].
 
 
 ## ChangeLog
-#### Version 0.6.0 (not yet released)
+#### Version 0.6.0 (14.12.2014)
 - [feature:] Android support
 - [feature:] `onactivate`, `ondeactivate` and `onfailure` callbacks.
 - [___change___:] Disabled by default

@@ -128,7 +128,7 @@ NSString *const kAPPBackgroundModeFailureEvent = @"failure";
  * Configure the audio player.
  */
 - (void) configureAudioPlayer {
-    NSString* path = [[NSBundle mainBundle] pathForResource:@"silent"
+    NSString* path = [[NSBundle mainBundle] pathForResource:@"appbeep"
                                                      ofType:@"wav"];
 
     NSURL* url = [NSURL fileURLWithPath:path];

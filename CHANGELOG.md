@@ -1,5 +1,5 @@
 ## ChangeLog
-#### Version 0.6.0 (not yet released)
+#### Version 0.6.0 (14.12.2014)
 - [feature:] Android support
 - [feature:] `onactivate`, `ondeactivate` and `onfailure` callbacks.
 - [___change___:] Disabled by default
