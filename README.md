@@ -28,8 +28,8 @@ The plugin focuses on enterprise-only distribution and may not compliant with al
 
 
 ## Supported Platforms
-- __iOS__
-- __Android__
+- __iOS__ _including iOS8_
+- __Android__ _(SDK >=11)_
 - __WP8__
 
 
