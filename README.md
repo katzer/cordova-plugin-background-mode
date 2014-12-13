@@ -22,7 +22,7 @@ The plugin focuses on enterprise-only distribution and may not compliant with al
 1. [Supported Platforms](#supported-platforms)
 2. [Installation](#installation)
 3. [ChangeLog](#changelog)
-4. [Using the plugin](#using-the-plugin)
+4. [Usage](#usage)
 5. [Examples](#examples)
 6. [Platform specifics](#platform-specifics)
 
@@ -65,6 +65,7 @@ More informations can be found [here][PGB_plugin].
 ## ChangeLog
 #### Version 0.6.0 (not yet released)
 - [feature:] Android support
+- [feature:] `onactivate`, `ondeactivate` and `onfailure` callbacks.
 - [___change___:] Disabled by default
 - [enhancement:] iOS does not require user permissions, internet connection and geo location anymore.
 
@@ -72,13 +73,19 @@ More informations can be found [here][PGB_plugin].
 - The former `plugin.backgroundMode` namespace has been deprecated and will be removed with the next major release.
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
 
+#### Known issues
+- Plug-in is broken on Windows Phone 8.1 platform.
 
-## Using the plugin
+
+## Usage
 The plugin creates the object ```cordova.plugins.backgroundMode``` with  the following methods:
 
 1. [backgroundMode.enable][enable]
 2. [backgroundMode.disable][disable]
 2. [backgroundMode.configure][configure]
+3. [backgroundMode.onactivate][onactivate]
+4. [backgroundMode.ondeactivate][ondeactivate]
+5. [backgroundMode.onfailure][onfailure]
 
 ### Plugin initialization
 The plugin and its methods are not available before the *deviceready* event has been fired.
@@ -110,16 +117,49 @@ The background mode can be disabled through the `backgroundMode.disable` interfa
 cordova.plugins.backgroundMode.disable();
 ```
 
+### Get informed when the background mode has been activated
+The `backgroundMode.onactivate` interface can be used to get notified when the background mode has been activated.
+
+```javascript
+cordova.plugins.backgroundMode.onactivate = function() {};
+```
+
+### Get informed when the background mode has been deactivated
+The `backgroundMode.ondeactivate` interface can be used to get notified when the background mode has been deactivated.
+
+#### Further informations
+- Once the mode has been deactivated the app will be paused soon after the callback has been fired.
+
+```javascript
+cordova.plugins.backgroundMode.ondeactivate = function() {};
+```
+
+### Get informed when the background mode could not been activated
+The `backgroundMode.onfailure` interface can be used to get notified when the background mode could not been activated.
+
+The listener has to be a function and takes the following arguments:
+ - errorCode: Error code which describes the error
+
+```javascript
+cordova.plugins.backgroundMode.onfailure = function(errorCode) {};
+```
+
 
 ## Examples
 The following example demonstrates how to enable the background mode after device is ready. The mode itself will be activated when the app has entered the background.
 
 ```javascript
 document.addEventListener('deviceready', function () {
-    // Enable background mode
-    cordova.plugins.backgroundMode.enable();
     // Android customization
     cordova.plugins.backgroundMode.configure({ text:'Doing heavy tasks.'});
+    // Enable background mode
+    cordova.plugins.backgroundMode.enable();
+    // Called when background mode has been activated
+    cordova.plugins.backgroundMode.onactivate = function () {
+        setInterval(function () {
+            console.log('App is running in background');
+        });
+    }
 }, false);
 ```
 
@@ -170,8 +210,11 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [PGB]: http://docs.build.phonegap.com/en_US/index.html
 [PGB_plugin]: https://build.phonegap.com/plugins/490
 [changelog]: CHANGELOG.md
-[enable]: #prevent-the-app-from-going-to-sleep-in-background
-[disable]: #pause-the-app-while-in-background
-[configure]: #android-customization
+[enable]: #prevent_the_app_from_going_to_sleep_in_background
+[disable]: #pause_the_app_while_in_background
+[configure]: #android_customization
+[onactivate]: #get_informed_when_the_background_mode_has_been_activated
+[ondeactivate]: #get_informed_when_the_background_mode_has_been_deactivated
+[onfailure]: #get_informed_when_the_background_mode_could_not_been_activated
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
 [appplant]: http://appplant.de

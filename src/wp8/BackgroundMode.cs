@@ -21,6 +21,9 @@
 
 using WPCordovaClassLib.Cordova.Commands;
 using Windows.Devices.Geolocation;
+using Microsoft.Phone.Shell;
+using System;
+using WPCordovaClassLib.Cordova;
 
 namespace Cordova.Extension.Commands
 {
@@ -30,97 +33,167 @@ namespace Cordova.Extension.Commands
     public class BackgroundMode : BaseCommand
     {
         /// </summary>
-        /// Flag gibt an, ob die App im Hintergrund wach gehalten werden soll
+        /// Event types for callbacks
         /// </summary>
-        private static bool IsEnabled = true;
+        enum Event {
+            ACTIVATE, DEACTIVATE, FAILURE
+        }
+
+        #region Instance variables
 
         /// </summary>
-        /// Lokalisiert das Smartphone
+        /// Flag indicates if the plugin is enabled or disabled
+        /// </summary>
+        private bool IsDisabled = true;
+
+        /// </summary>
+        /// Geolocator to monitor location changes
         /// </summary>
         private static Geolocator Geolocator { get; set; }
 
-        /// </summary>
-        /// Registriert die Listener für die (sleep/resume) Events und startet
-        /// bzw. stoppt die Geo-Lokalisierung
-        /// </summary>
-        public BackgroundMode ()
-        {
-            Activate();
-        }
+        #endregion
+
+        #region Interface methods
 
         /// </summary>
-        /// @js-interface
-        /// Setzt den Flag, dass die App im Hintergrund wach gehalten werden soll
+        /// Enable the mode to stay awake when switching
+        /// to background for the next time.
         /// </summary>
         public void enable (string args)
         {
-            Enable();
+            IsDisabled = false;
         }
 
         /// </summary>
-        /// @js-interface
-        /// Entfernt den Flag, sodass die App im Hintergrund pausiert wird
+        /// Disable the background mode and stop
+        /// being active in background.
         /// </summary>
         public void disable (string args)
         {
-            Disable();
-        }
-
-        /// </summary>
-        /// Setzt den Flag, dass die App im Hintergrund wach gehalten werden soll
-        /// </summary>
-        public static void Enable ()
-        {
-            IsEnabled = true;
-        }
-
-        /// </summary>
-        /// Entfernt den Flag, sodass die App im Hintergrund pausiert wird
-        /// </summary>
-        public static void Disable ()
-        {
-            IsEnabled = false;
+            IsDisabled = true;
 
             Deactivate();
         }
 
-        /// </summary>
-        /// Startet das Aktualisieren des Standpunktes
-        /// </summary>
-        public static void Activate ()
-        {
-            if (Geolocator == null && IsEnabled && IsServiceAvailable())
-            {
-                Geolocator = new Geolocator();
+        #endregion
 
-                Geolocator.DesiredAccuracy   = PositionAccuracy.Default;
-                Geolocator.MovementThreshold = 100000;
-                Geolocator.PositionChanged  += geolocator_PositionChanged;
+        #region Core methods
+
+        /// </summary>
+        /// Keep the app awake by tracking
+        /// for position changes.
+        /// </summary>
+        private void Activate()
+        {
+            if (IsDisabled || Geolocator != null)
+                return;
+
+            if (!IsServiceAvailable())
+            {
+                FireEvent(Event.FAILURE, null);
+                return;
             }
+
+            Geolocator = new Geolocator();
+
+            Geolocator.DesiredAccuracy   = PositionAccuracy.Default;
+            Geolocator.MovementThreshold = 100000;
+            Geolocator.PositionChanged  += geolocator_PositionChanged;
+
+            FireEvent(Event.ACTIVATE, null);
         }
 
         /// </summary>
-        /// Beendet das Aktualisieren des Standpunktes
+        /// Let the app going to sleep.
         /// </summary>
-        public static void Deactivate ()
+        private void Deactivate ()
         {
-            if (Geolocator != null)
-            {
-                Geolocator.PositionChanged -= geolocator_PositionChanged;
-                Geolocator = null;
-            }
+            if (Geolocator == null)
+                return;
+
+            FireEvent(Event.DEACTIVATE, null);
+
+            Geolocator.PositionChanged -= geolocator_PositionChanged;
+            Geolocator = null;
         }
 
-        private static void geolocator_PositionChanged (Geolocator sender, PositionChangedEventArgs args) {}
+        #endregion
+
+        #region Helper methods
 
         /// </summary>
-        /// Gibt an, ob der Lokalisierungsdienst verfügbar ist
+        /// Determine if location service is available and enabled.
         /// </summary>
-        private static bool IsServiceAvailable()
+        private bool IsServiceAvailable()
         {
             Geolocator geolocator = (Geolocator == null) ? new Geolocator() : Geolocator;
 
-            return !(geolocator.LocationStatus == PositionStatus.Disabled || geolocator.LocationStatus == PositionStatus.NotAvailable);
+            PositionStatus status = geolocator.LocationStatus;
+
+            if (status == PositionStatus.Disabled)
+                return false;
+
+            if (status == PositionStatus.NotAvailable)
+                return false;
+
+            return true;
         }
+
+        /// <summary>
+        /// Fires the given event.
+        /// </summary>
+        private void FireEvent(Event Event, string Param)
+        {
+            string EventName;
+
+            switch (Event) {
+                case Event.ACTIVATE:
+                    EventName = "activate"; break;
+                case Event.DEACTIVATE:
+                    EventName = "deactivate"; break;
+                default:
+                    EventName = "failure"; break;
+            }
+
+            string js = String.Format("cordova.plugins.backgroundMode.on{0}({1})", EventName, Param);
+
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, js);
+
+            pluginResult.KeepCallback = true;
+
+            DispatchCommandResult(pluginResult);
+        }
+
+        #endregion
+
+        #region Delegate methods
+
+        private void geolocator_PositionChanged(Geolocator sender, PositionChangedEventArgs args)
+        {
+            // Nothing to do here
+        }
+
+        #endregion
+
+        #region Lifecycle methods
+
+        /// <summary>
+        /// Occurs when the application is being deactivated.
+        /// </summary>
+        public override void OnPause(object sender, DeactivatedEventArgs e)
+        {
+            Activate();
+        }
+
+        /// <summary>
+        /// Occurs when the application is being made active after previously being put
+        /// into a dormant state or tombstoned.
+        /// </summary>
+        public override void OnResume(object sender, ActivatedEventArgs e)
+        {
+            Deactivate();
+        }
+
+        #endregion
     }
 }

@@ -37,6 +37,11 @@ import android.util.Log;
 
 public class BackgroundMode extends CordovaPlugin {
 
+    // Event types for callbacks
+    private enum Event {
+        ACTIVATE, DEACTIVATE, FAILURE
+    }
+
     // Flag indicates if the app is in background or foreground
     private boolean inBackground = false;
 
@@ -55,12 +60,11 @@ public class BackgroundMode extends CordovaPlugin {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             // Nothing to do here
-            Log.d("BackgroundMode", "Service connected");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.w("BackgroundMode", "Service disrupted");
+            // Nothing to do here
         }
     };
 
@@ -79,7 +83,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     @Override
     public boolean execute (String action, JSONArray args,
-            CallbackContext callback) throws JSONException {
+                            CallbackContext callback) throws JSONException {
 
         if (action.equalsIgnoreCase("configure")) {
             setSettings(args.getJSONObject(0));
@@ -188,10 +192,16 @@ public class BackgroundMode extends CordovaPlugin {
             return;
         }
 
-        context.bindService(
-                intent, connection, Context.BIND_AUTO_CREATE);
+        try {
+            context.bindService(
+                    intent, connection, Context.BIND_AUTO_CREATE);
 
-        context.startService(intent);
+            context.startService(intent);
+
+            fireEvent(Event.ACTIVATE, null);
+        } catch (Exception e) {
+            fireEvent(Event.FAILURE, e.getMessage());
+        }
 
         isBind = true;
     }
@@ -207,11 +217,40 @@ public class BackgroundMode extends CordovaPlugin {
                 context, ForegroundService.class);
 
         if (isBind) {
+            fireEvent(Event.DEACTIVATE, null);
             context.unbindService(connection);
         }
 
         context.stopService(intent);
 
         isBind = false;
+    }
+
+    /**
+     * Fire vent with some parameters inside the web view.
+     *
+     * @param event
+     *      The name of the event
+     * @param params
+     *      Optional arguments for the event
+     */
+    private void fireEvent (Event event, String params) {
+        String eventName;
+
+        switch (event) {
+            case ACTIVATE:
+                eventName = "activate"; break;
+            case DEACTIVATE:
+                eventName = "deactivate"; break;
+            default:
+                eventName = "failure";
+
+        }
+
+        String js = String.format("setTimeout('cordova.plugins.backgroundMode" +
+                        ".on%s(%s)',0)",
+                eventName, params);
+
+        webView.loadUrl("javascript:" + js);
     }
 }

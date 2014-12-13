@@ -23,6 +23,11 @@
 
 @implementation APPBackgroundMode
 
+NSString *const kAPPBackgroundModeNamespace = @"cordova.plugins.backgroundMode";
+NSString *const kAPPBackgroundModeActivateEvent = @"activate";
+NSString *const kAPPBackgroundModeDeactivateEvent = @"deactivate";
+NSString *const kAPPBackgroundModeFailureEvent = @"failure";
+
 #pragma mark -
 #pragma mark Initialization methods
 
@@ -99,6 +104,7 @@
 - (void) keepAwake {
     if (enabled) {
         [audioPlayer play];
+        [self fireEvent:kAPPBackgroundModeActivateEvent withParams:NULL];
     }
 }
 
@@ -109,6 +115,10 @@
 
     if (TARGET_IPHONE_SIMULATOR) {
         NSLog(@"BackgroundMode: On simulator apps never pause in background!");
+    }
+
+    if (audioPlayer.isPlaying) {
+        [self fireEvent:kAPPBackgroundModeDeactivateEvent withParams:NULL];
     }
 
     [audioPlayer pause];
@@ -149,11 +159,26 @@
     [session setActive:YES error:NULL];
 };
 
+#pragma mark -
+#pragma mark Helper methods
+
 /**
  * Restart playing sound when interrupted by phone calls.
  */
 - (void) handleAudioSessionInterruption:(NSNotification*)notification {
+    [self fireEvent:kAPPBackgroundModeDeactivateEvent withParams:NULL];
     [self keepAwake];
+}
+
+/**
+ * Method to fire an event with some parameters in the browser.
+ */
+- (void) fireEvent:(NSString*)event withParams:(NSString*)params
+{
+    NSString* js = [NSString stringWithFormat:@"setTimeout('%@.on%@(%@)',0)",
+                    kAPPBackgroundModeNamespace, event, params];
+
+    [self.commandDelegate evalJs:js];
 }
 
 @end

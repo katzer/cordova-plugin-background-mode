@@ -88,6 +88,24 @@ exports.configure = function (options) {
 };
 
 /**
+ * Called when the background mode has been activated.
+ */
+exports.onactivate = function () {};
+
+/**
+ * Called when the background mode has been deaktivated.
+ */
+exports.ondeactivate = function () {};
+
+/**
+ * Called when the background mode could not been activated.
+ *
+ * @param {Integer} errorCode
+ *      Error code which describes the error
+ */
+exports.onfailure = function () {};
+
+/**
  * @private
  *
  * Merge settings with default values.
