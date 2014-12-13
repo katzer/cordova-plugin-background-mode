@@ -26,7 +26,8 @@ var exec    = require('cordova/exec'),
 // Override back button action to prevent being killed
 document.addEventListener('backbutton', function () {}, false);
 
-channel.deviceready.subscribe(function () {
+// Called before 'deviceready' listener will be called
+channel.onCordovaReady.subscribe(function () {
     // Set the default settings
     exports.configure();
 
