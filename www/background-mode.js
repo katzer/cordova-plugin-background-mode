@@ -28,8 +28,11 @@ document.addEventListener('backbutton', function () {}, false);
 
 // Called before 'deviceready' listener will be called
 channel.onCordovaReady.subscribe(function () {
-    // Set the default settings
-    exports.configure();
+    // Device plugin is ready now
+    channel.onCordovaInfoReady.subscribe( function () {
+        // Set the defaults
+        exports.configure();
+    });
 
     // Only enable WP8 by default
     if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
