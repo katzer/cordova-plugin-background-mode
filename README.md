@@ -61,7 +61,7 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ### PhoneGap Build
 Add the following xml to your config.xml to always use the latest version of this plugin:
 ```xml
-<gap:plugin name="de.appplant.cordova.plugin.background-mode" version="0.6.0"  source="plugins.cordova.io" />
+<gap:plugin name="de.appplant.cordova.plugin.background-mode" version="0.6.0" source="plugins.cordova.io" />
 ```
 
 More informations can be found [here][PGB_plugin].
@@ -69,8 +69,9 @@ More informations can be found [here][PGB_plugin].
 
 ## ChangeLog
 #### Version 0.6.1 (not yet released)
-- [feature:] Get default settings through `getDefaults`.
-- [feature:] Set default settings through `setDefaults`.
+- [enhancement:] Set default settings through `setDefaults`.
+- [enhancement:] New method `isEnabled`
+- [bugfix:] Events caused thread collision.
 
 #### Further informations
 - The former `plugin.backgroundMode` namespace has been deprecated and will be removed with the next major release.
@@ -85,6 +86,7 @@ The plugin creates the object ```cordova.plugins.backgroundMode``` with  the fol
 
 1. [backgroundMode.enable][enable]
 2. [backgroundMode.disable][disable]
+3. [backgroundMode.isEnabled][is_enabled]
 3. [backgroundMode.getDefaults][android_specifics]
 4. [backgroundMode.setDefaults][android_specifics]
 2. [backgroundMode.configure][android_specifics]
@@ -120,6 +122,13 @@ The background mode can be disabled through the `backgroundMode.disable` interfa
 
 ```javascript
 cordova.plugins.backgroundMode.disable();
+```
+
+### Receive if the background mode is enabled
+The `backgroundMode.isActivated` interface can be used to get the information if the background mode is enabled or disabled.
+
+```javascript
+var enabled = cordova.plugins.backgroundMode.isEnabled();
 ```
 
 ### Get informed when the background mode has been activated

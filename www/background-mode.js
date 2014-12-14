@@ -44,6 +44,13 @@ channel.onCordovaReady.subscribe(function () {
 /**
  * @private
  *
+ * Flag indicated if the mod is enabled.
+ */
+exports._isEnabled = true;
+
+/**
+ * @private
+ *
  * Default values of all available options.
  */
 exports._defaults = {
@@ -60,6 +67,7 @@ exports._defaults = {
  * for the next time.
  */
 exports.enable = function () {
+    this._isEnabled = true;
     cordova.exec(null, null, 'BackgroundMode', 'enable', []);
 };
 
@@ -68,6 +76,7 @@ exports.enable = function () {
  * will not stay awake while in background.
  */
 exports.disable = function () {
+    this._isEnabled = false;
     cordova.exec(null, null, 'BackgroundMode', 'disable', []);
 };
 
@@ -113,6 +122,15 @@ exports.configure = function (options) {
     if (device.platform == 'Android') {
         cordova.exec(null, null, 'BackgroundMode', 'configure', [settings, true]);
     }
+};
+
+/**
+ * If the mode is enabled or not.
+ *
+ * @return {Boolean}
+ */
+exports.isEnabled = function () {
+    return this._isEnabled;
 };
 
 /**
