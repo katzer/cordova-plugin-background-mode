@@ -292,7 +292,7 @@ public class BackgroundMode extends CordovaPlugin {
                 eventName = "failure";
         }
 
-        String active = event == Event.ACTIVATE ? "true" : false;
+        String active = event == Event.ACTIVATE ? "true" : "false";
 
         String flag = String.format("%s._isActive=%s;",
                 JS_NAMESPACE, active);
