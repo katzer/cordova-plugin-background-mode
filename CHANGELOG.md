@@ -1,4 +1,8 @@
 ## ChangeLog
+#### Version 0.6.2 (14.12.2014)
+- [bugfix:] Type error
+- [bugfix:] Wrong default values for `isEnabled` and `isActive`.
+
 #### Version 0.6.1 (14.12.2014)
 - [enhancement:] Set default settings through `setDefaults`.
 - [enhancement:] New method `isEnabled` to receive if mode is enabled.

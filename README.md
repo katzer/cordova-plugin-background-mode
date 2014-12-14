@@ -68,6 +68,10 @@ More informations can be found [here][PGB_plugin].
 
 
 ## ChangeLog
+#### Version 0.6.2 (not yet released)
+- [bugfix:] Type error
+- [bugfix:] Wrong default values for `isEnabled` and `isActive`.
+
 #### Version 0.6.1 (14.12.2014)
 - [enhancement:] Set default settings through `setDefaults`.
 - [enhancement:] New method `isEnabled` to receive if mode is enabled.
