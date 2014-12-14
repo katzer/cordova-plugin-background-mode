@@ -31,7 +31,7 @@ channel.onCordovaReady.subscribe(function () {
     // Device plugin is ready now
     channel.onCordovaInfoReady.subscribe( function () {
         // Set the defaults
-        exports.configure();
+        exports.setDefaults({});
     });
 
     // Only enable WP8 by default
@@ -42,18 +42,17 @@ channel.onCordovaReady.subscribe(function () {
 
 
 /**
- * List of all available options with their default value.
+ * @private
  *
- * @return {Object}
+ * Default values of all available options.
  */
-exports.getDefaults = function () {
-    return {
-        title:  'App is running in background',
-        text:   'Doing heavy tasks.',
-        ticker: 'App is running in background',
-        resume: true
-    };
+exports._defaults = {
+    title:  'App is running in background',
+    text:   'Doing heavy tasks.',
+    ticker: 'App is running in background',
+    resume: true
 };
+
 
 /**
  * Activates the background mode. When activated the application
@@ -73,6 +72,35 @@ exports.disable = function () {
 };
 
 /**
+ * List of all available options with their default value.
+ *
+ * @return {Object}
+ */
+exports.getDefaults = function () {
+    return this._defaults;
+};
+
+/**
+ * Overwrite default settings
+ *
+ * @param {Object} overrides
+ *      Dict of options which shall be overridden
+ */
+exports.setDefaults = function (overrides) {
+    var defaults = this.getDefaults();
+
+    for (var key in defaults) {
+        if (overrides.hasOwnProperty(key)) {
+            defaults[key] = overrides[key];
+        }
+    }
+
+    if (device.platform == 'Android') {
+        cordova.exec(null, null, 'BackgroundMode', 'configure', [defaults, false]);
+    }
+};
+
+/**
  * Configures the notification settings for Android.
  * Will be merged with the defaults.
  *
@@ -80,10 +108,10 @@ exports.disable = function () {
  *      Dict with key/value pairs
  */
 exports.configure = function (options) {
-    var settings = this.mergeWithDefaults(options || {});
+    var settings = this.mergeWithDefaults(options);
 
     if (device.platform == 'Android') {
-        cordova.exec(null, null, 'BackgroundMode', 'configure', [settings]);
+        cordova.exec(null, null, 'BackgroundMode', 'configure', [settings, true]);
     }
 };
 

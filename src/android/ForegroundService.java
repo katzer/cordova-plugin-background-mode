@@ -86,6 +86,8 @@ public class ForegroundService extends Service {
 
         startForeground(NOTIFICATION_ID, makeNotification());
 
+        BackgroundMode.deleteUpdateSettings();
+
         keepAliveTask = new TimerTask() {
             @Override
             public void run() {
@@ -121,7 +123,7 @@ public class ForegroundService extends Service {
     @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
     private Notification makeNotification() {
-        JSONObject settings = BackgroundMode.settings;
+        JSONObject settings = BackgroundMode.getSettings();
         Context context     = getApplicationContext();
         String pkgName      = context.getPackageName();
         Intent intent       = context.getPackageManager()
@@ -141,6 +143,7 @@ public class ForegroundService extends Service {
 
             notification.setContentIntent(contentIntent);
         }
+
 
         if (Build.VERSION.SDK_INT < 16) {
             // Build notification for HoneyComb to ICS

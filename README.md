@@ -68,11 +68,9 @@ More informations can be found [here][PGB_plugin].
 
 
 ## ChangeLog
-#### Version 0.6.0 (14.12.2014)
-- [feature:] Android support
-- [feature:] `onactivate`, `ondeactivate` and `onfailure` callbacks.
-- [___change___:] Disabled by default
-- [enhancement:] iOS does not require user permissions, internet connection and geo location anymore.
+#### Version 0.6.1 (not yet released)
+- [feature:] Get default settings through `getDefaults`.
+- [feature:] Set default settings through `setDefaults`.
 
 #### Further informations
 - The former `plugin.backgroundMode` namespace has been deprecated and will be removed with the next major release.
@@ -87,7 +85,9 @@ The plugin creates the object ```cordova.plugins.backgroundMode``` with  the fol
 
 1. [backgroundMode.enable][enable]
 2. [backgroundMode.disable][disable]
-2. [backgroundMode.configure][configure]
+3. [backgroundMode.getDefaults][android_specifics]
+4. [backgroundMode.setDefaults][android_specifics]
+2. [backgroundMode.configure][android_specifics]
 3. [backgroundMode.onactivate][onactivate]
 4. [backgroundMode.ondeactivate][ondeactivate]
 5. [backgroundMode.onfailure][onfailure]
@@ -156,14 +156,18 @@ The following example demonstrates how to enable the background mode after devic
 ```javascript
 document.addEventListener('deviceready', function () {
     // Android customization
-    cordova.plugins.backgroundMode.configure({ text:'Doing heavy tasks.'});
+    cordova.plugins.backgroundMode.setDefaults({ text:'Doing heavy tasks.'});
     // Enable background mode
     cordova.plugins.backgroundMode.enable();
+
     // Called when background mode has been activated
     cordova.plugins.backgroundMode.onactivate = function () {
-        setInterval(function () {
-            console.log('App is running in background');
-        });
+        setTimeout(function () {
+            // Modify the currently displayed notification
+            cordova.plugins.backgroundMode.configure({
+                text:'Running in background for more than 5s now.'
+            });
+        }, 5000);
     }
 }, false);
 ```
@@ -171,14 +175,14 @@ document.addEventListener('deviceready', function () {
 
 ## Platform specifics
 
-### Android Customization
+### Android customization
+To indicate, that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
 
-To indicate, that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background like a download progress bar.
-
-The title, ticker and text for that notification can be customized in the following way at any time:
+#### Override defaults
+The title, ticker and text for that notification can be customized as follows:
 
 ```javascript
-cordova.plugins.backgroundMode.configure({
+cordova.plugins.backgroundMode.setDefaults({
     title:  String,
     ticker: String,
     text:   String
@@ -188,8 +192,18 @@ cordova.plugins.backgroundMode.configure({
 By default the app will come to foreground when taping on the notification. That can be changed also.
 
 ```javascript
-cordova.plugins.backgroundMode.configure({
+cordova.plugins.backgroundMode.setDefaults({
     resume: false
+})
+```
+
+#### Modify the currently displayed notification
+It's also possible to modify the currently displayed notification while in background.
+
+```javascript
+cordova.plugins.backgroundMode.configure({
+    title: String,
+    ...
 })
 ```
 
@@ -217,7 +231,7 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [changelog]: CHANGELOG.md
 [enable]: #prevent_the_app_from_going_to_sleep_in_background
 [disable]: #pause_the_app_while_in_background
-[configure]: #android_customization
+[android_specifics]: #android_customization
 [onactivate]: #get_informed_when_the_background_mode_has_been_activated
 [ondeactivate]: #get_informed_when_the_background_mode_has_been_deactivated
 [onfailure]: #get_informed_when_the_background_mode_could_not_been_activated

@@ -1,6 +1,13 @@
 ## ChangeLog
+#### Version 0.6.1 (not yet released)
+- [enhancement:] Set default settings through `setDefaults`.
+- [bugfix:] Events caused thread collision.
+
+
 #### Version 0.6.0 (14.12.2014)
 - [feature:] Android support
+- [feature:] Get default settings through `getDefaults`.
+- [feature:] Change Android notification through `configure`.
 - [feature:] `onactivate`, `ondeactivate` and `onfailure` callbacks.
 - [___change___:] Disabled by default
 - [enhancement:] iOS does not require user permissions, internet connection and geo location anymore.
