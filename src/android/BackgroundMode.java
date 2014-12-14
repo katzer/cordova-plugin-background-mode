@@ -42,6 +42,9 @@ public class BackgroundMode extends CordovaPlugin {
         ACTIVATE, DEACTIVATE, FAILURE
     }
 
+    // Plugin namespace
+    private static final String JS_NAMESPACE = "cordova.plugins.backgroundMode";
+
     // Flag indicates if the app is in background or foreground
     private boolean inBackground = false;
 
@@ -247,10 +250,14 @@ public class BackgroundMode extends CordovaPlugin {
 
         }
 
-        String js = String.format("setTimeout('cordova.plugins.backgroundMode" +
-                        ".on%s(%s)',0)",
-                eventName, params);
+        final String js = String.format("setTimeout('%s.on%s(%s)',0)",
+                JS_NAMESPACE, eventName, params);
 
-        webView.loadUrl("javascript:" + js);
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                webView.loadUrl("javascript:" + js);
+            }
+        });
     }
 }
