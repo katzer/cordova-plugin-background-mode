@@ -1,5 +1,5 @@
 ## ChangeLog
-#### Version 0.6.1 (not yet released)
+#### Version 0.6.1 (14.12.2014)
 - [enhancement:] Set default settings through `setDefaults`.
 - [enhancement:] New method `isEnabled` to receive if mode is enabled.
 - [enhancement:] New method `isActive` to receive if mode is active.
