@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.background-mode"
-        version="0.6.0-dev">
+        version="0.6.1">
 
     <name>BackgroundMode</name>
 
@@ -50,7 +50,7 @@
             </array>
         </config-file>
 
-        <resource-file src="res/silent.wav" />
+        <resource-file src="appbeep.wav" />
 
         <header-file src="src/ios/APPBackgroundMode.h" />
         <source-file src="src/ios/APPBackgroundMode.m" />
@@ -75,9 +75,7 @@
              * it to be something the user is actively aware of and thus not a
              * candidate for killing when low on memory.
             -->
-            <service
-                android:name="de.appplant.cordova.plugin.background.ForegroundService"
-                android:enabled="true" />
+            <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
 
         </config-file>
 

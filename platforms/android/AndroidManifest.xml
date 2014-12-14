@@ -9,7 +9,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:enabled="true" android:name="de.appplant.cordova.plugin.background.ForegroundService" />
+        <activity android:launchMode="singleInstance" android:name="de.appplant.cordova.plugin.badge.LaunchActivity" android:theme="@android:style/Theme.Black.NoTitleBar" />
+        <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
     </application>
     <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19" />
 </manifest>

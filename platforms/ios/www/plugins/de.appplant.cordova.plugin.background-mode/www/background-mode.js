@@ -26,30 +26,47 @@ var exec    = require('cordova/exec'),
 // Override back button action to prevent being killed
 document.addEventListener('backbutton', function () {}, false);
 
-channel.deviceready.subscribe(function () {
-    // Set the default settings
-    exports.configure();
+// Called before 'deviceready' listener will be called
+channel.onCordovaReady.subscribe(function () {
+    // Device plugin is ready now
+    channel.onCordovaInfoReady.subscribe(function () {
+        // Set the defaults
+        exports.setDefaults({});
+    });
 
     // Only enable WP8 by default
-    if (['WinCE', 'Win32NT'].indexOf(device.platform)) {
+    if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
         exports.enable();
     }
 });
 
 
 /**
- * List of all available options with their default value.
+ * @private
  *
- * @return {Object}
+ * Flag indicated if the mode is enabled.
  */
-exports.getDefaults = function () {
-    return {
-        title:  'App is running in background',
-        text:   'Doing heavy tasks.',
-        ticker: 'App is running in background',
-        resume: true
-    };
+exports._isEnabled = true;
+
+/**
+ * @private
+ *
+ * Flag indicated if the mode is active.
+ */
+exports._isActive = true;
+
+/**
+ * @private
+ *
+ * Default values of all available options.
+ */
+exports._defaults = {
+    title:  'App is running in background',
+    text:   'Doing heavy tasks.',
+    ticker: 'App is running in background',
+    resume: true
 };
+
 
 /**
  * Activates the background mode. When activated the application
@@ -57,6 +74,7 @@ exports.getDefaults = function () {
  * for the next time.
  */
 exports.enable = function () {
+    this._isEnabled = true;
     cordova.exec(null, null, 'BackgroundMode', 'enable', []);
 };
 
@@ -65,7 +83,37 @@ exports.enable = function () {
  * will not stay awake while in background.
  */
 exports.disable = function () {
+    this._isEnabled = false;
     cordova.exec(null, null, 'BackgroundMode', 'disable', []);
+};
+
+/**
+ * List of all available options with their default value.
+ *
+ * @return {Object}
+ */
+exports.getDefaults = function () {
+    return this._defaults;
+};
+
+/**
+ * Overwrite default settings
+ *
+ * @param {Object} overrides
+ *      Dict of options which shall be overridden
+ */
+exports.setDefaults = function (overrides) {
+    var defaults = this.getDefaults();
+
+    for (var key in defaults) {
+        if (overrides.hasOwnProperty(key)) {
+            defaults[key] = overrides[key];
+        }
+    }
+
+    if (device.platform == 'Android') {
+        cordova.exec(null, null, 'BackgroundMode', 'configure', [defaults, false]);
+    }
 };
 
 /**
@@ -76,12 +124,48 @@ exports.disable = function () {
  *      Dict with key/value pairs
  */
 exports.configure = function (options) {
-    var settings = this.mergeWithDefaults(options || {});
+    var settings = this.mergeWithDefaults(options);
 
     if (device.platform == 'Android') {
-        cordova.exec(null, null, 'BackgroundMode', 'configure', [settings]);
+        cordova.exec(null, null, 'BackgroundMode', 'configure', [settings, true]);
     }
 };
+
+/**
+ * If the mode is enabled or disabled.
+ *
+ * @return {Boolean}
+ */
+exports.isEnabled = function () {
+    return this._isEnabled;
+};
+
+/**
+ * If the mode is active.
+ *
+ * @return {Boolean}
+ */
+exports.isActive = function () {
+    return this._isActive;
+};
+
+/**
+ * Called when the background mode has been activated.
+ */
+exports.onactivate = function () {};
+
+/**
+ * Called when the background mode has been deaktivated.
+ */
+exports.ondeactivate = function () {};
+
+/**
+ * Called when the background mode could not been activated.
+ *
+ * @param {Integer} errorCode
+ *      Error code which describes the error
+ */
+exports.onfailure = function () {};
 
 /**
  * @private

@@ -23,6 +23,11 @@
 
 @implementation APPBackgroundMode
 
+NSString *const kAPPBackgroundJsNamespace = @"cordova.plugins.backgroundMode";
+NSString *const kAPPBackgroundEventActivate = @"activate";
+NSString *const kAPPBackgroundEventDeactivate = @"deactivate";
+NSString *const kAPPBackgroundEventFailure = @"failure";
+
 #pragma mark -
 #pragma mark Initialization methods
 
@@ -99,6 +104,7 @@
 - (void) keepAwake {
     if (enabled) {
         [audioPlayer play];
+        [self fireEvent:kAPPBackgroundEventActivate withParams:NULL];
     }
 }
 
@@ -111,6 +117,10 @@
         NSLog(@"BackgroundMode: On simulator apps never pause in background!");
     }
 
+    if (audioPlayer.isPlaying) {
+        [self fireEvent:kAPPBackgroundEventDeactivate withParams:NULL];
+    }
+
     [audioPlayer pause];
 }
 
@@ -118,7 +128,7 @@
  * Configure the audio player.
  */
 - (void) configureAudioPlayer {
-    NSString* path = [[NSBundle mainBundle] pathForResource:@"silent"
+    NSString* path = [[NSBundle mainBundle] pathForResource:@"appbeep"
                                                      ofType:@"wav"];
 
     NSURL* url = [NSURL fileURLWithPath:path];
@@ -149,11 +159,33 @@
     [session setActive:YES error:NULL];
 };
 
+#pragma mark -
+#pragma mark Helper methods
+
 /**
  * Restart playing sound when interrupted by phone calls.
  */
 - (void) handleAudioSessionInterruption:(NSNotification*)notification {
+    [self fireEvent:kAPPBackgroundEventDeactivate withParams:NULL];
     [self keepAwake];
+}
+
+/**
+ * Method to fire an event with some parameters in the browser.
+ */
+- (void) fireEvent:(NSString*)event withParams:(NSString*)params
+{
+    NSString* active = [event isEqualToString:kAPPBackgroundEventActivate] ? @"true" : @"false";
+
+    NSString* flag = [NSString stringWithFormat:@"%@._isActive=%@;",
+                    kAPPBackgroundJsNamespace, active];
+
+    NSString* fn = [NSString stringWithFormat:@"setTimeout('%@.on%@(%@)',0);",
+                    kAPPBackgroundJsNamespace, event, params];
+
+    NSString* js = [flag stringByAppendingString:fn];
+
+    [self.commandDelegate evalJs:js];
 }
 
 @end

@@ -19,11 +19,11 @@
     <feature name="LocalStorage">
         <param name="ios-package" value="CDVLocalStorage" />
     </feature>
-    <feature name="Device">
-        <param name="ios-package" value="CDVDevice" />
+    <feature name="Console">
+        <param name="ios-package" value="CDVLogger" />
     </feature>
-    <feature name="BackgroundMode">
-        <param name="ios-package" value="APPBackgroundMode" />
+    <feature name="Badge">
+        <param name="ios-package" value="APPBadge" />
     </feature>
     <name>BackgroundMode</name>
     <description>
@@ -34,4 +34,13 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <feature name="Notification">
+        <param name="ios-package" value="CDVNotification" />
+    </feature>
+    <feature name="Device">
+        <param name="ios-package" value="CDVDevice" />
+    </feature>
+    <feature name="BackgroundMode">
+        <param name="ios-package" value="APPBackgroundMode" />
+    </feature>
 </widget>

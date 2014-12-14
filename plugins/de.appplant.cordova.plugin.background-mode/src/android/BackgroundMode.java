@@ -33,9 +33,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
 
 public class BackgroundMode extends CordovaPlugin {
+
+    // Event types for callbacks
+    private enum Event {
+        ACTIVATE, DEACTIVATE, FAILURE
+    }
+
+    // Plugin namespace
+    private static final String JS_NAMESPACE = "cordova.plugins.backgroundMode";
 
     // Flag indicates if the app is in background or foreground
     private boolean inBackground = false;
@@ -46,8 +53,11 @@ public class BackgroundMode extends CordovaPlugin {
     // Flag indicates if the service is bind
     private boolean isBind = false;
 
-    // Settings for the notification
-    protected static JSONObject settings = new JSONObject();
+    // Default settings for the notification
+    private static JSONObject defaultSettings = new JSONObject();
+
+    // Tmp config settings for the notification
+    private static JSONObject updateSettings;
 
     // Used to (un)bind the service to with the activity
     private final ServiceConnection connection = new ServiceConnection() {
@@ -55,12 +65,11 @@ public class BackgroundMode extends CordovaPlugin {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             // Nothing to do here
-            Log.d("BackgroundMode", "Service connected");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.w("BackgroundMode", "Service disrupted");
+            // Nothing to do here
         }
     };
 
@@ -79,11 +88,19 @@ public class BackgroundMode extends CordovaPlugin {
      */
     @Override
     public boolean execute (String action, JSONArray args,
-            CallbackContext callback) throws JSONException {
+                            CallbackContext callback) throws JSONException {
 
         if (action.equalsIgnoreCase("configure")) {
-            setSettings(args.getJSONObject(0));
-            updateNotifcation();
+            JSONObject settings = args.getJSONObject(0);
+            boolean update = args.getBoolean(1);
+
+            if (update) {
+                setUpdateSettings(settings);
+                updateNotifcation();
+            } else {
+                setDefaultSettings(settings);
+            }
+
             return true;
         }
 
@@ -155,13 +172,43 @@ public class BackgroundMode extends CordovaPlugin {
     }
 
     /**
-     * Update the settings for the notification.
+     * Update the default settings for the notification.
      *
-     * @param newSettings
-     *      The new settings
+     * @param settings
+     *      The new default settings
      */
-    private void setSettings(JSONObject newSettings) {
-        settings = newSettings;
+    private void setDefaultSettings(JSONObject settings) {
+        defaultSettings = settings;
+    }
+
+    /**
+     * Update the config settings for the notification.
+     *
+     * @param settings
+     *      The tmp config settings
+     */
+    private void setUpdateSettings(JSONObject settings) {
+        updateSettings = settings;
+    }
+
+    /**
+     * The settings for the new/updated notification.
+     *
+     * @return
+     *      updateSettings if set or default settings
+     */
+    protected static JSONObject getSettings() {
+        if (updateSettings != null)
+            return updateSettings;
+
+        return defaultSettings;
+    }
+
+    /**
+     * Called by ForegroundService to delete the update settings.
+     */
+    protected static void deleteUpdateSettings() {
+        updateSettings = null;
     }
 
     /**
@@ -184,14 +231,19 @@ public class BackgroundMode extends CordovaPlugin {
         Intent intent = new Intent(
                 context, ForegroundService.class);
 
-        if (isDisabled || isBind) {
+        if (isDisabled || isBind)
             return;
+
+        try {
+            context.bindService(
+                    intent, connection, Context.BIND_AUTO_CREATE);
+
+            fireEvent(Event.ACTIVATE, null);
+
+            context.startService(intent);
+        } catch (Exception e) {
+            fireEvent(Event.FAILURE, e.getMessage());
         }
-
-        context.bindService(
-                intent, connection, Context.BIND_AUTO_CREATE);
-
-        context.startService(intent);
 
         isBind = true;
     }
@@ -206,12 +258,55 @@ public class BackgroundMode extends CordovaPlugin {
         Intent intent = new Intent(
                 context, ForegroundService.class);
 
-        if (isBind) {
-            context.unbindService(connection);
-        }
+        if (!isBind)
+            return;
 
+        fireEvent(Event.DEACTIVATE, null);
+
+        context.unbindService(connection);
         context.stopService(intent);
 
         isBind = false;
+    }
+
+    /**
+     * Fire vent with some parameters inside the web view.
+     *
+     * @param event
+     *      The name of the event
+     * @param params
+     *      Optional arguments for the event
+     */
+    private void fireEvent (Event event, String params) {
+        String eventName;
+
+        if (updateSettings != null && event != Event.FAILURE)
+            return;
+
+        switch (event) {
+            case ACTIVATE:
+                eventName = "activate"; break;
+            case DEACTIVATE:
+                eventName = "deactivate"; break;
+            default:
+                eventName = "failure";
+        }
+
+        String active = event == Event.ACTIVATE ? "true" : false;
+
+        String flag = String.format("%s._isActive=%s;",
+                JS_NAMESPACE, active);
+
+        String fn = String.format("setTimeout('%s.on%s(%s)',0);",
+                JS_NAMESPACE, eventName, params);
+
+        final String js = flag + fn;
+
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                webView.loadUrl("javascript:" + js);
+            }
+        });
     }
 }

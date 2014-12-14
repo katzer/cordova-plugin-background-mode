@@ -80,46 +80,119 @@
     </head>
     <body ontouchstart="">
         <div class="app">
-            <h1>BackgroundMode Plugin</h1>
+            <h1>Background-Mode Plugin</h1>
             <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
             </div>
 
-            <a href="#" class="button" onclick="enable()">Enable Background Mode<br/><span class="hint">backgroundMode.enable()</span></a>
-            <a href="#" class="button" onclick="disable()">Disable Background Mode<br/><span class="hint">backgroundMode.disable()</span></a>
-            <a href="#" class="button" onclick="configure1()">Configure Android Notification<br/><span class="hint">backgroundMode.configure({ text:'...'})</span></a>
-            <a href="#" class="button" onclick="configure2()">Configure Android Notification<br/><span class="hint">backgroundMode.configure({ resume:false })</span></a>
+            <a href="#" class="button" onclick="isEnabled()">Is Mode Enabled<br/><span class="hint">backgroundMode.isEnabled()</span></a>
+            <a href="#" class="button" onclick="enable()">Enable Mode<br/><span class="hint">backgroundMode.enable()</span></a>
+            <a href="#" class="button" onclick="disable()">Disable Mode<br/><span class="hint">backgroundMode.disable()</span></a>
+            <a href="#" class="button" onclick="configure1()">Override Defaults<br/><span class="hint">backgroundMode.setDefaults({ text:'...'})</span></a>
+            <a href="#" class="button" onclick="configure2()">Override Defaults<br/><span class="hint">backgroundMode.setDefaults({ resume:bool })</span></a>
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
         <script type="text/javascript">
-            app.initialize();
 
-            counter = 0;
-            startedAt = new Date();
+            isEnabled = function () {
+                alert(cordova.plugins.backgroundMode.isEnabled());
+            };
 
-            setInterval(function () {
-                console.log('Running since ' + ((new Date() - startedAt) / 1000) + ' sec');
-            }, 1000);
+            enable = function () {
+                cordova.plugins.backgroundMode.enable();
+            };
 
             disable = function () {
                 cordova.plugins.backgroundMode.disable();
             };
-            enable = function () {
-                cordova.plugins.backgroundMode.enable();
-            };
+
             configure1 = function () {
-                cordova.plugins.backgroundMode.configure({
-                    text: 'App is running in background ' + (++counter)
-                });
+                navigator.notification.prompt(
+                    'Please enter the text for the notification',
+                    function (results) {
+                        if (results.buttonIndex == 1) {
+                            cordova.plugins.backgroundMode.setDefaults({
+                                text: results.input1
+                            });
+                        }
+                    },
+                    'Override Defaults'
+                );
             };
+
             configure2 = function () {
+                var resume = !cordova.plugins.backgroundMode.getDefaults().resume;
+
                 cordova.plugins.backgroundMode.configure({
-                    resume: false
+                    resume: resume
                 });
             };
+        </script>
+
+        <!-- Callbacks -->
+        <script type="text/javascript">
+            document.addEventListener('deviceready', function () {
+                cordova.plugins.backgroundMode.onactivate = function () {
+                    var counter = 0;
+
+                    timer = setInterval(function () {
+                        counter++;
+
+                        console.log('Running since ' + counter + ' sec');
+
+                        if (device.platform != 'Android') {
+                            cordova.plugins.notification.badge.set(counter);
+                        }
+
+                        if (counter % 15 === 0) {
+                            cordova.plugins.backgroundMode.configure({
+                                text: 'Running since ' + counter + ' sec'
+                            });
+                        }
+                    }, 1000);
+                };
+
+                cordova.plugins.backgroundMode.ondeactivate = function () {
+                    clearInterval(timer);
+                    cordova.plugins.notification.badge.clear();
+                };
+            }, false);
+        </script>
+
+        <!-- override defaults -->
+        <script type="text/javascript">
+            document.addEventListener('deviceready', function () {
+                var defaultText = cordova.plugins.backgroundMode.getDefaults().text;
+
+                cordova.plugins.backgroundMode.setDefaults({
+                    text: 'test test test'
+                });
+
+                setTimeout(function () {
+                    var text = cordova.plugins.backgroundMode.getDefaults().text;
+
+                    if (defaultText == text) {
+                        alert('override defaults when device is ready failed!');
+                    }
+
+                    cordova.plugins.backgroundMode.setDefaults({ text:defaultText });
+                }, 100);
+            }, false);
+        </script>
+
+        <!-- Permissions -->
+        <script type="text/javascript">
+            document.addEventListener('deviceready', function () {
+                cordova.plugins.notification.badge.promptForPermission();
+            }, false);
+        </script>
+
+        <!-- Init -->
+        <script type="text/javascript">
+            app.initialize();
         </script>
     </body>
 </html>

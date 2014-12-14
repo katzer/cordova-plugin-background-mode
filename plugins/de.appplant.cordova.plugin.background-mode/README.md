@@ -22,15 +22,14 @@ The plugin focuses on enterprise-only distribution and may not compliant with al
 1. [Supported Platforms](#supported-platforms)
 2. [Installation](#installation)
 3. [ChangeLog](#changelog)
-4. [Using the plugin](#using-the-plugin)
+4. [Usage](#usage)
 5. [Examples](#examples)
 6. [Platform specifics](#platform-specifics)
-7. [Quirks](#quirks)
 
 
 ## Supported Platforms
-- __iOS__
-- __Android__
+- __iOS__ (_including iOS8_)
+- __Android__ _(SDK >=11)_
 - __WP8__
 
 
@@ -51,35 +50,51 @@ cordova plugin add de.appplant.cordova.plugin.background-mode --searchpath path
 or to use the last stable version:
 ```bash
 # ~~ stable version ~~
-cordova plugin add de.appplant.cordova.plugin.background-mode@0.5.0
+cordova plugin add de.appplant.cordova.plugin.background-mode@0.6.1
+```
+
+To remove the plug-in, run the following command:
+```bash
+cordova plugin rm de.appplant.cordova.plugin.background-mode
 ```
 
 ### PhoneGap Build
 Add the following xml to your config.xml to always use the latest version of this plugin:
 ```xml
-<gap:plugin name="de.appplant.cordova.plugin.background-mode" version="0.5.0" />
+<gap:plugin name="de.appplant.cordova.plugin.background-mode" version="0.6.1" />
 ```
 
 More informations can be found [here][PGB_plugin].
 
 
 ## ChangeLog
-#### Version 0.6.0 (not yet released)
-- [feature:] Android support
-- [___change___:] Disabled by default
-- [enhancement:] iOS does not require user permissions, internet connection and geo location anymore.
+#### Version 0.6.1 (14.12.2014)
+- [enhancement:] Set default settings through `setDefaults`.
+- [enhancement:] New method `isEnabled` to receive if mode is enabled.
+- [enhancement:] New method `isActive` to receive if mode is active.
+- [bugfix:] Events caused thread collision.
 
 #### Further informations
 - The former `plugin.backgroundMode` namespace has been deprecated and will be removed with the next major release.
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
 
+#### Known issues
+- Plug-in is broken on Windows Phone 8.1 platform.
 
-## Using the plugin
-The plugin creates the object ```cordova.plugins.backgroundMode``` with  the following methods:
+
+## Usage
+The plugin creates the object `cordova.plugins.backgroundMode` with  the following methods:
 
 1. [backgroundMode.enable][enable]
 2. [backgroundMode.disable][disable]
-2. [backgroundMode.configure][configure]
+3. [backgroundMode.isEnabled][is_enabled]
+4. [backgroundMode.isActive][is_active]
+5. [backgroundMode.getDefaults][android_specifics]
+6. [backgroundMode.setDefaults][android_specifics]
+7. [backgroundMode.configure][configure]
+8. [backgroundMode.onactivate][onactivate]
+9. [backgroundMode.ondeactivate][ondeactivate]
+10. [backgroundMode.onfailure][onfailure]
 
 ### Plugin initialization
 The plugin and its methods are not available before the *deviceready* event has been fired.
@@ -98,7 +113,7 @@ To prevent the app from being paused while in background, the `backroundMode.ena
 - To activate the background mode the app needs to be in foreground.
 
 ```javascript
-window.plugin.backgroundMode.enable();
+cordova.plugins.backgroundMode.enable();
 ```
 
 ### Pause the app while in background
@@ -108,7 +123,48 @@ The background mode can be disabled through the `backgroundMode.disable` interfa
 - Once the background mode has been disabled, the app will be paused when in background.
 
 ```javascript
-window.plugin.backgroundMode.disable();
+cordova.plugins.backgroundMode.disable();
+```
+
+### Receive if the background mode is enabled
+The `backgroundMode.isEnabled` interface can be used to get the information if the background mode is enabled or disabled.
+
+```javascript
+cordova.plugins.backgroundMode.isEnabled(); // => boolean
+```
+
+### Receive if the background mode is active
+The `backgroundMode.isActive` interface can be used to get the information if the background mode is active.
+
+```javascript
+cordova.plugins.backgroundMode.isActive(); // => boolean
+```
+
+### Get informed when the background mode has been activated
+The `backgroundMode.onactivate` interface can be used to get notified when the background mode has been activated.
+
+```javascript
+cordova.plugins.backgroundMode.onactivate = function() {};
+```
+
+### Get informed when the background mode has been deactivated
+The `backgroundMode.ondeactivate` interface can be used to get notified when the background mode has been deactivated.
+
+#### Further informations
+- Once the mode has been deactivated the app will be paused soon after the callback has been fired.
+
+```javascript
+cordova.plugins.backgroundMode.ondeactivate = function() {};
+```
+
+### Get informed when the background mode could not been activated
+The `backgroundMode.onfailure` interface can be used to get notified when the background mode could not been activated.
+
+The listener has to be a function and takes the following arguments:
+ - errorCode: Error code which describes the error
+
+```javascript
+cordova.plugins.backgroundMode.onfailure = function(errorCode) {};
 ```
 
 
@@ -117,24 +173,34 @@ The following example demonstrates how to enable the background mode after devic
 
 ```javascript
 document.addEventListener('deviceready', function () {
+    // Android customization
+    cordova.plugins.backgroundMode.setDefaults({ text:'Doing heavy tasks.'});
     // Enable background mode
     cordova.plugins.backgroundMode.enable();
-    // Android customization
-    cordova.plugins.backgroundMode.configure({ text:'Doing heavy tasks.'});
+
+    // Called when background mode has been activated
+    cordova.plugins.backgroundMode.onactivate = function () {
+        setTimeout(function () {
+            // Modify the currently displayed notification
+            cordova.plugins.backgroundMode.configure({
+                text:'Running in background for more than 5s now.'
+            });
+        }, 5000);
+    }
 }, false);
 ```
 
 
 ## Platform specifics
 
-### Android Customization
+### Android customization
+To indicate that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
 
-To indicate, that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background like a download progress bar.
-
-The title, ticker and text for that notification can be customized in the following way at any time:
+#### Override defaults
+The title, ticker and text for that notification can be customized as follows:
 
 ```javascript
-cordova.plugins.backgroundMode.configure({
+cordova.plugins.backgroundMode.setDefaults({
     title:  String,
     ticker: String,
     text:   String
@@ -144,61 +210,19 @@ cordova.plugins.backgroundMode.configure({
 By default the app will come to foreground when taping on the notification. That can be changed also.
 
 ```javascript
-cordova.plugins.backgroundMode.configure({
+cordova.plugins.backgroundMode.setDefaults({
     resume: false
 })
 ```
 
+#### Modify the currently displayed notification
+It's also possible to modify the currently displayed notification while in background.
 
-### WP8 Optimization
-By default the plugin will track for geo updates while the application is in background and foreground. To stop tracking in foreground, the `MainPage.xaml.cs` file needs the following 2 methods:
-
-```c#
-// MainPage.xaml.cs
-
-namespace your.own.namespace
-{
-    public partial class MainPage : PhoneApplicationPage
-    {
-        /// </summary>
-        /// The page (the app) will enter the background and the background mode
-        /// needs to be activated.
-        /// </summary>
-        protected override void OnNavigatingFrom(System.Windows.Navigation.NavigatingCancelEventArgs e)
-        {
-            Cordova.Extension.Commands.BackgroundMode.Activate();
-        }
-
-        /// </summary>
-        /// The page (the app) will enter the foreground and the background mode
-        /// needs to be deactivated.
-        /// </summary>
-        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
-        {
-            Cordova.Extension.Commands.BackgroundMode.Deactivate();
-        }
-    }
-}
-```
-
-
-## Quirks
-
-### iOS Crash
-If the app crashes after installing the plugin, make sure that your `*-Info.plist` is valid and reset all occurences of blank strings
-
-```xml
-<key>NSMainNibFile</key>
-<string>
-
-</string>
-```
-
-to
-
-```xml
-<key>NSMainNibFile</key>
-<string></string>
+```javascript
+cordova.plugins.backgroundMode.configure({
+    title: String,
+    ...
+})
 ```
 
 
@@ -225,6 +249,12 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [changelog]: CHANGELOG.md
 [enable]: #prevent-the-app-from-going-to-sleep-in-background
 [disable]: #pause-the-app-while-in-background
-[configure]: #android-customization
+[is_enabled]: #receive-if-the-background-mode-is-enabled
+[is_active]: #receive-if-the-background-mode-is-active
+[android_specifics]: #android-customization
+[configure]: #modify-the-currently-displayed-notification
+[onactivate]: #get-informed-when-the-background-mode-has-been-activated
+[ondeactivate]: #get-informed-when-the-background-mode-has-been-deactivated
+[onfailure]: #get-informed-when-the-background-mode-could-not-been-activated
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
 [appplant]: http://appplant.de

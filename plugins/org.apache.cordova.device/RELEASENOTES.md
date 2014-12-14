@@ -84,3 +84,9 @@
 * added status box and documentation to manual tests
 * Added plugin support for the browser
 * CB-7262 Adds support for universal windows apps.
+
+### 0.2.13 (Dec 02, 2014)
+* Changing `device.platform` to always report the platform as "browser".
+* CB-5892 - Remove deprecated `window.Settings`
+* CB-7700 cordova-plugin-device documentation translation: cordova-plugin-device
+* CB-7571 Bump version of nested plugin to match parent plugin

@@ -9,6 +9,18 @@
                 "parents": {
                     "/*": [
                         {
+                            "xml": "<feature name=\"Console\"><param name=\"wp-package\" value=\"DebugConsole\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Badge\"><param name=\"wp-package\" value=\"Badge\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Notification\"><param name=\"wp-package\" value=\"Notification\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"Device\"><param name=\"wp-package\" value=\"Device\" /></feature>",
                             "count": 1
                         },
@@ -42,6 +54,15 @@
         }
     },
     "installed_plugins": {
+        "org.apache.cordova.console": {
+            "PACKAGE_NAME": "{57753cc0-6e69-11e4-97ac-ed443a0f9529}"
+        },
+        "de.appplant.cordova.plugin.badge": {
+            "PACKAGE_NAME": "{57753cc0-6e69-11e4-97ac-ed443a0f9529}"
+        },
+        "org.apache.cordova.dialogs": {
+            "PACKAGE_NAME": "{57753cc0-6e69-11e4-97ac-ed443a0f9529}"
+        },
         "de.appplant.cordova.plugin.background-mode": {
             "PACKAGE_NAME": "{57753cc0-6e69-11e4-97ac-ed443a0f9529}"
         }

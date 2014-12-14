@@ -22,6 +22,8 @@
 using WPCordovaClassLib.Cordova.Commands;
 using Windows.Devices.Geolocation;
 using Microsoft.Phone.Shell;
+using System;
+using WPCordovaClassLib.Cordova;
 
 namespace Cordova.Extension.Commands
 {
@@ -30,6 +32,15 @@ namespace Cordova.Extension.Commands
     /// </summary>
     public class BackgroundMode : BaseCommand
     {
+        /// </summary>
+        /// Event types for callbacks
+        /// </summary>
+        enum Event {
+            ACTIVATE, DEACTIVATE, FAILURE
+        }
+
+        #region Instance variables
+
         /// </summary>
         /// Flag indicates if the plugin is enabled or disabled
         /// </summary>
@@ -40,9 +51,9 @@ namespace Cordova.Extension.Commands
         /// </summary>
         private static Geolocator Geolocator { get; set; }
 
-        /// </pragma mark>
-        /// Interface methods
-        /// </pragma mark>
+        #endregion
+
+        #region Interface methods
 
         /// </summary>
         /// Enable the mode to stay awake when switching
@@ -64,44 +75,51 @@ namespace Cordova.Extension.Commands
             Deactivate();
         }
 
-        /// </pragma mark>
-        /// Core methods
-        /// </pragma mark>
+        #endregion
+
+        #region Core methods
 
         /// </summary>
         /// Keep the app awake by tracking
         /// for position changes.
         /// </summary>
-        public void Activate ()
+        private void Activate()
         {
             if (IsDisabled || Geolocator != null)
                 return;
 
             if (!IsServiceAvailable())
+            {
+                FireEvent(Event.FAILURE, null);
                 return;
+            }
 
             Geolocator = new Geolocator();
 
             Geolocator.DesiredAccuracy   = PositionAccuracy.Default;
             Geolocator.MovementThreshold = 100000;
             Geolocator.PositionChanged  += geolocator_PositionChanged;
+
+            FireEvent(Event.ACTIVATE, null);
         }
 
         /// </summary>
         /// Let the app going to sleep.
         /// </summary>
-        public void Deactivate ()
+        private void Deactivate ()
         {
             if (Geolocator == null)
                 return;
+
+            FireEvent(Event.DEACTIVATE, null);
 
             Geolocator.PositionChanged -= geolocator_PositionChanged;
             Geolocator = null;
         }
 
-        /// </pragma mark>
-        /// Helper methods
-        /// </pragma mark>
+        #endregion
+
+        #region Helper methods
 
         /// </summary>
         /// Determine if location service is available and enabled.
@@ -121,13 +139,43 @@ namespace Cordova.Extension.Commands
             return true;
         }
 
-        /// </pragma mark>
-        /// Delegate methods
-        /// </pragma mark>
+        /// <summary>
+        /// Fires the given event.
+        /// </summary>
+        private void FireEvent(Event Event, string Param)
+        {
+            string EventName;
 
-        private void geolocator_PositionChanged(Geolocator sender, PositionChangedEventArgs args) {
+            switch (Event) {
+                case Event.ACTIVATE:
+                    EventName = "activate"; break;
+                case Event.DEACTIVATE:
+                    EventName = "deactivate"; break;
+                default:
+                    EventName = "failure"; break;
+            }
+
+            string js = String.Format("cordova.plugins.backgroundMode.on{0}({1})", EventName, Param);
+
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, js);
+
+            pluginResult.KeepCallback = true;
+
+            DispatchCommandResult(pluginResult);
+        }
+
+        #endregion
+
+        #region Delegate methods
+
+        private void geolocator_PositionChanged(Geolocator sender, PositionChangedEventArgs args)
+        {
             // Nothing to do here
         }
+
+        #endregion
+
+        #region Lifecycle methods
 
         /// <summary>
         /// Occurs when the application is being deactivated.
@@ -145,5 +193,7 @@ namespace Cordova.Extension.Commands
         {
             Deactivate();
         }
+
+        #endregion
     }
 }

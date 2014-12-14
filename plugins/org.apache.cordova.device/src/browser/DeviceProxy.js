@@ -22,7 +22,7 @@ var browser = require('cordova/platform');
 var cordova = require('cordova');
 
 function getPlatform() {
-    return navigator.platform;
+    return "browser";
 }
 
 function getModel() {
