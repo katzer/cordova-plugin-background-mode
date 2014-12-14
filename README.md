@@ -28,7 +28,7 @@ The plugin focuses on enterprise-only distribution and may not compliant with al
 
 
 ## Supported Platforms
-- __iOS__ _including iOS8_
+- __iOS__ (_including iOS8_)
 - __Android__ _(SDK >=11)_
 - __WP8__
 
@@ -61,7 +61,7 @@ cordova plugin rm de.appplant.cordova.plugin.background-mode
 ### PhoneGap Build
 Add the following xml to your config.xml to always use the latest version of this plugin:
 ```xml
-<gap:plugin name="de.appplant.cordova.plugin.background-mode" version="0.6.0" />
+<gap:plugin name="de.appplant.cordova.plugin.background-mode" version="0.6.0"  source="plugins.cordova.io" />
 ```
 
 More informations can be found [here][PGB_plugin].
