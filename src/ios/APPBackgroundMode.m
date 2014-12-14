@@ -23,10 +23,10 @@
 
 @implementation APPBackgroundMode
 
-NSString *const kAPPBackgroundModeNamespace = @"cordova.plugins.backgroundMode";
-NSString *const kAPPBackgroundModeActivateEvent = @"activate";
-NSString *const kAPPBackgroundModeDeactivateEvent = @"deactivate";
-NSString *const kAPPBackgroundModeFailureEvent = @"failure";
+NSString *const kAPPBackgroundJsNamespace = @"cordova.plugins.backgroundMode";
+NSString *const kAPPBackgroundEventActivate = @"activate";
+NSString *const kAPPBackgroundEventDeactivate = @"deactivate";
+NSString *const kAPPBackgroundEventFailure = @"failure";
 
 #pragma mark -
 #pragma mark Initialization methods
@@ -104,7 +104,7 @@ NSString *const kAPPBackgroundModeFailureEvent = @"failure";
 - (void) keepAwake {
     if (enabled) {
         [audioPlayer play];
-        [self fireEvent:kAPPBackgroundModeActivateEvent withParams:NULL];
+        [self fireEvent:kAPPBackgroundEventActivate withParams:NULL];
     }
 }
 
@@ -118,7 +118,7 @@ NSString *const kAPPBackgroundModeFailureEvent = @"failure";
     }
 
     if (audioPlayer.isPlaying) {
-        [self fireEvent:kAPPBackgroundModeDeactivateEvent withParams:NULL];
+        [self fireEvent:kAPPBackgroundEventDeactivate withParams:NULL];
     }
 
     [audioPlayer pause];
@@ -166,7 +166,7 @@ NSString *const kAPPBackgroundModeFailureEvent = @"failure";
  * Restart playing sound when interrupted by phone calls.
  */
 - (void) handleAudioSessionInterruption:(NSNotification*)notification {
-    [self fireEvent:kAPPBackgroundModeDeactivateEvent withParams:NULL];
+    [self fireEvent:kAPPBackgroundEventDeactivate withParams:NULL];
     [self keepAwake];
 }
 
@@ -175,8 +175,15 @@ NSString *const kAPPBackgroundModeFailureEvent = @"failure";
  */
 - (void) fireEvent:(NSString*)event withParams:(NSString*)params
 {
-    NSString* js = [NSString stringWithFormat:@"setTimeout('%@.on%@(%@)',0)",
-                    kAPPBackgroundModeNamespace, event, params];
+    NSString* active = [event isEqualToString:kAPPBackgroundEventActivate] ? @"true" : @"false";
+
+    NSString* flag = [NSString stringWithFormat:@"%@._isActive=%@;",
+                    kAPPBackgroundJsNamespace, active];
+
+    NSString* fn = [NSString stringWithFormat:@"setTimeout('%@.on%@(%@)',0);",
+                    kAPPBackgroundJsNamespace, event, params];
+
+    NSString* js = [flag stringByAppendingString:fn];
 
     [self.commandDelegate evalJs:js];
 }

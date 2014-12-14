@@ -290,11 +290,17 @@ public class BackgroundMode extends CordovaPlugin {
                 eventName = "deactivate"; break;
             default:
                 eventName = "failure";
-
         }
 
-        final String js = String.format("setTimeout('%s.on%s(%s)',0)",
+        String active = event == Event.ACTIVATE ? "true" : false;
+
+        String flag = String.format("%s._isActive=%s;",
+                JS_NAMESPACE, active);
+
+        String fn = String.format("setTimeout('%s.on%s(%s)',0);",
                 JS_NAMESPACE, eventName, params);
+
+        final String js = flag + fn;
 
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override

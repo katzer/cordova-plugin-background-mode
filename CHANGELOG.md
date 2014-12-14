@@ -1,7 +1,8 @@
 ## ChangeLog
 #### Version 0.6.1 (not yet released)
 - [enhancement:] Set default settings through `setDefaults`.
-- [enhancement:] New method `isEnabled`
+- [enhancement:] New method `isEnabled` to receive if mode is enabled.
+- [enhancement:] New method `isActive` to receive if mode is active.
 - [bugfix:] Events caused thread collision.
 
 

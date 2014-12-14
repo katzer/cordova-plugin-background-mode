@@ -70,7 +70,8 @@ More informations can be found [here][PGB_plugin].
 ## ChangeLog
 #### Version 0.6.1 (not yet released)
 - [enhancement:] Set default settings through `setDefaults`.
-- [enhancement:] New method `isEnabled`
+- [enhancement:] New method `isEnabled` to receive if mode is enabled.
+- [enhancement:] New method `isActive` to receive if mode is active.
 - [bugfix:] Events caused thread collision.
 
 #### Further informations
@@ -82,17 +83,18 @@ More informations can be found [here][PGB_plugin].
 
 
 ## Usage
-The plugin creates the object ```cordova.plugins.backgroundMode``` with  the following methods:
+The plugin creates the object `cordova.plugins.backgroundMode` with  the following methods:
 
 1. [backgroundMode.enable][enable]
 2. [backgroundMode.disable][disable]
 3. [backgroundMode.isEnabled][is_enabled]
-3. [backgroundMode.getDefaults][android_specifics]
-4. [backgroundMode.setDefaults][android_specifics]
-2. [backgroundMode.configure][android_specifics]
-3. [backgroundMode.onactivate][onactivate]
-4. [backgroundMode.ondeactivate][ondeactivate]
-5. [backgroundMode.onfailure][onfailure]
+4. [backgroundMode.isActive][is_active]
+5. [backgroundMode.getDefaults][android_specifics]
+6. [backgroundMode.setDefaults][android_specifics]
+7. [backgroundMode.configure][android_specifics]
+8. [backgroundMode.onactivate][onactivate]
+9. [backgroundMode.ondeactivate][ondeactivate]
+10. [backgroundMode.onfailure][onfailure]
 
 ### Plugin initialization
 The plugin and its methods are not available before the *deviceready* event has been fired.
@@ -125,10 +127,17 @@ cordova.plugins.backgroundMode.disable();
 ```
 
 ### Receive if the background mode is enabled
-The `backgroundMode.isActivated` interface can be used to get the information if the background mode is enabled or disabled.
+The `backgroundMode.isEnabled` interface can be used to get the information if the background mode is enabled or disabled.
 
 ```javascript
-var enabled = cordova.plugins.backgroundMode.isEnabled();
+cordova.plugins.backgroundMode.isEnabled(); // => boolean
+```
+
+### Receive if the background mode is active
+The `backgroundMode.isActive` interface can be used to get the information if the background mode is active.
+
+```javascript
+cordova.plugins.backgroundMode.isActive(); // => boolean
 ```
 
 ### Get informed when the background mode has been activated
@@ -240,6 +249,8 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [changelog]: CHANGELOG.md
 [enable]: #prevent_the_app_from_going_to_sleep_in_background
 [disable]: #pause_the_app_while_in_background
+[is_enabled]: #receive_if_the_background_mode_is_enabled
+[is_active]: #receive_if_the_background_mode_is_active
 [android_specifics]: #android_customization
 [onactivate]: #get_informed_when_the_background_mode_has_been_activated
 [ondeactivate]: #get_informed_when_the_background_mode_has_been_deactivated

@@ -29,7 +29,7 @@ document.addEventListener('backbutton', function () {}, false);
 // Called before 'deviceready' listener will be called
 channel.onCordovaReady.subscribe(function () {
     // Device plugin is ready now
-    channel.onCordovaInfoReady.subscribe( function () {
+    channel.onCordovaInfoReady.subscribe(function () {
         // Set the defaults
         exports.setDefaults({});
     });
@@ -44,9 +44,16 @@ channel.onCordovaReady.subscribe(function () {
 /**
  * @private
  *
- * Flag indicated if the mod is enabled.
+ * Flag indicated if the mode is enabled.
  */
 exports._isEnabled = true;
+
+/**
+ * @private
+ *
+ * Flag indicated if the mode is active.
+ */
+exports._isActive = true;
 
 /**
  * @private
@@ -125,12 +132,21 @@ exports.configure = function (options) {
 };
 
 /**
- * If the mode is enabled or not.
+ * If the mode is enabled or disabled.
  *
  * @return {Boolean}
  */
 exports.isEnabled = function () {
     return this._isEnabled;
+};
+
+/**
+ * If the mode is active.
+ *
+ * @return {Boolean}
+ */
+exports.isActive = function () {
+    return this._isActive;
 };
 
 /**
