@@ -91,7 +91,7 @@ The plugin creates the object `cordova.plugins.backgroundMode` with  the followi
 4. [backgroundMode.isActive][is_active]
 5. [backgroundMode.getDefaults][android_specifics]
 6. [backgroundMode.setDefaults][android_specifics]
-7. [backgroundMode.configure][android_specifics]
+7. [backgroundMode.configure][configure]
 8. [backgroundMode.onactivate][onactivate]
 9. [backgroundMode.ondeactivate][ondeactivate]
 10. [backgroundMode.onfailure][onfailure]
@@ -194,7 +194,7 @@ document.addEventListener('deviceready', function () {
 ## Platform specifics
 
 ### Android customization
-To indicate, that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
+To indicate that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
 
 #### Override defaults
 The title, ticker and text for that notification can be customized as follows:
@@ -252,6 +252,7 @@ This software is released under the [Apache 2.0 License][apache2_license].
 [is_enabled]: #receive-if-the-background-mode-is-enabled
 [is_active]: #receive-if-the-background-mode-is-active
 [android_specifics]: #android-customization
+[configure]: #modify-the-currently-displayed-notification
 [onactivate]: #get-informed-when-the-background-mode-has-been-activated
 [ondeactivate]: #get-informed-when-the-background-mode-has-been-deactivated
 [onfailure]: #get-informed-when-the-background-mode-could-not-been-activated
