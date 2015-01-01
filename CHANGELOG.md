@@ -1,5 +1,5 @@
 ## ChangeLog
-#### Version 0.6.3 (not yet released)
+#### Version 0.6.3 (01.01.2015)
 - [feature:] Silent mode for Android
 
 #### Version 0.6.2 (14.12.2014)
