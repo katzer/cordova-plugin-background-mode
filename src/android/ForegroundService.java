@@ -36,6 +36,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 /**
  * Puts the service in a foreground state, where the system considers it to be
@@ -84,7 +85,11 @@ public class ForegroundService extends Service {
     public void keepAwake() {
         final Handler handler = new Handler();
 
-        startForeground(NOTIFICATION_ID, makeNotification());
+        if (!this.inSilentMode()) {
+            startForeground(NOTIFICATION_ID, makeNotification());
+        } else {
+            Log.w("BackgroundMode", "In silent mode app may be paused by OS!");
+        }
 
         BackgroundMode.deleteUpdateSettings();
 
@@ -160,7 +165,7 @@ public class ForegroundService extends Service {
      * @return
      *      The resource ID of the app icon
      */
-    private int getIconResId () {
+    private int getIconResId() {
         Context context = getApplicationContext();
         Resources res   = context.getResources();
         String pkgName  = context.getPackageName();
@@ -169,5 +174,17 @@ public class ForegroundService extends Service {
         resId = res.getIdentifier("icon", "drawable", pkgName);
 
         return resId;
+    }
+
+    /**
+     * In silent mode no notification has to be added.
+     *
+     * @return
+     *      True if silent: was set to true
+     */
+    private boolean inSilentMode() {
+        JSONObject settings = BackgroundMode.getSettings();
+
+        return settings.optBoolean("silent", false);
     }
 }
