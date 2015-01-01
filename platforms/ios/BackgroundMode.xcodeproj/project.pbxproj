@@ -44,9 +44,9 @@
 		563A87A8BFAB46039BC741CB /* CDVNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 2598A863A11B40698A58A744 /* CDVNotification.m */; };
 		0B62BD9BA1284ECC8B5F3D1C /* CDVNotification.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CB9B3EA36EB140B5B87E43AF /* CDVNotification.bundle */; };
 		D659701FD2D44ED7B73C0383 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8DDD24E074A44EA9069B770 /* AudioToolbox.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		45CE3E6E40174D60A2BEACB8 /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 8339435A69A04D198CFD9FE3 /* CDVDevice.m */; };
-		E1ECC4BA12C74C608AAA080C /* APPBackgroundMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 02CCC21DA8474094B33BDF4B /* APPBackgroundMode.m */; };
-		2071C99AAE0940D987950FDC /* appbeep.wav in Resources */ = {isa = PBXBuildFile; fileRef = 100F533E34B8402EAD9D3A23 /* appbeep.wav */; };
+		F422AA8CC2064B44BE5270A3 /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = CD685CE1CA2244FBA1E08BD7 /* CDVDevice.m */; };
+		7AC9968B9A1C4B798B9ECC4D /* APPBackgroundMode.m in Sources */ = {isa = PBXBuildFile; fileRef = F946590DE99B40DA90EE9CD9 /* APPBackgroundMode.m */; };
+		EB3D0558D038479BB8EDF677 /* appbeep.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8007E5EA440345B3825F5A27 /* appbeep.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -120,11 +120,11 @@
 		1CA3F59202BA402C921D9F37 /* CDVNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVNotification.h"; path = "org.apache.cordova.dialogs/CDVNotification.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		CB9B3EA36EB140B5B87E43AF /* CDVNotification.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = "CDVNotification.bundle"; path = "CDVNotification.bundle"; sourceTree = "<group>"; };
 		A8DDD24E074A44EA9069B770 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "AudioToolbox.framework"; path = "System/Library/Frameworks/AudioToolbox.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
-		8339435A69A04D198CFD9FE3 /* CDVDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVDevice.m"; path = "org.apache.cordova.device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		492E8E0ECCA24E70A28AE44D /* CDVDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVDevice.h"; path = "org.apache.cordova.device/CDVDevice.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		02CCC21DA8474094B33BDF4B /* APPBackgroundMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "APPBackgroundMode.m"; path = "de.appplant.cordova.plugin.background-mode/APPBackgroundMode.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		D3C1DD27324D459EADBEF7EA /* APPBackgroundMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "APPBackgroundMode.h"; path = "de.appplant.cordova.plugin.background-mode/APPBackgroundMode.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		100F533E34B8402EAD9D3A23 /* appbeep.wav */ = {isa = PBXFileReference; lastKnownFileType = unknown; name = "appbeep.wav"; path = "appbeep.wav"; sourceTree = "<group>"; fileEncoding = 4; };
+		CD685CE1CA2244FBA1E08BD7 /* CDVDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVDevice.m"; path = "org.apache.cordova.device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		D499018D4D974D7C92AF3CD6 /* CDVDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVDevice.h"; path = "org.apache.cordova.device/CDVDevice.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		F946590DE99B40DA90EE9CD9 /* APPBackgroundMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "APPBackgroundMode.m"; path = "de.appplant.cordova.plugin.background-mode/APPBackgroundMode.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		D15C71686FFA4322ADCE2127 /* APPBackgroundMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "APPBackgroundMode.h"; path = "de.appplant.cordova.plugin.background-mode/APPBackgroundMode.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		8007E5EA440345B3825F5A27 /* appbeep.wav */ = {isa = PBXFileReference; lastKnownFileType = unknown; name = "appbeep.wav"; path = "appbeep.wav"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,7 +199,7 @@
 				308D05311370CCF300D202BF /* splash */,
 				8D1107310486CEB800E47090 /* BackgroundMode-Info.plist */,
 				CB9B3EA36EB140B5B87E43AF /* CDVNotification.bundle */,
-				100F533E34B8402EAD9D3A23 /* appbeep.wav */,
+				8007E5EA440345B3825F5A27 /* appbeep.wav */,
 			);
 			name = Resources;
 			path = "BackgroundMode/Resources";
@@ -233,10 +233,10 @@
 				6AF0FD63C2914C8A82B35DB5 /* APPBadge.h */,
 				2598A863A11B40698A58A744 /* CDVNotification.m */,
 				1CA3F59202BA402C921D9F37 /* CDVNotification.h */,
-				8339435A69A04D198CFD9FE3 /* CDVDevice.m */,
-				492E8E0ECCA24E70A28AE44D /* CDVDevice.h */,
-				02CCC21DA8474094B33BDF4B /* APPBackgroundMode.m */,
-				D3C1DD27324D459EADBEF7EA /* APPBackgroundMode.h */,
+				CD685CE1CA2244FBA1E08BD7 /* CDVDevice.m */,
+				D499018D4D974D7C92AF3CD6 /* CDVDevice.h */,
+				F946590DE99B40DA90EE9CD9 /* APPBackgroundMode.m */,
+				D15C71686FFA4322ADCE2127 /* APPBackgroundMode.h */,
 			);
 			name = Plugins;
 			path = "BackgroundMode/Plugins";
@@ -391,7 +391,7 @@
 				7E7966E51810823500FA85AD /* icon-76@2x.png in Resources */,
 				30FC414916E50CA1004E6F35 /* icon-72@2x.png in Resources */,
 				0B62BD9BA1284ECC8B5F3D1C /* CDVNotification.bundle in Resources */,
-				2071C99AAE0940D987950FDC /* appbeep.wav in Resources */,
+				EB3D0558D038479BB8EDF677 /* appbeep.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,8 +426,8 @@
 				F7C750F33BF8447A902D7EA2 /* CDVLogger.m in Sources */,
 				7FF3410C10B443BC857ED668 /* APPBadge.m in Sources */,
 				563A87A8BFAB46039BC741CB /* CDVNotification.m in Sources */,
-				45CE3E6E40174D60A2BEACB8 /* CDVDevice.m in Sources */,
-				E1ECC4BA12C74C608AAA080C /* APPBackgroundMode.m in Sources */,
+				F422AA8CC2064B44BE5270A3 /* CDVDevice.m in Sources */,
+				7AC9968B9A1C4B798B9ECC4D /* APPBackgroundMode.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

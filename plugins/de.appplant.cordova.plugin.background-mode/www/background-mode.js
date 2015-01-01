@@ -46,14 +46,14 @@ channel.onCordovaReady.subscribe(function () {
  *
  * Flag indicated if the mode is enabled.
  */
-exports._isEnabled = true;
+exports._isEnabled = false;
 
 /**
  * @private
  *
  * Flag indicated if the mode is active.
  */
-exports._isActive = true;
+exports._isActive = false;
 
 /**
  * @private
@@ -64,7 +64,8 @@ exports._defaults = {
     title:  'App is running in background',
     text:   'Doing heavy tasks.',
     ticker: 'App is running in background',
-    resume: true
+    resume: true,
+    silent: false
 };
 
 

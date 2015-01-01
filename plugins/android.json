@@ -42,7 +42,8 @@
                             "xml": "<service android:name=\"de.appplant.cordova.plugin.background.ForegroundService\" />",
                             "count": 1
                         }
-                    ]
+                    ],
+                    "/manifest": []
                 }
             }
         }

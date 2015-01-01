@@ -64,7 +64,8 @@ exports._defaults = {
     title:  'App is running in background',
     text:   'Doing heavy tasks.',
     ticker: 'App is running in background',
-    resume: true
+    resume: true,
+    silent: false
 };
 
 

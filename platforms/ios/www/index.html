@@ -91,6 +91,7 @@
             <a href="#" class="button" onclick="disable()">Disable Mode<br/><span class="hint">backgroundMode.disable()</span></a>
             <a href="#" class="button" onclick="configure1()">Override Defaults<br/><span class="hint">backgroundMode.setDefaults({ text:'...'})</span></a>
             <a href="#" class="button" onclick="configure2()">Override Defaults<br/><span class="hint">backgroundMode.setDefaults({ resume:bool })</span></a>
+            <a href="#" class="button" onclick="silent()">Silent mode<br/><span class="hint">backgroundMode.setDefaults({ silent:true })</span></a>
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
@@ -129,6 +130,10 @@
                 cordova.plugins.backgroundMode.configure({
                     resume: resume
                 });
+            };
+
+            silent = function () {
+                cordova.plugins.backgroundMode.configure({ silent:true });
             };
         </script>
 
