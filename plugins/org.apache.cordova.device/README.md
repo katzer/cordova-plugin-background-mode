@@ -19,4 +19,6 @@
 
 # org.apache.cordova.device
 
+[![Build Status](https://travis-ci.org/apache/cordova-plugin-device.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-device)
+
 Plugin documentation: [doc/index.md](doc/index.md)

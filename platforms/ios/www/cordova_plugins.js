@@ -51,8 +51,8 @@ module.exports.metadata =
     "org.apache.cordova.console": "0.2.12",
     "de.appplant.cordova.plugin.badge": "0.6.1",
     "org.apache.cordova.dialogs": "0.2.12-dev",
-    "de.appplant.cordova.plugin.background-mode": "0.6.2",
-    "org.apache.cordova.device": "0.2.14-dev"
+    "de.appplant.cordova.plugin.background-mode": "0.6.3",
+    "org.apache.cordova.device": "0.3.1-dev"
 }
 // BOTTOM OF METADATA
 });

@@ -43,7 +43,8 @@
                             "count": 1
                         }
                     ],
-                    "/manifest": []
+                    "/manifest": [],
+                    "/*": []
                 }
             }
         }

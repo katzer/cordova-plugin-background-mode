@@ -48,7 +48,9 @@
                             "xml": "true",
                             "count": 1
                         }
-                    ]
+                    ],
+                    "AssetsLibrary.framework": [],
+                    "MobileCoreServices.framework": []
                 }
             }
         }
