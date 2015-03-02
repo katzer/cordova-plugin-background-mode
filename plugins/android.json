@@ -9,14 +9,6 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"Badge\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.badge.Badge\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
                             "count": 1
                         },
@@ -27,6 +19,14 @@
                         {
                             "xml": "<preference name=\"KeepRunning\" value=\"true\" />",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Badge\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.badge.Badge\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -35,31 +35,29 @@
                 "parents": {
                     "/manifest/application": [
                         {
-                            "xml": "<activity android:launchMode=\"singleInstance\" android:name=\"de.appplant.cordova.plugin.badge.LaunchActivity\" android:theme=\"@android:style/Theme.Black.NoTitleBar\" />",
+                            "xml": "<service android:name=\"de.appplant.cordova.plugin.background.ForegroundService\" />",
                             "count": 1
                         },
                         {
-                            "xml": "<service android:name=\"de.appplant.cordova.plugin.background.ForegroundService\" />",
+                            "xml": "<activity android:launchMode=\"singleInstance\" android:name=\"de.appplant.cordova.plugin.badge.LaunchActivity\" android:theme=\"@android:style/Theme.Black.NoTitleBar\" />",
                             "count": 1
                         }
-                    ],
-                    "/manifest": [],
-                    "/*": []
+                    ]
                 }
             }
         }
     },
     "installed_plugins": {
-        "org.apache.cordova.console": {
+        "de.appplant.cordova.plugin.background-mode": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         },
         "de.appplant.cordova.plugin.badge": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         },
-        "org.apache.cordova.dialogs": {
+        "org.apache.cordova.console": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         },
-        "de.appplant.cordova.plugin.background-mode": {
+        "org.apache.cordova.dialogs": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         }
     },

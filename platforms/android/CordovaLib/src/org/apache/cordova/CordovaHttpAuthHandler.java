@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /*
        Licensed to the Apache Software Foundation (ASF) under one
        or more contributor license agreements.  See the NOTICE file
@@ -18,8 +16,36 @@
        specific language governing permissions and limitations
        under the License.
 */
+package org.apache.cordova;
 
-// Coho updates this line:
-var VERSION = "3.7.1";
+import android.webkit.HttpAuthHandler;
 
-console.log(VERSION);
+/**
+ * Specifies interface for HTTP auth handler object which is used to handle auth requests and
+ * specifying user credentials.
+ */
+public class CordovaHttpAuthHandler implements ICordovaHttpAuthHandler {
+
+    private final HttpAuthHandler handler;
+
+    public CordovaHttpAuthHandler(HttpAuthHandler handler) {
+        this.handler = handler;
+    }
+    
+    /**
+     * Instructs the WebView to cancel the authentication request.
+     */
+    public void cancel () {
+        this.handler.cancel();
+    }
+    
+    /**
+     * Instructs the WebView to proceed with the authentication with the given credentials.
+     * 
+     * @param username
+     * @param password
+     */
+    public void proceed (String username, String password) {
+        this.handler.proceed(username, password);
+    }
+}

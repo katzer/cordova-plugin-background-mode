@@ -16,7 +16,7 @@
    under the License.
 */
 
-
+// GENERATED FILE! DO NOT EDIT!
 
 buildscript {
     repositories {
@@ -44,6 +44,12 @@ buildscript {
 
 apply plugin: 'android-library'
 
+dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+    debugCompile project(path: ":CordovaLib", configuration: "debug")
+    releaseCompile project(path: ":CordovaLib", configuration: "release")
+}
+
 android {
     compileSdkVersion cdvCompileSdkVersion
     buildToolsVersion cdvBuildToolsVersion
@@ -63,6 +69,11 @@ android {
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
+            jniLibs.srcDirs = ['libs']
         }
     }
+}
+
+if (file('build-extras.gradle').exists()) {
+    apply from: 'build-extras.gradle'
 }
