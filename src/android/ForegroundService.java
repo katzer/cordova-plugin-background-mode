@@ -166,12 +166,13 @@ public class ForegroundService extends Service {
      *      The resource ID of the app icon
      */
     private int getIconResId() {
+        JSONObject settings = BackgroundMode.getSettings();
         Context context = getApplicationContext();
         Resources res   = context.getResources();
         String pkgName  = context.getPackageName();
 
         int resId;
-        resId = res.getIdentifier("icon", "drawable", pkgName);
+        resId = res.getIdentifier(settings.optString("icon", "icon"), "drawable", pkgName);
 
         return resId;
     }
