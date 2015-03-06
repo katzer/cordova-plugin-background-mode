@@ -66,7 +66,8 @@ exports._defaults = {
     ticker: 'App is running in background',
     resume: true,
     silent: false,
-	icon: 'icon'
+	icon: 'icon',
+	smallIcon: 'icon'
 };
 
 
