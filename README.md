@@ -208,7 +208,8 @@ cordova.plugins.backgroundMode.setDefaults({
     title:  String,
     ticker: String,
     text:   String,
-	icon:	String
+	icon:	String,
+	smallIcon:	String
 })
 ```
 
