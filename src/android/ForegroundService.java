@@ -28,12 +28,14 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -49,6 +51,11 @@ public class ForegroundService extends Service {
     // Fixed ID for the 'foreground' notification
     private static final int NOTIFICATION_ID = -574543954;
 
+    private Notification.Builder notification;
+
+    // Binder given to clients
+    private final IBinder mBinder = new ForegroundBinder();
+
     // Scheduler to exec periodic tasks
     final Timer scheduler = new Timer();
 
@@ -60,7 +67,18 @@ public class ForegroundService extends Service {
      */
     @Override
     public IBinder onBind (Intent intent) {
-        return null;
+        return mBinder;
+    }
+
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class ForegroundBinder extends Binder {
+        ForegroundService getService() {
+            // Return this instance of ForegroundService so clients can call public methods
+            return ForegroundService.this;
+        }
     }
 
     /**
@@ -135,7 +153,7 @@ public class ForegroundService extends Service {
         Intent intent       = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
-        Notification.Builder notification = new Notification.Builder(context)
+        notification = new Notification.Builder(context)
             .setContentTitle(settings.optString("title", ""))
             .setContentText(settings.optString("text", ""))
             .setTicker(settings.optString("ticker", ""))
@@ -172,6 +190,12 @@ public class ForegroundService extends Service {
             // Notification for Jellybean and above
             return notification.build();
         }
+    }
+
+    public void updateNotification() {
+        Notification n = makeNotification();
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(NOTIFICATION_ID, n);
     }
 
     /**
