@@ -201,21 +201,18 @@ document.addEventListener('deviceready', function () {
 To indicate that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
 
 #### Override defaults
-The title, ticker and text for that notification can be customized as follows:
+The title, ticker, text for that notification can be customized as below. Also, by default the app will come to foreground when tapping on the notification. That can be changed by setting resume to false. On Android 5.0+, the color option will set the background color of the notification circle. Also on Android 5.0+, setting isPublic to true will make the full notification show on a secure lockscreen.
+
+All of these fields are optional - only override the things you need to.
 
 ```javascript
 cordova.plugins.backgroundMode.setDefaults({
     title:  String,
     ticker: String,
-    text:   String
-})
-```
-
-By default the app will come to foreground when taping on the notification. That can be changed also.
-
-```javascript
-cordova.plugins.backgroundMode.setDefaults({
-    resume: false
+    text:   String,
+    resume: true / false,
+    color: "#123456",
+    isPublic: true / false
 })
 ```
 

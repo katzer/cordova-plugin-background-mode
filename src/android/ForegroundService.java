@@ -33,6 +33,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -140,6 +141,20 @@ public class ForegroundService extends Service {
             .setTicker(settings.optString("ticker", ""))
             .setOngoing(true)
             .setSmallIcon(getIconResId());
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(settings.optBoolean("isPublic") == true) {
+                notification.setVisibility(Notification.VISIBILITY_PUBLIC);
+            }
+
+            if(!settings.optString("color").equals("")) {
+                try {
+                    notification.setColor(Color.parseColor(settings.optString("color")));
+                } catch (Exception e) {
+                    Log.e("BackgroundMode", settings.optString("color") + " is not a valid color");
+                }
+            }
+        }
 
         if (intent != null && settings.optBoolean("resume")) {
 
