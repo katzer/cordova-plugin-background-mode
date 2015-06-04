@@ -67,7 +67,8 @@ exports._defaults = {
     resume: true,
     silent: false,
     isPublic: false,
-    color: ""
+    color: "",
+    icon: "icon"
 };
 
 
