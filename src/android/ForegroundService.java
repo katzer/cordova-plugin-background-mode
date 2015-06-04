@@ -177,7 +177,7 @@ public class ForegroundService extends Service {
         if (intent != null && settings.optBoolean("resume")) {
 
             PendingIntent contentIntent = PendingIntent.getActivity(
-                    context, NOTIFICATION_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    context, NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             notification.setContentIntent(contentIntent);
         }
