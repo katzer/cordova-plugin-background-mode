@@ -20,7 +20,7 @@
     <author>Sebastián Katzer</author>
 
     <!-- dependencies -->
-    <dependency id="org.apache.cordova.device" />
+    <dependency id="cordova-plugin-device" />
 
     <!-- cordova -->
     <engines>
