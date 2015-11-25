@@ -112,7 +112,7 @@ exports.setDefaults = function (overrides) {
         }
     }
 
-    if (device.platform == 'Android') {
+    if ((device.platform == 'Android') || (device.platform == 'Windows')){
         cordova.exec(null, null, 'BackgroundMode', 'configure', [defaults, false]);
     }
 };
@@ -127,7 +127,7 @@ exports.setDefaults = function (overrides) {
 exports.configure = function (options) {
     var settings = this.mergeWithDefaults(options);
 
-    if (device.platform == 'Android') {
+    if ((device.platform == 'Android') || (device.platform == 'Windows')){
         cordova.exec(null, null, 'BackgroundMode', 'configure', [settings, true]);
     }
 };

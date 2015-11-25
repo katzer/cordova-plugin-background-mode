@@ -31,6 +31,7 @@ The plugin focuses on enterprise-only distribution and may not compliant with al
 - __iOS__ (_including iOS8_)
 - __Android__ _(SDK >=11)_
 - __WP8__
+- __Windows 10__
 
 
 ## Installation
@@ -137,21 +138,21 @@ The `backgroundMode.isEnabled` interface can be used to get the information if t
 cordova.plugins.backgroundMode.isEnabled(); // => boolean
 ```
 
-### Receive if the background mode is active
+### Receive if the background mode is active (Android/iOS only)
 The `backgroundMode.isActive` interface can be used to get the information if the background mode is active.
 
 ```javascript
 cordova.plugins.backgroundMode.isActive(); // => boolean
 ```
 
-### Get informed when the background mode has been activated
+### Get informed when the background mode has been activated (Android/iOS only)
 The `backgroundMode.onactivate` interface can be used to get notified when the background mode has been activated.
 
 ```javascript
 cordova.plugins.backgroundMode.onactivate = function() {};
 ```
 
-### Get informed when the background mode has been deactivated
+### Get informed when the background mode has been deactivated (Android/iOS only)
 The `backgroundMode.ondeactivate` interface can be used to get notified when the background mode has been deactivated.
 
 #### Further informations
@@ -162,7 +163,7 @@ cordova.plugins.backgroundMode.ondeactivate = function() {};
 ```
 
 ### Get informed when the background mode could not been activated
-The `backgroundMode.onfailure` interface can be used to get notified when the background mode could not been activated.
+The `backgroundMode.onfailure` interface can be used to get notified when the background mode could not be activated (Android/iOS) or enabled (Windows 10).
 
 The listener has to be a function and takes the following arguments:
  - errorCode: Error code which describes the error
