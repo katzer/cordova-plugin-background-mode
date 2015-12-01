@@ -49,7 +49,7 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
 {
     NSNotificationCenter* listener = [NSNotificationCenter defaultCenter];
 
-    if (&UIApplicationDidEnterBackgroundNotification && &UIApplicationWillEnterForegroundNotification) {
+    if (UIApplicationDidEnterBackgroundNotification && UIApplicationWillEnterForegroundNotification) {
 
         [listener addObserver:self
                      selector:@selector(keepAwake)
