@@ -17,6 +17,8 @@ This cordova plug-in can be used for applications, who rely on continuous networ
 ### :bangbang: Store Compliance :bangbang:
 The plugin focuses on enterprise-only distribution and may not compliant with all public store vendors.
 
+__Update:__ The plugin ID has changed to cordova-plugin-background-mode and is available under npm. An updated version comes later!
+
 
 ## Overview
 1. [Supported Platforms](#supported-platforms)
