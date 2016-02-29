@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-background-mode"
-        version="0.6.4">
+        version="0.6.5">
 
     <name>BackgroundMode</name>
 
@@ -20,7 +20,7 @@
     <author>Sebastián Katzer</author>
 
     <!-- dependencies -->
-    <dependency id="org.apache.cordova.device" />
+    <dependency id="cordova-plugin-device" />
 
     <!-- cordova -->
     <engines>

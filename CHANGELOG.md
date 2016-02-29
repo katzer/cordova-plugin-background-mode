@@ -1,4 +1,8 @@
 ## ChangeLog
+#### Version 0.6.5 (29.02.2016)
+- Published on npm
+- Updated dependency ID for the device plug-in
+
 #### Version 0.6.4 (03.03.2015)
 - Resolve possibly dependency conflict
 
