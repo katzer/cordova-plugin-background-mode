@@ -41,7 +41,7 @@
             </feature>
         </config-file>
 
-        <!-- The app is able to run in background through audio mode -->
+        <!-- The app is able to run in background through remote-notification mode -->
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
             <array>
                 <string>remote-notification</string>
