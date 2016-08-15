@@ -11,7 +11,7 @@
         Cordova plugin to prevent the app from going to sleep in background.
     </description>
 
-    <repo>https://github.com/katzer/cordova-plugin-background-mode.git</repo>
+    <repo>https://github.com/chcnetconsulting/cordova-plugin-background-mode.git</repo>
 
     <keywords>appplant, background</keywords>
 
@@ -32,27 +32,6 @@
         <clobbers target="cordova.plugins.backgroundMode" />
         <clobbers target="plugin.backgroundMode" />
     </js-module>
-
-    <!-- ios -->
-    <platform name="ios">
-        <config-file target="config.xml" parent="/*">
-            <feature name="BackgroundMode">
-                <param name="ios-package" value="APPBackgroundMode" />
-            </feature>
-        </config-file>
-
-        <!-- The app is able to run in background through audio mode -->
-        <config-file target="*-Info.plist" parent="UIBackgroundModes">
-            <array>
-                <string>audio</string>
-            </array>
-        </config-file>
-
-        <resource-file src="appbeep.wav" />
-
-        <header-file src="src/ios/APPBackgroundMode.h" />
-        <source-file src="src/ios/APPBackgroundMode.m" />
-    </platform>
 
     <!-- android -->
     <platform name="android">
