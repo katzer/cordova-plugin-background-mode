@@ -62,7 +62,9 @@ exports._defaults = {
     text:   'Doing heavy tasks.',
     ticker: 'App is running in background',
     resume: true,
-    silent: false
+    silent: false,
+	icon: 'icon',
+	smallIcon: 'icon'
 };
 
 

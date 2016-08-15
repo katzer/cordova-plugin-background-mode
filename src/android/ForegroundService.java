@@ -37,6 +37,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.graphics.BitmapFactory;
 
 /**
  * Puts the service in a foreground state, where the system considers it to be
@@ -139,7 +140,8 @@ public class ForegroundService extends Service {
             .setContentText(settings.optString("text", ""))
             .setTicker(settings.optString("ticker", ""))
             .setOngoing(true)
-            .setSmallIcon(getIconResId());
+			.setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), getIconResId()))
+            .setSmallIcon(getSmallIconResId());
 
         if (intent != null && settings.optBoolean("resume")) {
 
@@ -166,12 +168,31 @@ public class ForegroundService extends Service {
      *      The resource ID of the app icon
      */
     private int getIconResId() {
+        JSONObject settings = BackgroundMode.getSettings();
         Context context = getApplicationContext();
         Resources res   = context.getResources();
         String pkgName  = context.getPackageName();
 
         int resId;
-        resId = res.getIdentifier("icon", "drawable", pkgName);
+        resId = res.getIdentifier(settings.optString("icon", "icon"), "drawable", pkgName);
+
+        return resId;
+    }
+
+    /**
+     * Retrieves the resource ID of the app icon.
+     *
+     * @return
+     *      The resource ID of the app icon
+     */
+    private int getSmallIconResId() {
+        JSONObject settings = BackgroundMode.getSettings();
+        Context context = getApplicationContext();
+        Resources res   = context.getResources();
+        String pkgName  = context.getPackageName();
+
+        int resId;
+        resId = res.getIdentifier(settings.optString("smallIcon", "icon"), "drawable", pkgName);
 
         return resId;
     }

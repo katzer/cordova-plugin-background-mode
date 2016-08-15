@@ -204,13 +204,15 @@ document.addEventListener('deviceready', function () {
 To indicate that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
 
 #### Override defaults
-The title, ticker and text for that notification can be customized as follows:
+The title, ticker, text and icon for that notification can be customized as follows:
 
 ```javascript
 cordova.plugins.backgroundMode.setDefaults({
     title:  String,
     ticker: String,
-    text:   String
+    text:   String,
+	icon:	String,
+	smallIcon:	String
 })
 ```
 
