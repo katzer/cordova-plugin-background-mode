@@ -113,7 +113,7 @@ document.addEventListener('deviceready', function () {
 ```
 
 ### Prevent the app from going to sleep in background
-To prevent the app from being paused while in background, the `backroundMode.enable` interface has to be called.
+To prevent the app from being paused while in background, the `backgroundMode.enable` interface has to be called.
 
 #### Further informations
 - The background mode will be activated once the app has entered the background and will be deactivated after the app has entered the foreground.
