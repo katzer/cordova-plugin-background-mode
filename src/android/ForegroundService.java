@@ -139,7 +139,7 @@ public class ForegroundService extends Service {
             .setContentText(settings.optString("text", ""))
             .setTicker(settings.optString("ticker", ""))
             .setOngoing(true)
-            .setSmallIcon(getIconResId());
+            .setSmallIcon(getIconResId(settings.optString("icon", "icon")));
 
         if (intent != null && settings.optBoolean("resume")) {
 
@@ -165,13 +165,13 @@ public class ForegroundService extends Service {
      * @return
      *      The resource ID of the app icon
      */
-    private int getIconResId() {
+    private int getIconResId(String iconName) {
         Context context = getApplicationContext();
         Resources res   = context.getResources();
         String pkgName  = context.getPackageName();
 
         int resId;
-        resId = res.getIdentifier("icon", "drawable", pkgName);
+        resId = res.getIdentifier(iconName, "drawable", pkgName);
 
         return resId;
     }
