@@ -28,11 +28,14 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -48,6 +51,11 @@ public class ForegroundService extends Service {
     // Fixed ID for the 'foreground' notification
     private static final int NOTIFICATION_ID = -574543954;
 
+    private Notification.Builder notification;
+
+    // Binder given to clients
+    private final IBinder mBinder = new ForegroundBinder();
+
     // Scheduler to exec periodic tasks
     final Timer scheduler = new Timer();
 
@@ -59,7 +67,18 @@ public class ForegroundService extends Service {
      */
     @Override
     public IBinder onBind (Intent intent) {
-        return null;
+        return mBinder;
+    }
+
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class ForegroundBinder extends Binder {
+        ForegroundService getService() {
+            // Return this instance of ForegroundService so clients can call public methods
+            return ForegroundService.this;
+        }
     }
 
     /**
@@ -134,17 +153,31 @@ public class ForegroundService extends Service {
         Intent intent       = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
-        Notification.Builder notification = new Notification.Builder(context)
+        notification = new Notification.Builder(context)
             .setContentTitle(settings.optString("title", ""))
             .setContentText(settings.optString("text", ""))
             .setTicker(settings.optString("ticker", ""))
             .setOngoing(true)
             .setSmallIcon(getIconResId());
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if(settings.optBoolean("isPublic") == true) {
+                notification.setVisibility(Notification.VISIBILITY_PUBLIC);
+            }
+
+            if(!settings.optString("color").equals("")) {
+                try {
+                    notification.setColor(Color.parseColor(settings.optString("color")));
+                } catch (Exception e) {
+                    Log.e("BackgroundMode", settings.optString("color") + " is not a valid color");
+                }
+            }
+        }
+
         if (intent != null && settings.optBoolean("resume")) {
 
             PendingIntent contentIntent = PendingIntent.getActivity(
-                    context, NOTIFICATION_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    context, NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             notification.setContentIntent(contentIntent);
         }
@@ -159,6 +192,12 @@ public class ForegroundService extends Service {
         }
     }
 
+    public void updateNotification() {
+        Notification n = makeNotification();
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(NOTIFICATION_ID, n);
+    }
+
     /**
      * Retrieves the resource ID of the app icon.
      *
@@ -166,12 +205,12 @@ public class ForegroundService extends Service {
      *      The resource ID of the app icon
      */
     private int getIconResId() {
+        JSONObject settings = BackgroundMode.getSettings();
         Context context = getApplicationContext();
         Resources res   = context.getResources();
         String pkgName  = context.getPackageName();
 
-        int resId;
-        resId = res.getIdentifier("icon", "drawable", pkgName);
+        int resId = res.getIdentifier(settings.optString("icon", "icon"), "drawable", pkgName);
 
         return resId;
     }
