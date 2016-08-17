@@ -29,10 +29,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 
 import org.json.JSONObject;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Puts the service in a foreground state, where the system considers it to be
@@ -158,6 +162,8 @@ public class ForegroundService extends Service {
                 .setOngoing(true)
                 .setSmallIcon(getIconResId());
 
+        setColor(notification, settings);
+
         if (intent != null && settings.optBoolean("resume")) {
             PendingIntent contentIntent = PendingIntent.getActivity(
                     context, NOTIFICATION_ID, intent,
@@ -210,5 +216,37 @@ public class ForegroundService extends Service {
         }
 
         return resId;
+    }
+
+    /**
+     * Set notification color if its supported by the SDK.
+     *
+     * @param notification
+     *      A Notification.Builder instance
+     * @param settings
+     *      A JSON dict containing the color definition (red: FF0000)
+     */
+    private void setColor(Notification.Builder notification,
+                          JSONObject settings) {
+
+        String hex = settings.optString("color", null);
+
+        if (Build.VERSION.SDK_INT < 21 || hex == null)
+            return;
+
+        int aRGB = Integer.parseInt(hex, 16) + 0xFF000000;
+
+        try {
+            Method setColorMethod = notification.getClass().getMethod(
+                    "setColor", int.class);
+
+            setColorMethod.invoke(notification, aRGB);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -58,6 +58,7 @@ exports._defaults = {
     ticker: 'Running in background',
     resume: true,
     silent: false,
+    color:  undefined,
     icon:   'icon'
 };
 
