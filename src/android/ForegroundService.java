@@ -93,7 +93,7 @@ public class ForegroundService extends Service {
      * Put the service in a foreground state to prevent app from being killed
      * by the OS.
      */
-    public void keepAwake() {
+    private void keepAwake() {
         JSONObject settings = BackgroundMode.getSettings();
         boolean isSilent    = settings.optBoolean("silent", false);
 
@@ -101,7 +101,8 @@ public class ForegroundService extends Service {
             startForeground(NOTIFICATION_ID, makeNotification());
         }
 
-        PowerManager powerMgr = (PowerManager) getSystemService(POWER_SERVICE);
+        PowerManager powerMgr = (PowerManager)
+                getSystemService(POWER_SERVICE);
 
         wakeLock = powerMgr.newWakeLock(
                 PowerManager.PARTIAL_WAKE_LOCK, "BackgroundMode");
@@ -174,7 +175,7 @@ public class ForegroundService extends Service {
      * @param settings
      *      The config settings
      */
-    public void updateNotification (JSONObject settings) {
+    protected void updateNotification (JSONObject settings) {
         boolean isSilent = settings.optBoolean("silent", false);
 
         if (isSilent) {
@@ -202,6 +203,12 @@ public class ForegroundService extends Service {
         String pkgName  = context.getPackageName();
         String icon     = settings.optString("icon", "icon");
 
-        return res.getIdentifier(icon, "drawable", pkgName);
+        int resId = res.getIdentifier(icon, "drawable", pkgName);
+
+        if (resId == 0) {
+            resId = res.getIdentifier("icon", "drawable", pkgName);
+        }
+
+        return resId;
     }
 }
