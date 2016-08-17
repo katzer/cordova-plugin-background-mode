@@ -1,5 +1,5 @@
 // Platform: ios
-// 91157c2e1bf3eb098c7e2ab31404e895ccb0df2a
+// 2fd4bcb84048415922d13d80d35b8d1668e8e150
 /*
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements.  See the NOTICE file
@@ -19,7 +19,7 @@
  under the License.
 */
 ;(function() {
-var PLATFORM_VERSION_BUILD_LABEL = '3.7.0';
+var PLATFORM_VERSION_BUILD_LABEL = '4.2.0';
 // file: src/scripts/require.js
 
 /*jshint -W079 */
@@ -101,9 +101,16 @@ if (typeof module === "object" && typeof require === "function") {
 // file: src/cordova.js
 define("cordova", function(require, exports, module) {
 
+// Workaround for Windows 10 in hosted environment case
+// http://www.w3.org/html/wg/drafts/html/master/browsers.html#named-access-on-the-window-object
+if (window.cordova && !(window.cordova instanceof HTMLElement)) {
+    throw new Error("cordova already defined");
+}
+
 
 var channel = require('cordova/channel');
 var platform = require('cordova/platform');
+
 
 /**
  * Intercept calls to addEventListener + removeEventListener and handle deviceready,
@@ -284,10 +291,16 @@ var cordova = {
             if (callback) {
                 if (isSuccess && status == cordova.callbackStatus.OK) {
                     callback.success && callback.success.apply(null, args);
-                } else {
+                } else if (!isSuccess) {
                     callback.fail && callback.fail.apply(null, args);
                 }
-
+                /*
+                else
+                    Note, this case is intentionally not caught.
+                    this can happen if isSuccess is true, but callbackStatus is NO_RESULT
+                    which is used to remove a callback from the list without calling the callbacks
+                    typically keepCallback is false in this case
+                */
                 // Clear callback if not expecting any more results
                 if (!keepCallback) {
                     delete cordova.callbacks[callbackId];
@@ -320,7 +333,6 @@ module.exports = cordova;
 // file: src/common/argscheck.js
 define("cordova/argscheck", function(require, exports, module) {
 
-var exec = require('cordova/exec');
 var utils = require('cordova/utils');
 
 var moduleExports = module.exports;
@@ -464,9 +476,14 @@ function each(objects, func, context) {
 
 function clobber(obj, key, value) {
     exports.replaceHookForTesting(obj, key);
-    obj[key] = value;
+    var needsProperty = false;
+    try {
+        obj[key] = value;
+    } catch (e) {
+        needsProperty = true;
+    }
     // Getters can only be overridden by getters.
-    if (obj[key] !== value) {
+    if (needsProperty || obj[key] !== value) {
         utils.defineGetter(obj, key, function() {
             return value;
         });
@@ -581,7 +598,6 @@ var utils = require('cordova/utils'),
  * onDeviceReady*              User event fired to indicate that Cordova is ready
  * onResume                    User event fired to indicate a start/resume lifecycle event
  * onPause                     User event fired to indicate a pause lifecycle event
- * onDestroy*                  Internal event fired when app is being destroyed (User should use window.onunload event, not this one).
  *
  * The events marked with an * are sticky. Once they have fired, they will stay in the fired state.
  * All listeners that subscribe after the event is fired will be executed right away.
@@ -793,9 +809,6 @@ channel.create('onResume');
 // Event to indicate a pause lifecycle event
 channel.create('onPause');
 
-// Event to indicate a destroy lifecycle event
-channel.createSticky('onDestroy');
-
 // Channels that must fire before "deviceready" is fired.
 channel.waitForInitialization('onCordovaReady');
 channel.waitForInitialization('onDOMContentLoaded');
@@ -804,75 +817,22 @@ module.exports = channel;
 
 });
 
-// file: src/ios/exec.js
+// file: /Users/steveng/repo/cordova/cordova-ios/cordova-js-src/exec.js
 define("cordova/exec", function(require, exports, module) {
+
+/*global require, module, atob, document */
 
 /**
  * Creates a gap bridge iframe used to notify the native code about queued
  * commands.
  */
 var cordova = require('cordova'),
-    channel = require('cordova/channel'),
     utils = require('cordova/utils'),
     base64 = require('cordova/base64'),
-    // XHR mode does not work on iOS 4.2.
-    // XHR mode's main advantage is working around a bug in -webkit-scroll, which
-    // doesn't exist only on iOS 5.x devices.
-    // IFRAME_NAV is the fastest.
-    // IFRAME_HASH could be made to enable synchronous bridge calls if we wanted this feature.
-    jsToNativeModes = {
-        IFRAME_NAV: 0,
-        XHR_NO_PAYLOAD: 1,
-        XHR_WITH_PAYLOAD: 2,
-        XHR_OPTIONAL_PAYLOAD: 3,
-        IFRAME_HASH_NO_PAYLOAD: 4,
-        // Bundling the payload turns out to be slower. Probably since it has to be URI encoded / decoded.
-        IFRAME_HASH_WITH_PAYLOAD: 5,
-        WK_WEBVIEW_BINDING: 6
-    },
-    bridgeMode,
     execIframe,
-    execHashIframe,
-    hashToggle = 1,
-    execXhr,
-    requestCount = 0,
-    vcHeaderValue = null,
     commandQueue = [], // Contains pending JS->Native messages.
-    isInContextOfEvalJs = 0;
-
-function createExecIframe(src, unloadListener) {
-    var iframe = document.createElement("iframe");
-    iframe.style.display = 'none';
-    // Both the unload listener and the src must be set before adding the iframe
-    // to the document in order to avoid race conditions. Callbacks from native
-    // can happen within the appendChild() call!
-    iframe.onunload = unloadListener;
-    iframe.src = src;
-    document.body.appendChild(iframe);
-    return iframe;
-}
-
-function createHashIframe() {
-    var ret = createExecIframe('about:blank');
-    // Hash changes don't work on about:blank, so switch it to file:///.
-    ret.contentWindow.history.replaceState(null, null, 'file:///#');
-    return ret;
-}
-
-function shouldBundleCommandJson() {
-    if (bridgeMode === jsToNativeModes.XHR_WITH_PAYLOAD) {
-        return true;
-    }
-    if (bridgeMode === jsToNativeModes.XHR_OPTIONAL_PAYLOAD) {
-        var payloadLength = 0;
-        for (var i = 0; i < commandQueue.length; ++i) {
-            payloadLength += commandQueue[i].length;
-        }
-        // The value here was determined using the benchmark within CordovaLibApp on an iPad 3.
-        return payloadLength < 4500;
-    }
-    return false;
-}
+    isInContextOfEvalJs = 0,
+    failSafeTimerId = 0;
 
 function massageArgsJsToNative(args) {
     if (!args || utils.typeName(args) != 'Array') {
@@ -924,17 +884,10 @@ function convertMessageToArgsNativeToJs(message) {
 }
 
 function iOSExec() {
-    if (bridgeMode === undefined) {
-        bridgeMode = jsToNativeModes.IFRAME_NAV;
-    }
 
-    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.cordova && window.webkit.messageHandlers.cordova.postMessage) {
-        bridgeMode = jsToNativeModes.WK_WEBVIEW_BINDING;
-    }
-
-    var successCallback, failCallback, service, action, actionArgs, splitCommand;
+    var successCallback, failCallback, service, action, actionArgs;
     var callbackId = null;
-    if (typeof arguments[0] !== "string") {
+    if (typeof arguments[0] !== 'string') {
         // FORMAT ONE
         successCallback = arguments[0];
         failCallback = arguments[1];
@@ -948,18 +901,9 @@ function iOSExec() {
         // an invalid callbackId and passes it even if no callbacks were given.
         callbackId = 'INVALID';
     } else {
-        // FORMAT TWO, REMOVED
-        try {
-            splitCommand = arguments[0].split(".");
-            action = splitCommand.pop();
-            service = splitCommand.join(".");
-            actionArgs = Array.prototype.splice.call(arguments, 1);
-
-            console.log('The old format of this exec call has been removed (deprecated since 2.1). Change to: ' +
-                       "cordova.exec(null, null, \"" + service + "\", \"" + action + "\"," + JSON.stringify(actionArgs) + ");"
-            );
-            return;
-        } catch (e) {}
+        throw new Error('The old format of this exec call has been removed (deprecated since 2.1). Change to: ' +
+            'cordova.exec(null, null, \'Service\', \'action\', [ arg1, arg2 ]);'
+        );
     }
 
     // If actionArgs is not provided, default to an empty array
@@ -981,106 +925,85 @@ function iOSExec() {
     // effectively clone the command arguments in case they are mutated before
     // the command is executed.
     commandQueue.push(JSON.stringify(command));
+
+    // If we're in the context of a stringByEvaluatingJavaScriptFromString call,
+    // then the queue will be flushed when it returns; no need for a poke.
+    // Also, if there is already a command in the queue, then we've already
+    // poked the native side, so there is no reason to do so again.
+    if (!isInContextOfEvalJs && commandQueue.length == 1) {
+        pokeNative();
+    }
+}
+
+// CB-10530
+function proxyChanged() {
+    var cexec = cordovaExec();
+       
+    return (execProxy !== cexec && // proxy objects are different
+            iOSExec !== cexec      // proxy object is not the current iOSExec
+            );
+}
+
+// CB-10106
+function handleBridgeChange() {
+    if (proxyChanged()) {
+        var commandString = commandQueue.shift();
+        while(commandString) {
+            var command = JSON.parse(commandString);
+            var callbackId = command[0];
+            var service = command[1];
+            var action = command[2];
+            var actionArgs = command[3];
+            var callbacks = cordova.callbacks[callbackId] || {};
+            
+            execProxy(callbacks.success, callbacks.fail, service, action, actionArgs);
+            
+            commandString = commandQueue.shift();
+        };
+        return true;
+    }
     
-    if (bridgeMode === jsToNativeModes.WK_WEBVIEW_BINDING) {
-        window.webkit.messageHandlers.cordova.postMessage(command);
-    } else {
-        // If we're in the context of a stringByEvaluatingJavaScriptFromString call,
-        // then the queue will be flushed when it returns; no need for a poke.
-        // Also, if there is already a command in the queue, then we've already
-        // poked the native side, so there is no reason to do so again.
-        if (!isInContextOfEvalJs && commandQueue.length == 1) {
-            switch (bridgeMode) {
-            case jsToNativeModes.XHR_NO_PAYLOAD:
-            case jsToNativeModes.XHR_WITH_PAYLOAD:
-            case jsToNativeModes.XHR_OPTIONAL_PAYLOAD:
-                pokeNativeViaXhr();
-                break;
-            default: // iframe-based.
-                pokeNativeViaIframe();
-            }
-        }
-    }
+    return false;
 }
 
-function pokeNativeViaXhr() {
-    // This prevents sending an XHR when there is already one being sent.
-    // This should happen only in rare circumstances (refer to unit tests).
-    if (execXhr && execXhr.readyState != 4) {
-        execXhr = null;
-    }
-    // Re-using the XHR improves exec() performance by about 10%.
-    execXhr = execXhr || new XMLHttpRequest();
-    // Changing this to a GET will make the XHR reach the URIProtocol on 4.2.
-    // For some reason it still doesn't work though...
-    // Add a timestamp to the query param to prevent caching.
-    execXhr.open('HEAD', "/!gap_exec?" + (+new Date()), true);
-    if (!vcHeaderValue) {
-        vcHeaderValue = /.*\((.*)\)$/.exec(navigator.userAgent)[1];
-    }
-    execXhr.setRequestHeader('vc', vcHeaderValue);
-    execXhr.setRequestHeader('rc', ++requestCount);
-    if (shouldBundleCommandJson()) {
-        execXhr.setRequestHeader('cmds', iOSExec.nativeFetchMessages());
-    }
-    execXhr.send(null);
-}
-
-function onIframeUnload() {
-    execIframe = null;
-    setTimeout(pokeNativeViaIframe, 0);
-}
-
-function pokeNativeViaIframe() {
+function pokeNative() {
     // CB-5488 - Don't attempt to create iframe before document.body is available.
     if (!document.body) {
-        setTimeout(pokeNativeViaIframe);
+        setTimeout(pokeNative);
         return;
     }
-    if (bridgeMode === jsToNativeModes.IFRAME_HASH_NO_PAYLOAD || bridgeMode === jsToNativeModes.IFRAME_HASH_WITH_PAYLOAD) {
-        // TODO: This bridge mode doesn't properly support being removed from the DOM (CB-7735)
-        execHashIframe = execHashIframe || createHashIframe();
-        // Check if they've removed it from the DOM, and put it back if so.
-        if (!execHashIframe.contentWindow) {
-            execHashIframe = createHashIframe();
-        }
-        // The delegate method is called only when the hash changes, so toggle it back and forth.
-        hashToggle = hashToggle ^ 3;
-        var hashValue = '%0' + hashToggle;
-        if (bridgeMode === jsToNativeModes.IFRAME_HASH_WITH_PAYLOAD) {
-            hashValue += iOSExec.nativeFetchMessages();
-        }
-        execHashIframe.contentWindow.location.hash = hashValue;
+    
+    // Check if they've removed it from the DOM, and put it back if so.
+    if (execIframe && execIframe.contentWindow) {
+        execIframe.contentWindow.location = 'gap://ready';
     } else {
-        // Check if they've removed it from the DOM, and put it back if so.
-        if (execIframe && execIframe.contentWindow) {
-            // Listen for unload, since it can happen (CB-7735) that the iframe gets
-            // removed from the DOM before it gets a chance to poke the native side.
-            execIframe.contentWindow.onunload = onIframeUnload;
-            execIframe.src = 'gap://ready';
-        } else {
-            execIframe = createExecIframe('gap://ready', onIframeUnload);
+        execIframe = document.createElement('iframe');
+        execIframe.style.display = 'none';
+        execIframe.src = 'gap://ready';
+        document.body.appendChild(execIframe);
+    }
+    // Use a timer to protect against iframe being unloaded during the poke (CB-7735).
+    // This makes the bridge ~ 7% slower, but works around the poke getting lost
+    // when the iframe is removed from the DOM.
+    // An onunload listener could be used in the case where the iframe has just been
+    // created, but since unload events fire only once, it doesn't work in the normal
+    // case of iframe reuse (where unload will have already fired due to the attempted
+    // navigation of the page).
+    failSafeTimerId = setTimeout(function() {
+        if (commandQueue.length) {
+            // CB-10106 - flush the queue on bridge change
+            if (!handleBridgeChange()) {
+                pokeNative();
+             }
         }
-    }
+    }, 50); // Making this > 0 improves performance (marginally) in the normal case (where it doesn't fire).
 }
-
-iOSExec.jsToNativeModes = jsToNativeModes;
-
-iOSExec.setJsToNativeBridgeMode = function(mode) {
-    // Remove the iFrame since it may be no longer required, and its existence
-    // can trigger browser bugs.
-    // https://issues.apache.org/jira/browse/CB-593
-    if (execIframe) {
-        execIframe.parentNode.removeChild(execIframe);
-        execIframe = null;
-    }
-    bridgeMode = mode;
-};
 
 iOSExec.nativeFetchMessages = function() {
     // Stop listing for window detatch once native side confirms poke.
-    if (execIframe && execIframe.contentWindow) {
-        execIframe.contentWindow.onunload = null;
+    if (failSafeTimerId) {
+        clearTimeout(failSafeTimerId);
+        failSafeTimerId = 0;
     }
     // Each entry in commandQueue is a JSON string already.
     if (!commandQueue.length) {
@@ -1091,11 +1014,14 @@ iOSExec.nativeFetchMessages = function() {
     return json;
 };
 
-iOSExec.nativeCallback = function(callbackId, status, message, keepCallback) {
+iOSExec.nativeCallback = function(callbackId, status, message, keepCallback, debug) {
     return iOSExec.nativeEvalAndFetch(function() {
         var success = status === 0 || status === 1;
         var args = convertMessageToArgsNativeToJs(message);
-        cordova.callbackFromNative(callbackId, success, status, args, keepCallback);
+        function nc2() {
+            cordova.callbackFromNative(callbackId, success, status, args, keepCallback);
+        }
+        setTimeout(nc2, 0);
     });
 };
 
@@ -1110,7 +1036,31 @@ iOSExec.nativeEvalAndFetch = function(func) {
     }
 };
 
-module.exports = iOSExec;
+// Proxy the exec for bridge changes. See CB-10106
+
+function cordovaExec() {
+    var cexec = require('cordova/exec');
+    var cexec_valid = (typeof cexec.nativeFetchMessages === 'function') && (typeof cexec.nativeEvalAndFetch === 'function') && (typeof cexec.nativeCallback === 'function');
+    return (cexec_valid && execProxy !== cexec)? cexec : iOSExec;
+}
+
+function execProxy() {
+    cordovaExec().apply(null, arguments);
+};
+
+execProxy.nativeFetchMessages = function() {
+    return cordovaExec().nativeFetchMessages.apply(null, arguments);
+};
+
+execProxy.nativeEvalAndFetch = function() {
+    return cordovaExec().nativeEvalAndFetch.apply(null, arguments);
+};
+
+execProxy.nativeCallback = function() {
+    return cordovaExec().nativeCallback.apply(null, arguments);
+};
+
+module.exports = execProxy;
 
 });
 
@@ -1184,7 +1134,7 @@ function replaceNavigator(origNavigator) {
         for (var key in origNavigator) {
             if (typeof origNavigator[key] == 'function') {
                 newNavigator[key] = origNavigator[key].bind(origNavigator);
-            } 
+            }
             else {
                 (function(k) {
                     utils.defineGetterSetter(newNavigator,key,function() {
@@ -1215,6 +1165,7 @@ if (!window.console.warn) {
 // Register pause, resume and deviceready channels as events on document.
 channel.onPause = cordova.addDocumentEventHandler('pause');
 channel.onResume = cordova.addDocumentEventHandler('resume');
+channel.onActivated = cordova.addDocumentEventHandler('activated');
 channel.onDeviceReady = cordova.addStickyDocumentEventHandler('deviceready');
 
 // Listen for DOMContentLoaded and notify our channel subscribers.
@@ -1276,10 +1227,12 @@ define("cordova/init_b", function(require, exports, module) {
 
 var channel = require('cordova/channel');
 var cordova = require('cordova');
+var modulemapper = require('cordova/modulemapper');
 var platform = require('cordova/platform');
+var pluginloader = require('cordova/pluginloader');
 var utils = require('cordova/utils');
 
-var platformInitChannelsArray = [channel.onDOMContentLoaded, channel.onNativeReady];
+var platformInitChannelsArray = [channel.onDOMContentLoaded, channel.onNativeReady, channel.onPluginsReady];
 
 // setting exec
 cordova.exec = require('cordova/exec');
@@ -1312,7 +1265,7 @@ function replaceNavigator(origNavigator) {
         for (var key in origNavigator) {
             if (typeof origNavigator[key] == 'function') {
                 newNavigator[key] = origNavigator[key].bind(origNavigator);
-            } 
+            }
             else {
                 (function(k) {
                     utils.defineGetterSetter(newNavigator,key,function() {
@@ -1342,6 +1295,7 @@ if (!window.console.warn) {
 // Register pause, resume and deviceready channels as events on document.
 channel.onPause = cordova.addDocumentEventHandler('pause');
 channel.onResume = cordova.addDocumentEventHandler('resume');
+channel.onActivated = cordova.addDocumentEventHandler('activated');
 channel.onDeviceReady = cordova.addStickyDocumentEventHandler('deviceready');
 
 // Listen for DOMContentLoaded and notify our channel subscribers.
@@ -1363,11 +1317,20 @@ if (window._nativeReady) {
 // Call the platform-specific initialization.
 platform.bootstrap && platform.bootstrap();
 
+// Wrap in a setTimeout to support the use-case of having plugin JS appended to cordova.js.
+// The delay allows the attached modules to be defined before the plugin loader looks for them.
+setTimeout(function() {
+    pluginloader.load(function() {
+        channel.onPluginsReady.fire();
+    });
+}, 0);
+
 /**
  * Create all cordova objects once native side is ready.
  */
 channel.join(function() {
-    
+    modulemapper.mapModules(window);
+
     platform.initialize && platform.initialize();
 
     // Fire event to notify that all objects are created
@@ -1485,7 +1448,104 @@ exports.reset();
 
 });
 
-// file: src/ios/platform.js
+// file: src/common/modulemapper_b.js
+define("cordova/modulemapper_b", function(require, exports, module) {
+
+var builder = require('cordova/builder'),
+    symbolList = [],
+    deprecationMap;
+
+exports.reset = function() {
+    symbolList = [];
+    deprecationMap = {};
+};
+
+function addEntry(strategy, moduleName, symbolPath, opt_deprecationMessage) {
+    symbolList.push(strategy, moduleName, symbolPath);
+    if (opt_deprecationMessage) {
+        deprecationMap[symbolPath] = opt_deprecationMessage;
+    }
+}
+
+// Note: Android 2.3 does have Function.bind().
+exports.clobbers = function(moduleName, symbolPath, opt_deprecationMessage) {
+    addEntry('c', moduleName, symbolPath, opt_deprecationMessage);
+};
+
+exports.merges = function(moduleName, symbolPath, opt_deprecationMessage) {
+    addEntry('m', moduleName, symbolPath, opt_deprecationMessage);
+};
+
+exports.defaults = function(moduleName, symbolPath, opt_deprecationMessage) {
+    addEntry('d', moduleName, symbolPath, opt_deprecationMessage);
+};
+
+exports.runs = function(moduleName) {
+    addEntry('r', moduleName, null);
+};
+
+function prepareNamespace(symbolPath, context) {
+    if (!symbolPath) {
+        return context;
+    }
+    var parts = symbolPath.split('.');
+    var cur = context;
+    for (var i = 0, part; part = parts[i]; ++i) {
+        cur = cur[part] = cur[part] || {};
+    }
+    return cur;
+}
+
+exports.mapModules = function(context) {
+    var origSymbols = {};
+    context.CDV_origSymbols = origSymbols;
+    for (var i = 0, len = symbolList.length; i < len; i += 3) {
+        var strategy = symbolList[i];
+        var moduleName = symbolList[i + 1];
+        var module = require(moduleName);
+        // <runs/>
+        if (strategy == 'r') {
+            continue;
+        }
+        var symbolPath = symbolList[i + 2];
+        var lastDot = symbolPath.lastIndexOf('.');
+        var namespace = symbolPath.substr(0, lastDot);
+        var lastName = symbolPath.substr(lastDot + 1);
+
+        var deprecationMsg = symbolPath in deprecationMap ? 'Access made to deprecated symbol: ' + symbolPath + '. ' + deprecationMsg : null;
+        var parentObj = prepareNamespace(namespace, context);
+        var target = parentObj[lastName];
+
+        if (strategy == 'm' && target) {
+            builder.recursiveMerge(target, module);
+        } else if ((strategy == 'd' && !target) || (strategy != 'd')) {
+            if (!(symbolPath in origSymbols)) {
+                origSymbols[symbolPath] = target;
+            }
+            builder.assignOrWrapInDeprecateGetter(parentObj, lastName, module, deprecationMsg);
+        }
+    }
+};
+
+exports.getOriginalSymbol = function(context, symbolPath) {
+    var origSymbols = context.CDV_origSymbols;
+    if (origSymbols && (symbolPath in origSymbols)) {
+        return origSymbols[symbolPath];
+    }
+    var parts = symbolPath.split('.');
+    var obj = context;
+    for (var i = 0; i < parts.length; ++i) {
+        obj = obj && obj[parts[i]];
+    }
+    return obj;
+};
+
+exports.reset();
+
+
+});
+
+// file: /Users/steveng/repo/cordova/cordova-ios/cordova-js-src/platform.js
 define("cordova/platform", function(require, exports, module) {
 
 module.exports = {
@@ -1610,6 +1670,54 @@ exports.load = function(callback) {
 
 });
 
+// file: src/common/pluginloader_b.js
+define("cordova/pluginloader_b", function(require, exports, module) {
+
+var modulemapper = require('cordova/modulemapper');
+
+// Handler for the cordova_plugins.js content.
+// See plugman's plugin_loader.js for the details of this object.
+function handlePluginsObject(moduleList) {
+    // if moduleList is not defined or empty, we've nothing to do
+    if (!moduleList || !moduleList.length) {
+        return;
+    }
+
+    // Loop through all the modules and then through their clobbers and merges.
+    for (var i = 0, module; module = moduleList[i]; i++) {
+        if (module.clobbers && module.clobbers.length) {
+            for (var j = 0; j < module.clobbers.length; j++) {
+                modulemapper.clobbers(module.id, module.clobbers[j]);
+            }
+        }
+
+        if (module.merges && module.merges.length) {
+            for (var k = 0; k < module.merges.length; k++) {
+                modulemapper.merges(module.id, module.merges[k]);
+            }
+        }
+
+        // Finally, if runs is truthy we want to simply require() the module.
+        if (module.runs) {
+            modulemapper.runs(module.id);
+        }
+    }
+}
+
+// Loads all plugins' js-modules. Plugin loading is syncronous in browserified bundle
+// but the method accepts callback to be compatible with non-browserify flow.
+// onDeviceReady is blocked on onPluginsReady. onPluginsReady is fired when there are
+// no plugins to load, or they are all done.
+exports.load = function(callback) {
+    var moduleList = require("cordova/plugin_list");
+    handlePluginsObject(moduleList);
+
+    callback();
+};
+
+
+});
+
 // file: src/common/urlutil.js
 define("cordova/urlutil", function(require, exports, module) {
 
@@ -1689,15 +1797,14 @@ utils.typeName = function(val) {
 /**
  * Returns an indication of whether the argument is an array or not
  */
-utils.isArray = function(a) {
-    return utils.typeName(a) == 'Array';
-};
+utils.isArray = Array.isArray ||
+                function(a) {return utils.typeName(a) == 'Array';};
 
 /**
  * Returns an indication of whether the argument is a Date or not
  */
 utils.isDate = function(d) {
-    return utils.typeName(d) == 'Date';
+    return (d instanceof Date);
 };
 
 /**
@@ -1731,16 +1838,24 @@ utils.clone = function(obj) {
  * Returns a wrapped version of the function
  */
 utils.close = function(context, func, params) {
-    if (typeof params == 'undefined') {
-        return function() {
-            return func.apply(context, arguments);
-        };
-    } else {
-        return function() {
-            return func.apply(context, params);
-        };
-    }
+    return function() {
+        var args = params || arguments;
+        return func.apply(context, args);
+    };
 };
+
+//------------------------------------------------------------------------------
+function UUIDcreatePart(length) {
+    var uuidpart = "";
+    for (var i=0; i<length; i++) {
+        var uuidchar = parseInt((Math.random() * 256), 10).toString(16);
+        if (uuidchar.length == 1) {
+            uuidchar = "0" + uuidchar;
+        }
+        uuidpart += uuidchar;
+    }
+    return uuidpart;
+}
 
 /**
  * Create a UUID
@@ -1753,6 +1868,7 @@ utils.createUUID = function() {
         UUIDcreatePart(6);
 };
 
+
 /**
  * Extends a child object from a parent object using classical inheritance
  * pattern.
@@ -1762,6 +1878,7 @@ utils.extend = (function() {
     var F = function() {};
     // extend Child from Parent
     return function(Child, Parent) {
+
         F.prototype = Parent.prototype;
         Child.prototype = new F();
         Child.__super__ = Parent.prototype;
@@ -1781,18 +1898,7 @@ utils.alert = function(msg) {
 };
 
 
-//------------------------------------------------------------------------------
-function UUIDcreatePart(length) {
-    var uuidpart = "";
-    for (var i=0; i<length; i++) {
-        var uuidchar = parseInt((Math.random() * 256), 10).toString(16);
-        if (uuidchar.length == 1) {
-            uuidchar = "0" + uuidchar;
-        }
-        uuidpart += uuidchar;
-    }
-    return uuidpart;
-}
+
 
 
 });

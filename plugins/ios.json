@@ -4,73 +4,24 @@
         "uninstalled": []
     },
     "config_munge": {
-        "files": {
-            "config.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Badge\"><param name=\"ios-package\" value=\"APPBadge\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"BackgroundMode\"><param name=\"ios-package\" value=\"APPBackgroundMode\" /></feature>",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "*-Info.plist": {
-                "parents": {
-                    "UIBackgroundModes": [
-                        {
-                            "xml": "<array><string>audio</string></array>",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "framework": {
-                "parents": {
-                    "AudioToolbox.framework": [
-                        {
-                            "xml": "true",
-                            "count": 1
-                        }
-                    ],
-                    "AssetsLibrary.framework": [],
-                    "MobileCoreServices.framework": []
-                }
-            }
-        }
+        "files": {}
     },
     "installed_plugins": {
-        "org.apache.cordova.console": {
+        "cordova-plugin-badge": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         },
-        "de.appplant.cordova.plugin.badge": {
+        "cordova-plugin-console": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         },
-        "org.apache.cordova.dialogs": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
-        },
-        "de.appplant.cordova.plugin.background-mode": {
+        "cordova-plugin-background-mode": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         }
     },
     "dependent_plugins": {
-        "org.apache.cordova.device": {
+        "cordova-plugin-app-event": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        },
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         }
     }

@@ -61,7 +61,7 @@ String doFindLatestInstalledBuildTools(String minBuildToolsVersion) {
         highestBuildToolsVersion
     } else {
         throw new RuntimeException(
-            "No installed build tools found. Please install the Android build tools version " +
+            "No installed build tools found. Install the Android build tools version " +
             minBuildToolsVersion + " or higher.")
     }
 }
@@ -128,6 +128,14 @@ def doExtractIntFromManifest(name) {
     return Integer.parseInt(matcher.group(1))
 }
 
+def doExtractStringFromManifest(name) {
+    def manifestFile = file(android.sourceSets.main.manifest.srcFile)
+    def pattern = Pattern.compile(name + "=\"(\\S+)\"")
+    def matcher = pattern.matcher(manifestFile.getText())
+    matcher.find()
+    return matcher.group(1)
+}
+
 def doPromptForPassword(msg) {
     if (System.console() == null) {
         def ret = null
@@ -152,6 +160,26 @@ def doPromptForPassword(msg) {
     }
 }
 
+def doGetConfigXml() {
+    def xml = file("res/xml/config.xml").getText()
+    // Disable namespace awareness since Cordova doesn't use them properly
+    return new XmlParser(false, false).parseText(xml)
+}
+
+def doGetConfigPreference(name, defaultValue) {
+    name = name.toLowerCase()
+    def root = doGetConfigXml()
+
+    def ret = defaultValue
+    root.preference.each { it ->
+        def attrName = it.attribute("name")
+        if (attrName && attrName.toLowerCase() == name) {
+            ret = it.attribute("value")
+        }
+    }
+    return ret
+}
+
 // Properties exported here are visible to all plugins.
 ext {
     // These helpers are shared, but are not guaranteed to be stable / unchanged.
@@ -159,7 +187,15 @@ ext {
     privateHelpers.getProjectTarget = { doGetProjectTarget() }
     privateHelpers.findLatestInstalledBuildTools = { doFindLatestInstalledBuildTools('19.1.0') }
     privateHelpers.extractIntFromManifest = { name -> doExtractIntFromManifest(name) }
+    privateHelpers.extractStringFromManifest = { name -> doExtractStringFromManifest(name) }
     privateHelpers.promptForPassword = { msg -> doPromptForPassword(msg) }
     privateHelpers.ensureValueExists = { filePath, props, key -> doEnsureValueExists(filePath, props, key) }
+
+    // These helpers can be used by plugins / projects and will not change.
+    cdvHelpers = {}
+    // Returns a XmlParser for the config.xml. Added in 4.1.0.
+    cdvHelpers.getConfigXml = { doGetConfigXml() }
+    // Returns the value for the desired <preference>. Added in 4.1.0.
+    cdvHelpers.getConfigPreference = { name, defaultValue -> doGetConfigPreference(name, defaultValue) }
 }
 

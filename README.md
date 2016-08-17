@@ -1,73 +1,72 @@
 
-Cordova Background Plug-in - Example
-====================================
+Cordova Background Plugin - Sample App
+======================================
 
-[Cordova][cordova] plugin to prevent the app from going to sleep while in background.
+<img height="470px" align="right" src="images/overview.png">
+
+[Cordova][cordova] plugin to prevent the app from going to sleep while in background, device get locked or screen goes off.
 
 ## Instructions
-[Download][zip] or clone the _example_ branch and run the following command:
+Clone the _example_ branch:
 
-```bash
-cordova run [ios|android|wp8]
-```
+    git clone -b example https://github.com/katzer/cordova-plugin-background-mode.git
 
-These will lunch the simulator or any plugged in device and start the example application as seen below in the screenshots.
-Its also possible to open the project with [Xcode][xcode], [Android Studio][studio] or [Eclipse][eclipse].
+And then execute:
 
-<p align="center">
-    <img src="images/overview.png"></img>
-</p>
+    cordova run [ios|android]
 
-A click on the _"Enable Mode"_ button will prevent the app from going to sleep in background. Once activated the app starts increasing its badge number and writing a log every second.
+These will lunch the simulator or any plugged in device and start the example application as seen below in the screenshots. It is also possible to open the project with [Android Studio][studio] or [Xcode][xcode].
+
+A click on the _Background_ enables the mode and starts them once the app is going into the background. 
 
 ```javascript
-// Prevent the app from going to sleep in background
+// 1) Request background execution
 cordova.plugins.backgroundMode.enable();
 
-// Get informed when the background mode has been activated
+// 2) Now the app runs ins background but stays awake
 cordova.plugins.backgroundMode.onactivate = function () {
-    var counter = 0;
-
-    // Update badge number every second
-    // and write update to log
-    timer = setInterval(function () {
-        counter++;
-        console.log('Running since ' + counter + ' sec');
-        cordova.plugins.notification.badge.set(counter);
+    setInterval(function () {
+        cordova.plugins.notification.badge.increase();
     }, 1000);
 };
 
-// Get informed when the background mode has been deactivated
+// 3) App is back to foreground
 cordova.plugins.backgroundMode.ondeactivate = function () {
-    clearInterval(timer);
     cordova.plugins.notification.badge.clear();
 };
 ```
 
+<img height="350px" align="right" src="images/android.png"></img>
+
+On __Android__ a customizable notification will appear to inform the user that the app is performing a task in the background. It's possible to prevent any system notification by using the __silent mode__.
+
+Customizable attributes are the title, text, ticker, icon and color:
+
+```javascript
+cordova.plugins.backgroundMode.setDefaults({ color: 'FF0000' });
+```
+
+To use the silent mode:
+
+```javascript
+cordova.plugins.backgroundMode.setDefaults({ silent: true });
+```
+
 Please read the plugin's [README][readme] for further requirements and informations.
-
-
-## Android notification
-To indicate that the app is executing tasks in background - and being paused would disrupt the user - the plug-in has to create a notification while in background on Android.
-
-The default configuration can be changed with `setDefaults` or through `configure` to update the currently displayed notification only.
-
-<p align="center">
-    <img src="images/android.png"></img>
-</p>
-
 
 ## License
 
 This software is released under the [Apache 2.0 License][apache2_license].
 
-© 2013-2014 appPlant UG, Inc. All rights reserved
+Made with :yum: from Leipzig
+
+© 2016 [appPlant GmbH][appplant]
 
 
 [cordova]: https://cordova.apache.org
 [readme]: https://github.com/katzer/cordova-plugin-background-mode/blob/master/README.md
-[zip]: https://github.com/katzer/cordova-plugin-background-mode/archive/example.zip
-[xcode]: https://developer.apple.com/xcode/
 [studio]: https://developer.android.com/sdk/installing/studio.html
-[eclipse]: https://developer.android.com/sdk/index.html
+[xcode]: https://developer.apple.com/xcode/
+[vs]: https://www.visualstudio.com
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
+[appplant]: www.appplant.de

@@ -4,65 +4,24 @@
         "uninstalled": []
     },
     "config_munge": {
-        "files": {
-            "res/xml/config.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"BackgroundMode\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.background.BackgroundMode\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"KeepRunning\" value=\"true\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Badge\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.badge.Badge\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
-                            "count": 1
-                        }
-                    ]
-                }
-            },
-            "AndroidManifest.xml": {
-                "parents": {
-                    "/manifest/application": [
-                        {
-                            "xml": "<service android:name=\"de.appplant.cordova.plugin.background.ForegroundService\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<activity android:launchMode=\"singleInstance\" android:name=\"de.appplant.cordova.plugin.badge.LaunchActivity\" android:theme=\"@android:style/Theme.Black.NoTitleBar\" />",
-                            "count": 1
-                        }
-                    ]
-                }
-            }
-        }
+        "files": {}
     },
     "installed_plugins": {
-        "de.appplant.cordova.plugin.background-mode": {
+        "cordova-plugin-badge": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         },
-        "de.appplant.cordova.plugin.badge": {
+        "cordova-plugin-console": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         },
-        "org.apache.cordova.console": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
-        },
-        "org.apache.cordova.dialogs": {
+        "cordova-plugin-background-mode": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         }
     },
     "dependent_plugins": {
-        "org.apache.cordova.device": {
+        "cordova-plugin-app-event": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        },
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         }
     }

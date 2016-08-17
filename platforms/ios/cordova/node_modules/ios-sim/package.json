@@ -1,0 +1,117 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "ios-sim@^5.0.7",
+        "scope": null,
+        "escapedName": "ios-sim",
+        "name": "ios-sim",
+        "rawSpec": "^5.0.7",
+        "spec": ">=5.0.7 <6.0.0",
+        "type": "range"
+      },
+      "/Users/steveng/repo/cordova/cordova-ios"
+    ]
+  ],
+  "_from": "ios-sim@>=5.0.7 <6.0.0",
+  "_id": "ios-sim@5.0.8",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/ios-sim",
+  "_nodeVersion": "0.12.7",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/ios-sim-5.0.8.tgz_1458757739978_0.3562360794749111"
+  },
+  "_npmUser": {
+    "name": "shazron",
+    "email": "shazron@gmail.com"
+  },
+  "_npmVersion": "2.11.3",
+  "_phantomChildren": {
+    "abbrev": "1.0.9"
+  },
+  "_requested": {
+    "raw": "ios-sim@^5.0.7",
+    "scope": null,
+    "escapedName": "ios-sim",
+    "name": "ios-sim",
+    "rawSpec": "^5.0.7",
+    "spec": ">=5.0.7 <6.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "http://registry.npmjs.org/ios-sim/-/ios-sim-5.0.8.tgz",
+  "_shasum": "20520bbcfdadb0b0cb08690b90969b6e60a9a796",
+  "_shrinkwrap": null,
+  "_spec": "ios-sim@^5.0.7",
+  "_where": "/Users/steveng/repo/cordova/cordova-ios",
+  "author": {
+    "name": "Shazron Abdullah"
+  },
+  "bin": {
+    "ios-sim": "./bin/ios-sim"
+  },
+  "bugs": {
+    "url": "https://github.com/phonegap/ios-sim/issues"
+  },
+  "dependencies": {
+    "bplist-parser": "^0.0.6",
+    "nopt": "1.0.9",
+    "plist": "^1.2.0",
+    "simctl": "^0.0.9"
+  },
+  "description": "launch iOS apps into the iOS Simulator from the command line (Xcode 6.0+)",
+  "devDependencies": {
+    "jshint": "^2.9.1"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "20520bbcfdadb0b0cb08690b90969b6e60a9a796",
+    "tarball": "https://registry.npmjs.org/ios-sim/-/ios-sim-5.0.8.tgz"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "gitHead": "f0fc8160c262fe86ccaf8eeef1ff4ef22eb19b5c",
+  "homepage": "https://github.com/phonegap/ios-sim#readme",
+  "keywords": [
+    "ios-sim",
+    "iOS Simulator"
+  ],
+  "license": "MIT",
+  "main": "ios-sim.js",
+  "maintainers": [
+    {
+      "name": "macdonst",
+      "email": "simon.macdonald@gmail.com"
+    },
+    {
+      "name": "purplecabbage",
+      "email": "purplecabbage@gmail.com"
+    },
+    {
+      "name": "shazron",
+      "email": "shazron@gmail.com"
+    },
+    {
+      "name": "stevegill",
+      "email": "stevengill97@gmail.com"
+    }
+  ],
+  "name": "ios-sim",
+  "optionalDependencies": {},
+  "preferGlobal": "true",
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phonegap/ios-sim.git"
+  },
+  "scripts": {
+    "jshint": "jshint src ./ios-sim.js",
+    "test": "npm run jshint"
+  },
+  "version": "5.0.8"
+}

@@ -1,2 +1,12 @@
-/platforms/wp8
+/platforms/ios/build
+/platforms/android/CordovaLib/gen
+/platforms/android/gen
 /out
+/platforms/android/ant-build
+/platforms/android/CordovaLib/ant-build
+/platforms/android/CordovaLib/bin
+/platforms/android/CordovaLib/ant-gen
+platforms/android/CordovaLib/build
+/platforms/android/ant-gen
+/platforms/android/bin
+/platforms/windows/build

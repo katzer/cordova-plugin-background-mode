@@ -1,203 +1,49 @@
-
 <!DOCTYPE html>
 <!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+ -->
 <html>
     <head>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <title>Hello World</title>
-
-        <style type="text/css">
-        .button {
-            -moz-box-shadow:inset 0px 1px 0px 0px #caefab;
-            -webkit-box-shadow:inset 0px 1px 0px 0px #caefab;
-            box-shadow:inset 0px 1px 0px 0px #caefab;
-            background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77d42a), color-stop(1, #5cb811) );
-            background:-moz-linear-gradient( center top, #77d42a 5%, #5cb811 100% );
-            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77d42a', endColorstr='#5cb811');
-            background-color:#77d42a;
-            -webkit-border-top-left-radius:10px;
-            -moz-border-radius-topleft:10px;
-            border-top-left-radius:10px;
-            -webkit-border-top-right-radius:10px;
-            -moz-border-radius-topright:10px;
-            border-top-right-radius:10px;
-            -webkit-border-bottom-right-radius:10px;
-            -moz-border-radius-bottomright:10px;
-            border-bottom-right-radius:10px;
-            -webkit-border-bottom-left-radius:10px;
-            -moz-border-radius-bottomleft:10px;
-            border-bottom-left-radius:10px;
-            text-indent:0px;
-            border:1px solid #268a16;
-            display:inline-block;
-            color:#306108;
-            font-family:Arial;
-            font-size:15px;
-            font-weight:bold;
-            font-style:normal;
-            min-height:30px;
-            max-height:42px;
-            line-height:30px;
-            width:100%;
-            margin:10px 0 0 0;
-            text-transform:none;
-            text-decoration:none;
-            text-align:center;
-            text-shadow:1px 1px 0px #aade7c;
-        }
-        .button:active {
-            background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #5cb811), color-stop(1, #77d42a) );
-            background:-moz-linear-gradient( center top, #5cb811 5%, #77d42a 100% );
-            filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#5cb811', endColorstr='#77d42a');
-            background-color:#5cb811;
-        }
-        .button .hint {
-            font-size:10px;
-            position:relative;
-            top:-15px;
-        }
-        </style>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <title>Background Plugin</title>
     </head>
-    <body ontouchstart="">
+    <body>
         <div class="app">
             <h1>Background Plugin</h1>
             <div id="deviceready" class="blink">
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
             </div>
-
-            <a href="#" class="button" onclick="isEnabled()">Is Mode Enabled<br/><span class="hint">backgroundMode.isEnabled()</span></a>
-            <a href="#" class="button" onclick="enable()">Enable Mode<br/><span class="hint">backgroundMode.enable()</span></a>
-            <a href="#" class="button" onclick="disable()">Disable Mode<br/><span class="hint">backgroundMode.disable()</span></a>
-            <a href="#" class="button" onclick="configure1()">Override Defaults<br/><span class="hint">backgroundMode.setDefaults({ text:'...'})</span></a>
-            <a href="#" class="button" onclick="configure2()">Override Defaults<br/><span class="hint">backgroundMode.setDefaults({ resume:bool })</span></a>
-            <a href="#" class="button" onclick="silent()">Silent mode<br/><span class="hint">backgroundMode.setDefaults({ silent:true })</span></a>
+            <div class="container">
+                <a id="silent" href="#" class="button grey"><span>✓</span>Silent mode</a>
+                <a id="mode" href="#" class="button orange"><span>✓</span>Background</a>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2016 appPlant<br/>
+            Made with <g-emoji alias="yum" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f60b.png">😋</g-emoji> from Leipzig
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
-
-        <script type="text/javascript">
-
-            isEnabled = function () {
-                alert(cordova.plugins.backgroundMode.isEnabled());
-            };
-
-            enable = function () {
-                cordova.plugins.backgroundMode.enable();
-            };
-
-            disable = function () {
-                cordova.plugins.backgroundMode.disable();
-            };
-
-            configure1 = function () {
-                navigator.notification.prompt(
-                    'Please enter the text for the notification',
-                    function (results) {
-                        if (results.buttonIndex == 1) {
-                            cordova.plugins.backgroundMode.setDefaults({
-                                text: results.input1
-                            });
-                        }
-                    },
-                    'Override Defaults'
-                );
-            };
-
-            configure2 = function () {
-                var resume = !cordova.plugins.backgroundMode.getDefaults().resume;
-
-                cordova.plugins.backgroundMode.configure({
-                    resume: resume
-                });
-            };
-
-            silent = function () {
-                cordova.plugins.backgroundMode.configure({ silent:true });
-            };
-        </script>
-
-        <!-- Callbacks -->
-        <script type="text/javascript">
-            document.addEventListener('deviceready', function () {
-                cordova.plugins.backgroundMode.onactivate = function () {
-                    var counter = 0;
-
-                    timer = setInterval(function () {
-                        counter++;
-
-                        console.log('Running since ' + counter + ' sec');
-
-                        if (device.platform != 'Android') {
-                            cordova.plugins.notification.badge.set(counter);
-                        }
-
-                        if (counter % 15 === 0) {
-                            cordova.plugins.backgroundMode.configure({
-                                text: 'Running since ' + counter + ' sec'
-                            });
-                        }
-                    }, 1000);
-                };
-
-                cordova.plugins.backgroundMode.ondeactivate = function () {
-                    clearInterval(timer);
-                    cordova.plugins.notification.badge.clear();
-                };
-            }, false);
-        </script>
-
-        <!-- override defaults -->
-        <script type="text/javascript">
-            document.addEventListener('deviceready', function () {
-                var defaultText = cordova.plugins.backgroundMode.getDefaults().text;
-
-                cordova.plugins.backgroundMode.setDefaults({
-                    text: 'test test test'
-                });
-
-                setTimeout(function () {
-                    var text = cordova.plugins.backgroundMode.getDefaults().text;
-
-                    if (defaultText == text) {
-                        alert('override defaults when device is ready failed!');
-                    }
-
-                    cordova.plugins.backgroundMode.setDefaults({ text:defaultText });
-                }, 100);
-            }, false);
-        </script>
-
-        <!-- Permissions -->
-        <script type="text/javascript">
-            document.addEventListener('deviceready', function () {
-                cordova.plugins.notification.badge.promptForPermission();
-            }, false);
-        </script>
-
-        <!-- Init -->
-        <script type="text/javascript">
-            app.initialize();
-        </script>
     </body>
 </html>
