@@ -31,7 +31,6 @@ import android.content.res.Resources;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -43,11 +42,12 @@ import org.json.JSONObject;
 public class ForegroundService extends Service {
 
     // Fixed ID for the 'foreground' notification
-    private static final int NOTIFICATION_ID = -574543954;
+    public static final int NOTIFICATION_ID = -574543954;
 
     // Binder given to clients
     private final IBinder mBinder = new ForegroundBinder();
 
+    // Partial wake lock to prevent the app from going to sleep when locked
     private PowerManager.WakeLock wakeLock;
 
     /**
@@ -64,7 +64,8 @@ public class ForegroundService extends Service {
      */
     public class ForegroundBinder extends Binder {
         ForegroundService getService() {
-            // Return this instance of ForegroundService so clients can call public methods
+            // Return this instance of ForegroundService
+            // so clients can call public methods
             return ForegroundService.this;
         }
     }
@@ -93,14 +94,12 @@ public class ForegroundService extends Service {
      * by the OS.
      */
     public void keepAwake() {
+        JSONObject settings = BackgroundMode.getSettings();
+        boolean isSilent    = settings.optBoolean("silent", false);
 
-        if (!this.inSilentMode()) {
+        if (!isSilent) {
             startForeground(NOTIFICATION_ID, makeNotification());
-        } else {
-            Log.w("BackgroundMode", "In silent mode app may be paused by OS!");
         }
-
-        BackgroundMode.deleteUpdateSettings();
 
         PowerManager powerMgr = (PowerManager) getSystemService(POWER_SERVICE);
 
@@ -124,17 +123,31 @@ public class ForegroundService extends Service {
 
     /**
      * Create a notification as the visible part to be able to put the service
-     * in a foreground state.
+     * in a foreground state by using the default settings.
      *
      * @return
      *      A local ongoing notification which pending intent is bound to the
      *      main activity.
      */
     private Notification makeNotification() {
-        JSONObject settings = BackgroundMode.getSettings();
-        Context context     = getApplicationContext();
-        String pkgName      = context.getPackageName();
-        Intent intent       = context.getPackageManager()
+        return makeNotification(BackgroundMode.getSettings());
+    }
+
+    /**
+     * Create a notification as the visible part to be able to put the service
+     * in a foreground state.
+     *
+     * @param settings
+     *      The config settings
+     *
+     * @return
+     *      A local ongoing notification which pending intent is bound to the
+     *      main activity.
+     */
+    private Notification makeNotification(JSONObject settings) {
+        Context context = getApplicationContext();
+        String pkgName  = context.getPackageName();
+        Intent intent   = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
         Notification.Builder notification = new Notification.Builder(context)
@@ -156,9 +169,19 @@ public class ForegroundService extends Service {
 
     /**
      * Update the notification.
+     *
+     * @param settings
+     *      The config settings
      */
-    public void updateNotification() {
-        Notification notification   = makeNotification();
+    public void updateNotification (JSONObject settings) {
+        boolean isSilent = settings.optBoolean("silent", false);
+
+        if (isSilent) {
+            stopForeground(true);
+            return;
+        }
+
+        Notification notification   = makeNotification(settings);
         NotificationManager service = (NotificationManager)
                 getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -179,17 +202,5 @@ public class ForegroundService extends Service {
         String icon     = settings.optString("icon", "icon");
 
         return res.getIdentifier(icon, "drawable", pkgName);
-    }
-
-    /**
-     * In silent mode no notification has to be added.
-     *
-     * @return
-     *      True if silent: was set to true
-     */
-    private boolean inSilentMode() {
-        JSONObject settings = BackgroundMode.getSettings();
-
-        return settings.optBoolean("silent", false);
     }
 }

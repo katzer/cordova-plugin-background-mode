@@ -42,7 +42,8 @@ public class BackgroundMode extends CordovaPlugin {
     }
 
     // Plugin namespace
-    private static final String JS_NAMESPACE = "cordova.plugins.backgroundMode";
+    private static final String JS_NAMESPACE =
+            "cordova.plugins.backgroundMode";
 
     // Flag indicates if the app is in background or foreground
     private boolean inBackground = false;
@@ -56,9 +57,6 @@ public class BackgroundMode extends CordovaPlugin {
     // Default settings for the notification
     private static JSONObject defaultSettings = new JSONObject();
 
-    // Tmp config settings for the notification
-    private static JSONObject updateSettings;
-
     ForegroundService mService;
 
     // Used to (un)bind the service to with the activity
@@ -66,7 +64,9 @@ public class BackgroundMode extends CordovaPlugin {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            ForegroundService.ForegroundBinder binder = (ForegroundService.ForegroundBinder) service;
+            ForegroundService.ForegroundBinder binder =
+                    (ForegroundService.ForegroundBinder) service;
+
             mService = binder.getService();
         }
 
@@ -98,8 +98,7 @@ public class BackgroundMode extends CordovaPlugin {
             boolean update = args.getBoolean(1);
 
             if (update) {
-                setUpdateSettings(settings);
-                updateNotifcation();
+                updateNotification(settings);
             } else {
                 setDefaultSettings(settings);
             }
@@ -185,41 +184,24 @@ public class BackgroundMode extends CordovaPlugin {
     }
 
     /**
-     * Update the config settings for the notification.
-     *
-     * @param settings
-     *      The tmp config settings
-     */
-    private void setUpdateSettings(JSONObject settings) {
-        updateSettings = settings;
-    }
-
-    /**
      * The settings for the new/updated notification.
      *
      * @return
      *      updateSettings if set or default settings
      */
     protected static JSONObject getSettings() {
-        if (updateSettings != null)
-            return updateSettings;
-
         return defaultSettings;
     }
 
     /**
-     * Called by ForegroundService to delete the update settings.
-     */
-    protected static void deleteUpdateSettings() {
-        updateSettings = null;
-    }
-
-    /**
      * Update the notification.
+     *
+     * @param settings
+     *      The config settings
      */
-    private void updateNotifcation() {
+    private void updateNotification(JSONObject settings) {
         if (isBind) {
-            mService.updateNotification();
+            mService.updateNotification(settings);
         }
     }
 
