@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-background-mode"
-        version="0.6.6.dev">
+        version="0.6.6-dev">
 
     <name>BackgroundMode</name>
 
@@ -72,7 +72,10 @@
              * candidate for killing when low on memory.
             -->
             <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
+        </config-file>
 
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
         </config-file>
 
         <source-file

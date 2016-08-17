@@ -21,18 +21,18 @@
 
 package de.appplant.cordova.plugin.background;
 
-import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaPlugin;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -230,15 +230,15 @@ public class BackgroundMode extends CordovaPlugin {
     private void startService() {
         Activity context = cordova.getActivity();
 
-        Intent intent = new Intent(
-                context, ForegroundService.class);
-
         if (isDisabled || isBind)
             return;
 
+        Intent intent = new Intent(
+                context, ForegroundService.class);
+
         try {
-            context.bindService(
-                    intent, connection, Context.BIND_AUTO_CREATE);
+            context.bindService(intent,
+                    connection, Context.BIND_AUTO_CREATE);
 
             fireEvent(Event.ACTIVATE, null);
 
@@ -281,9 +281,6 @@ public class BackgroundMode extends CordovaPlugin {
      */
     private void fireEvent (Event event, String params) {
         String eventName;
-
-        if (updateSettings != null && event != Event.FAILURE)
-            return;
 
         switch (event) {
             case ACTIVATE:

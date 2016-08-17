@@ -21,12 +21,6 @@
 
 package de.appplant.cordova.plugin.background;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.json.JSONObject;
-
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -34,12 +28,12 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Binder;
-import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
+
+import org.json.JSONObject;
 
 /**
  * Puts the service in a foreground state, where the system considers it to be
@@ -51,16 +45,10 @@ public class ForegroundService extends Service {
     // Fixed ID for the 'foreground' notification
     private static final int NOTIFICATION_ID = -574543954;
 
-    private Notification.Builder notification;
-
     // Binder given to clients
     private final IBinder mBinder = new ForegroundBinder();
 
-    // Scheduler to exec periodic tasks
-    final Timer scheduler = new Timer();
-
-    // Used to keep the app alive
-    TimerTask keepAliveTask;
+    private PowerManager.WakeLock wakeLock;
 
     /**
      * Allow clients to call on to the service.
@@ -91,6 +79,9 @@ public class ForegroundService extends Service {
         keepAwake();
     }
 
+    /**
+     * No need to run headless on destroy.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -102,7 +93,6 @@ public class ForegroundService extends Service {
      * by the OS.
      */
     public void keepAwake() {
-        final Handler handler = new Handler();
 
         if (!this.inSilentMode()) {
             startForeground(NOTIFICATION_ID, makeNotification());
@@ -112,20 +102,12 @@ public class ForegroundService extends Service {
 
         BackgroundMode.deleteUpdateSettings();
 
-        keepAliveTask = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Nothing to do here
-                        // Log.d("BackgroundMode", "" + new Date().getTime());
-                    }
-                });
-            }
-        };
+        PowerManager powerMgr = (PowerManager) getSystemService(POWER_SERVICE);
 
-        scheduler.schedule(keepAliveTask, 0, 1000);
+        wakeLock = powerMgr.newWakeLock(
+                PowerManager.PARTIAL_WAKE_LOCK, "BackgroundMode");
+
+        wakeLock.acquire();
     }
 
     /**
@@ -133,7 +115,11 @@ public class ForegroundService extends Service {
      */
     private void sleepWell() {
         stopForeground(true);
-        keepAliveTask.cancel();
+
+        if (wakeLock != null) {
+            wakeLock.release();
+            wakeLock = null;
+        }
     }
 
     /**
@@ -144,8 +130,6 @@ public class ForegroundService extends Service {
      *      A local ongoing notification which pending intent is bound to the
      *      main activity.
      */
-    @SuppressLint("NewApi")
-    @SuppressWarnings("deprecation")
     private Notification makeNotification() {
         JSONObject settings = BackgroundMode.getSettings();
         Context context     = getApplicationContext();
@@ -153,49 +137,32 @@ public class ForegroundService extends Service {
         Intent intent       = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
-        notification = new Notification.Builder(context)
-            .setContentTitle(settings.optString("title", ""))
-            .setContentText(settings.optString("text", ""))
-            .setTicker(settings.optString("ticker", ""))
-            .setOngoing(true)
-            .setSmallIcon(getIconResId());
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if(settings.optBoolean("isPublic") == true) {
-                notification.setVisibility(Notification.VISIBILITY_PUBLIC);
-            }
-
-            if(!settings.optString("color").equals("")) {
-                try {
-                    notification.setColor(Color.parseColor(settings.optString("color")));
-                } catch (Exception e) {
-                    Log.e("BackgroundMode", settings.optString("color") + " is not a valid color");
-                }
-            }
-        }
+        Notification.Builder notification = new Notification.Builder(context)
+                .setContentTitle(settings.optString("title", ""))
+                .setContentText(settings.optString("text", ""))
+                .setOngoing(true)
+                .setSmallIcon(getIconResId());
 
         if (intent != null && settings.optBoolean("resume")) {
-
             PendingIntent contentIntent = PendingIntent.getActivity(
-                    context, NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    context, NOTIFICATION_ID, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
 
             notification.setContentIntent(contentIntent);
         }
 
-
-        if (Build.VERSION.SDK_INT < 16) {
-            // Build notification for HoneyComb to ICS
-            return notification.getNotification();
-        } else {
-            // Notification for Jellybean and above
-            return notification.build();
-        }
+        return notification.build();
     }
 
+    /**
+     * Update the notification.
+     */
     public void updateNotification() {
-        Notification n = makeNotification();
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(NOTIFICATION_ID, n);
+        Notification notification   = makeNotification();
+        NotificationManager service = (NotificationManager)
+                getSystemService(Context.NOTIFICATION_SERVICE);
+
+        service.notify(NOTIFICATION_ID, notification);
     }
 
     /**
@@ -209,10 +176,9 @@ public class ForegroundService extends Service {
         Context context = getApplicationContext();
         Resources res   = context.getResources();
         String pkgName  = context.getPackageName();
+        String icon     = settings.optString("icon", "icon");
 
-        int resId = res.getIdentifier(settings.optString("icon", "icon"), "drawable", pkgName);
-
-        return resId;
+        return res.getIdentifier(icon, "drawable", pkgName);
     }
 
     /**

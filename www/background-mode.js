@@ -30,11 +30,6 @@ channel.onCordovaReady.subscribe(function () {
         // Set the defaults
         exports.setDefaults({});
     });
-
-    // Only enable WP8 by default
-    if (['WinCE', 'Win32NT'].indexOf(device.platform) > -1) {
-        exports.enable();
-    }
 });
 
 
@@ -60,11 +55,8 @@ exports._isActive = false;
 exports._defaults = {
     title:  'App is running in background',
     text:   'Doing heavy tasks.',
-    ticker: 'App is running in background',
     resume: true,
     silent: false,
-    isPublic: false,
-    color: "",
     icon: "icon"
 };
 
