@@ -55,9 +55,10 @@ exports._isActive = false;
 exports._defaults = {
     title:  'App is running in background',
     text:   'Doing heavy tasks.',
+    ticker: 'Running in background',
     resume: true,
     silent: false,
-    icon: "icon"
+    icon:   'icon'
 };
 
 

@@ -153,6 +153,7 @@ public class ForegroundService extends Service {
         Notification.Builder notification = new Notification.Builder(context)
                 .setContentTitle(settings.optString("title", ""))
                 .setContentText(settings.optString("text", ""))
+                .setTicker(settings.optString("ticker", ""))
                 .setOngoing(true)
                 .setSmallIcon(getIconResId());
 
