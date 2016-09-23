@@ -110,4 +110,19 @@
 
         <source-file src="src/wp8/BackgroundMode.cs" />
     </platform>
+	
+
+	<!-- windows -->
+	<platform name="windows">
+		<config-file target="config.xml" parent="/*">
+			<feature name="BackgroundMode" >
+				<param name="windows-package" value="BackgroundMode"/>
+			</feature>
+		</config-file>
+
+		<js-module src="src/windows/backgroundmodeProxy.js" name="backgroundmodeProxy">
+			<merges target="" />
+		</js-module>
+	</platform>
+
 </plugin>
