@@ -154,12 +154,15 @@ public class ForegroundService extends Service {
         String pkgName  = context.getPackageName();
         Intent intent   = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
+        
+        int color = Color.parseColor(settings.optString("color", ""));
 
         Notification.Builder notification = new Notification.Builder(context)
                 .setContentTitle(settings.optString("title", ""))
                 .setContentText(settings.optString("text", ""))
                 .setTicker(settings.optString("ticker", ""))
                 .setOngoing(true)
+                .setColor(color)
                 .setSmallIcon(getIconResId());
 
         setColor(notification, settings);
