@@ -137,6 +137,132 @@ public class ForegroundService extends Service {
         Intent intent       = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
         int color = Color.parseColor(settings.optString("color", ""));
+        String iconName = (settings.optString("icon", "") == "") ? "icon" : settings.optString("icon", "");
+
+        Notification.Builder notification = new Notification.Builder(context)
+            .setContentTitle(settings.optString("title", ""))
+            .setContentText(settings.optString("text", ""))
+            .setTicker(settings.optString("ticker", ""))
+            .setOngoing(true)
+            .setSmallIcon(getIconResId(iconName))
+            .setColor(color);
+
+        if (intent != null && settings.optBoolean("resume")) {
+
+            PendingIntent contentIntent = PendingIntent.getActivity(
+                    context, NOTIFICATION_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+            notification.setContentIntent(contentIntent);
+        }
+
+
+        if (Build.VERSION.SDK_INT < 16) {
+            // Build notification for HoneyComb to ICS
+            return notification.getNotification();
+        } else {
+            // Notification for Jellybean and above
+            return notification.build();
+        }
+    }
+
+    /**
+     * Retrieves the resource ID of the app icon.
+     *
+     * @return
+     *      The resource ID of the app icon
+     */
+    private int getIconResId(String iconName) {
+        Context context = getApplicationContext();
+        Resources res   = context.getResources();
+        String pkgName  = context.getPackageName();
+
+        int resId;
+        resId = res.getIdentifier(iconName, "drawable", pkgName);
+
+        return resId;
+    }
+
+    /**
+     * In silent mode no notification has to be added.
+     *
+     * @return
+     *      True if silent: was set to true
+     */
+    private boolean inSilentMode() {
+        JSONObject settings = BackgroundMode.getSettings();
+
+        return settings.optBoolean("silent", false);
+    }
+}
+     */
+    @Override
+    public void onCreate () {
+        super.onCreate();
+        keepAwake();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sleepWell();
+    }
+
+    /**
+     * Put the service in a foreground state to prevent app from being killed
+     * by the OS.
+     */
+    public void keepAwake() {
+        final Handler handler = new Handler();
+
+        if (!this.inSilentMode()) {
+            startForeground(NOTIFICATION_ID, makeNotification());
+        } else {
+            Log.w("BackgroundMode", "In silent mode app may be paused by OS!");
+        }
+
+        BackgroundMode.deleteUpdateSettings();
+
+        keepAliveTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Nothing to do here
+                        // Log.d("BackgroundMode", "" + new Date().getTime());
+                    }
+                });
+            }
+        };
+
+        scheduler.schedule(keepAliveTask, 0, 1000);
+    }
+
+    /**
+     * Stop background mode.
+     */
+    private void sleepWell() {
+        stopForeground(true);
+        keepAliveTask.cancel();
+    }
+
+    /**
+     * Create a notification as the visible part to be able to put the service
+     * in a foreground state.
+     *
+     * @return
+     *      A local ongoing notification which pending intent is bound to the
+     *      main activity.
+     */
+    @SuppressLint("NewApi")
+    @SuppressWarnings("deprecation")
+    private Notification makeNotification() {
+        JSONObject settings = BackgroundMode.getSettings();
+        Context context     = getApplicationContext();
+        String pkgName      = context.getPackageName();
+        Intent intent       = context.getPackageManager()
+                .getLaunchIntentForPackage(pkgName);
+        int color = Color.parseColor(settings.optString("color", ""));
 
         Notification.Builder notification = new Notification.Builder(context)
             .setContentTitle(settings.optString("title", ""))
