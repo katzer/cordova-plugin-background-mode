@@ -150,7 +150,7 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
     AVAudioSession* session = [AVAudioSession
                                sharedInstance];
     // Don't activate the audio session yet
-    [session setActive: NO error:NULL];
+    [session setActive:NO error:NULL];
     // Play music even in background and dont stop playing music
     // even another app starts playing sound
     [session setCategory:AVAudioSessionCategoryPlayback
