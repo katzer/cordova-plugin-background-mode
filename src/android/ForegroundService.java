@@ -160,6 +160,7 @@ public class ForegroundService extends Service {
                 .setContentText(settings.optString("text", ""))
                 .setTicker(settings.optString("ticker", ""))
                 .setOngoing(true)
+                .setPriority(Notification.PRIORITY_LOW)
                 .setSmallIcon(getIconResId());
 
         setColor(notification, settings);
