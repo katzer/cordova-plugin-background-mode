@@ -119,6 +119,7 @@ public class ForegroundService extends Service {
      */
     private void sleepWell() {
         stopForeground(true);
+        getNotificationManager().cancel(NOTIFICATION_ID);
 
         if (wakeLock != null) {
             wakeLock.release();
@@ -129,10 +130,6 @@ public class ForegroundService extends Service {
     /**
      * Create a notification as the visible part to be able to put the service
      * in a foreground state by using the default settings.
-     *
-     * @return
-     *      A local ongoing notification which pending intent is bound to the
-     *      main activity.
      */
     private Notification makeNotification() {
         return makeNotification(BackgroundMode.getSettings());
@@ -142,14 +139,12 @@ public class ForegroundService extends Service {
      * Create a notification as the visible part to be able to put the service
      * in a foreground state.
      *
-     * @param settings
-     *      The config settings
-     *
-     * @return
-     *      A local ongoing notification which pending intent is bound to the
-     *      main activity.
+     * @param settings The config settings
      */
     private Notification makeNotification(JSONObject settings) {
+        String text     = settings.optString("text", "");
+        boolean bigText = settings.optBoolean("bigText", false);
+
         Context context = getApplicationContext();
         String pkgName  = context.getPackageName();
         Intent intent   = context.getPackageManager()
@@ -157,10 +152,15 @@ public class ForegroundService extends Service {
 
         Notification.Builder notification = new Notification.Builder(context)
                 .setContentTitle(settings.optString("title", ""))
-                .setContentText(settings.optString("text", ""))
+                .setContentText(text)
                 .setTicker(settings.optString("ticker", ""))
                 .setOngoing(true)
                 .setSmallIcon(getIconResId());
+
+        if (bigText || text.contains("\n")) {
+            notification.setStyle(
+                    new Notification.BigTextStyle().bigText(text));
+        }
 
         setColor(notification, settings);
 
@@ -178,8 +178,7 @@ public class ForegroundService extends Service {
     /**
      * Update the notification.
      *
-     * @param settings
-     *      The config settings
+     * @param settings The config settings
      */
     protected void updateNotification (JSONObject settings) {
         boolean isSilent = settings.optBoolean("silent", false);
@@ -189,18 +188,14 @@ public class ForegroundService extends Service {
             return;
         }
 
-        Notification notification   = makeNotification(settings);
-        NotificationManager service = (NotificationManager)
-                getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notification = makeNotification(settings);
 
-        service.notify(NOTIFICATION_ID, notification);
+        getNotificationManager().notify(
+                NOTIFICATION_ID, notification);
     }
 
     /**
      * Retrieves the resource ID of the app icon.
-     *
-     * @return
-     *      The resource ID of the app icon
      */
     private int getIconResId() {
         JSONObject settings = BackgroundMode.getSettings();
@@ -222,14 +217,10 @@ public class ForegroundService extends Service {
     /**
      * Retrieve resource id of the specified icon.
      *
-     * @param res
-     *      The app resource bundle.
-     * @param icon
-     *      The name of the icon.
-     * @param type
-     *      The resource type where to look for.
-     * @param pkgName
-     *      The name of the package.
+     * @param res The app resource bundle.
+     * @param icon The name of the icon.
+     * @param type The resource type where to look for.
+     * @param pkgName The name of the package.
      *
      * @return The resource id or 0 if not found.
      */
@@ -248,10 +239,8 @@ public class ForegroundService extends Service {
     /**
      * Set notification color if its supported by the SDK.
      *
-     * @param notification
-     *      A Notification.Builder instance
-     * @param settings
-     *      A JSON dict containing the color definition (red: FF0000)
+     * @param notification A Notification.Builder instance
+     * @param settings A JSON dict containing the color definition (red: FF0000)
      */
     private void setColor(Notification.Builder notification,
                           JSONObject settings) {
@@ -276,4 +265,13 @@ public class ForegroundService extends Service {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Shared manager for the notification service.
+     */
+    private NotificationManager getNotificationManager() {
+        return (NotificationManager) getSystemService(
+                Context.NOTIFICATION_SERVICE);
+    }
+
 }
