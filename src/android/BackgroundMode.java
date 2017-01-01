@@ -27,12 +27,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.view.View;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.Method;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -62,7 +65,6 @@ public class BackgroundMode extends CordovaPlugin {
 
     // Used to (un)bind the service to with the activity
     private final ServiceConnection connection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             ForegroundService.ForegroundBinder binder =
@@ -96,14 +98,14 @@ public class BackgroundMode extends CordovaPlugin {
 
         if (action.equalsIgnoreCase("configure")) {
             JSONObject settings = args.getJSONObject(0);
-            boolean update = args.getBoolean(1);
+            boolean update      = args.getBoolean(1);
 
-            if (update) {
-                updateNotification(settings);
-            } else {
-                setDefaultSettings(settings);
-            }
+            configure(settings, update);
+            return true;
+        }
 
+        if (action.equalsIgnoreCase("enableGeoLocation")) {
+            enableGeoLocation();
             return true;
         }
 
@@ -175,10 +177,23 @@ public class BackgroundMode extends CordovaPlugin {
     }
 
     /**
+     * Update the default settings and configure the notification.
+     *
+     * @param settings The settings
+     * @param update A truthy value means to update the running service.
+     */
+    private void configure(JSONObject settings, boolean update) {
+        if (update) {
+            updateNotification(settings);
+        } else {
+            setDefaultSettings(settings);
+        }
+    }
+
+    /**
      * Update the default settings for the notification.
      *
-     * @param settings
-     *      The new default settings
+     * @param settings The new default settings
      */
     private void setDefaultSettings(JSONObject settings) {
         defaultSettings = settings;
@@ -197,8 +212,7 @@ public class BackgroundMode extends CordovaPlugin {
     /**
      * Update the notification.
      *
-     * @param settings
-     *      The config settings
+     * @param settings The config settings
      */
     private void updateNotification(JSONObject settings) {
         if (isBind) {
@@ -255,12 +269,45 @@ public class BackgroundMode extends CordovaPlugin {
     }
 
     /**
+     * Enable GPS position tracking while in background.
+     */
+    private void enableGeoLocation() {
+        Thread thread = new Thread(){
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    cordova.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            View view = webView.getEngine().getView();
+
+                            try {
+                                Class<?> xWalkCls = Class.forName(
+                                        "org.crosswalk.engine.XWalkCordovaView");
+
+                                Method onShowMethod =
+                                        xWalkCls.getMethod("onShow");
+
+                                onShowMethod.invoke(view);
+                            } catch (Exception e){
+                                view.dispatchWindowVisibilityChanged(View.VISIBLE);
+                            }
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    // do nothing
+                }
+            }
+        };
+
+        thread.start();
+    }
+
+    /**
      * Fire vent with some parameters inside the web view.
      *
-     * @param event
-     *      The name of the event
-     * @param params
-     *      Optional arguments for the event
+     * @param event The name of the event
+     * @param params Optional arguments for the event
      */
     private void fireEvent (Event event, String params) {
         String eventName;
@@ -294,4 +341,5 @@ public class BackgroundMode extends CordovaPlugin {
             }
         });
     }
+
 }
