@@ -57,7 +57,8 @@ public class BackgroundMode extends CordovaPlugin {
     // Default settings for the notification
     private static JSONObject defaultSettings = new JSONObject();
 
-    ForegroundService mService;
+    // Service that keeps the app awake
+    private ForegroundService service;
 
     // Used to (un)bind the service to with the activity
     private final ServiceConnection connection = new ServiceConnection() {
@@ -67,7 +68,7 @@ public class BackgroundMode extends CordovaPlugin {
             ForegroundService.ForegroundBinder binder =
                     (ForegroundService.ForegroundBinder) service;
 
-            mService = binder.getService();
+            BackgroundMode.this.service = binder.getService();
         }
 
         @Override
@@ -201,7 +202,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     private void updateNotification(JSONObject settings) {
         if (isBind) {
-            mService.updateNotification(settings);
+            service.updateNotification(settings);
         }
     }
 
@@ -278,10 +279,13 @@ public class BackgroundMode extends CordovaPlugin {
         String flag = String.format("%s._isActive=%s;",
                 JS_NAMESPACE, active);
 
-        String fn = String.format("setTimeout('%s.on%s(%s)',0);",
+        String depFn = String.format("%s.on%s(%s);",
                 JS_NAMESPACE, eventName, params);
 
-        final String js = flag + fn;
+        String fn = String.format("%s.fireEvent('%s',%s);",
+                JS_NAMESPACE, eventName, params);
+
+        final String js = flag + fn + depFn;
 
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
