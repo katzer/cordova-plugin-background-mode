@@ -254,7 +254,7 @@ cordova.plugins.backgroundMode.configure({
 
 This software is released under the [Apache 2.0 License][apache2_license].
 
-© 2013-2014 appPlant UG, Inc. All rights reserved
+© 2013-2017 appPlant GmbH, Inc. All rights reserved
 
 
 [cordova]: https://cordova.apache.org
