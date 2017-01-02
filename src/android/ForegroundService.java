@@ -155,6 +155,7 @@ public class ForegroundService extends Service {
                 .setContentText(text)
                 .setTicker(settings.optString("ticker", ""))
                 .setOngoing(true)
+                .setPriority(Notification.PRIORITY_MIN)
                 .setSmallIcon(getIconResId());
 
         if (bigText || text.contains("\n")) {
