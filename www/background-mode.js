@@ -93,9 +93,9 @@ exports.configure = function (options) {
 /**
  * Enable GPS-tracking in background (Android).
  */
-exports.enableGeoLocation = function () {
+exports.disableWebViewOptimizations = function () {
     if (device.platform == 'Android') {
-        cordova.exec(null, null, 'BackgroundMode', 'enableGeoLocation', []);
+        cordova.exec(null, null, 'BackgroundMode', 'disableWebViewOptimizations', []);
     }
 };
 

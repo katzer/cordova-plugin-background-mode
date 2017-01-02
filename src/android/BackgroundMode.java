@@ -104,8 +104,8 @@ public class BackgroundMode extends CordovaPlugin {
             return true;
         }
 
-        if (action.equalsIgnoreCase("enableGeoLocation")) {
-            enableGeoLocation();
+        if (action.equalsIgnoreCase("disableWebViewOptimizations")) {
+            disableWebViewOptimizations();
             return true;
         }
 
@@ -271,7 +271,7 @@ public class BackgroundMode extends CordovaPlugin {
     /**
      * Enable GPS position tracking while in background.
      */
-    private void enableGeoLocation() {
+    private void disableWebViewOptimizations() {
         Thread thread = new Thread(){
             public void run() {
                 try {
