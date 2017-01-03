@@ -114,6 +114,11 @@ public class BackgroundMode extends CordovaPlugin {
             return true;
         }
 
+        if (action.equalsIgnoreCase("foreground")) {
+            moveToForeground();
+            return true;
+        }
+
         if (action.equalsIgnoreCase("enable")) {
             enableMode();
             return true;
@@ -160,6 +165,33 @@ public class BackgroundMode extends CordovaPlugin {
     public void onDestroy() {
         super.onDestroy();
         stopService();
+    }
+
+    /**
+     * Move app to background.
+     */
+    private void moveToBackground() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+
+        intent.addCategory(Intent.CATEGORY_HOME);
+        cordova.getActivity().startActivity(intent);
+    }
+
+    /**
+     * Move app to foreground.
+     */
+    private void moveToForeground() {
+        Context context = cordova.getActivity();
+        String pkgName  = context.getPackageName();
+
+        Intent intent = context
+                .getPackageManager()
+                .getLaunchIntentForPackage(pkgName);
+
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        context.startActivity(intent);
     }
 
     /**
@@ -306,16 +338,6 @@ public class BackgroundMode extends CordovaPlugin {
         };
 
         thread.start();
-    }
-
-    /**
-     * Send app to background.
-     */
-    private void moveToBackground() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-
-        intent.addCategory(Intent.CATEGORY_HOME);
-        cordova.getActivity().startActivity(intent);
     }
 
     /**

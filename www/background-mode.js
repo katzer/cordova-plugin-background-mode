@@ -111,6 +111,17 @@ exports.moveToBackground = function () {
 };
 
 /**
+ * Move app to foreground when in background (Android only).
+ *
+ * @return [ Void ]
+ */
+exports.moveToForeground = function () {
+    if (this.isActive() && device.platform == 'Android') {
+        cordova.exec(null, null, 'BackgroundMode', 'foreground', []);
+    }
+};
+
+/**
  * Override the back button on Android to go to background
  * instead of closing the app.
  *
