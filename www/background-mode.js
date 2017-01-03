@@ -100,6 +100,17 @@ exports.disableWebViewOptimizations = function () {
 };
 
 /**
+ * Move app to background (Android only).
+ *
+ * @return [ Void ]
+ */
+exports.moveToBackground = function () {
+    if (device.platform == 'Android') {
+        cordova.exec(null, null, 'BackgroundMode', 'background', []);
+    }
+};
+
+/**
  * If the mode is enabled or disabled.
  *
  * @return {Boolean}

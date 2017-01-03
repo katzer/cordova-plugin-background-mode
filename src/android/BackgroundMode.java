@@ -109,6 +109,11 @@ public class BackgroundMode extends CordovaPlugin {
             return true;
         }
 
+        if (action.equalsIgnoreCase("background")) {
+            moveToBackground();
+            return true;
+        }
+
         if (action.equalsIgnoreCase("enable")) {
             enableMode();
             return true;
@@ -301,6 +306,16 @@ public class BackgroundMode extends CordovaPlugin {
         };
 
         thread.start();
+    }
+
+    /**
+     * Send app to background.
+     */
+    private void moveToBackground() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+
+        intent.addCategory(Intent.CATEGORY_HOME);
+        cordova.getActivity().startActivity(intent);
     }
 
     /**
