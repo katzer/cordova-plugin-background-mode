@@ -105,7 +105,7 @@ exports.disableWebViewOptimizations = function () {
  * @return {Boolean}
  */
 exports.isEnabled = function () {
-    return this._isEnabled;
+    return this._isEnabled !== false;
 };
 
 /**
@@ -114,7 +114,7 @@ exports.isEnabled = function () {
  * @return {Boolean}
  */
 exports.isActive = function () {
-    return this._isActive;
+    return this._isActive !== false;
 };
 
 
