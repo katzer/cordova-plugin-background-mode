@@ -111,6 +111,16 @@ exports.moveToBackground = function () {
 };
 
 /**
+ * Override the back button on Android to go to background
+ * instead of closing the app.
+ *
+ * @return [ Void ]
+ */
+exports.overrideBackButton = function () {
+    document.addEventListener('backbutton', this.moveToBackground, false);
+};
+
+/**
  * If the mode is enabled or disabled.
  *
  * @return {Boolean}
