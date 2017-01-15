@@ -33,8 +33,14 @@ var exec    = require('cordova/exec'),
  * for the next time.
  */
 exports.enable = function () {
+    if (this.isEnabled())
+        return;
+
+    var me        = this,
+        fireEvent = function () { me.fireEvent('enable'); };
+
     this._isEnabled = true;
-    cordova.exec(null, null, 'BackgroundMode', 'enable', []);
+    cordova.exec(fireEvent, null, 'BackgroundMode', 'enable', []);
 };
 
 /**
@@ -42,8 +48,14 @@ exports.enable = function () {
  * will not stay awake while in background.
  */
 exports.disable = function () {
+    if (!this.isEnabled())
+        return;
+
+    var me        = this,
+        fireEvent = function () { me.fireEvent('disable'); };
+
     this._isEnabled = false;
-    cordova.exec(null, null, 'BackgroundMode', 'disable', []);
+    cordova.exec(fireEvent, null, 'BackgroundMode', 'disable', []);
 };
 
 /**

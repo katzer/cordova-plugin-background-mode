@@ -101,35 +101,31 @@ public class BackgroundMode extends CordovaPlugin {
             boolean update      = args.getBoolean(1);
 
             configure(settings, update);
-            return true;
         }
 
         if (action.equalsIgnoreCase("disableWebViewOptimizations")) {
             disableWebViewOptimizations();
-            return true;
         }
 
         if (action.equalsIgnoreCase("background")) {
             moveToBackground();
-            return true;
         }
 
         if (action.equalsIgnoreCase("foreground")) {
             moveToForeground();
-            return true;
         }
 
         if (action.equalsIgnoreCase("enable")) {
             enableMode();
-            return true;
         }
 
         if (action.equalsIgnoreCase("disable")) {
             disableMode();
-            return true;
         }
 
-        return false;
+        callback.success();
+
+        return true;
     }
 
     /**
