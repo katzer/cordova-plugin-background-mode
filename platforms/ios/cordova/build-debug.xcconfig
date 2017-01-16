@@ -26,3 +26,7 @@
 GCC_PREPROCESSOR_DEFINITIONS = DEBUG=1
 
 #include "build-extras.xcconfig"
+
+// (CB-11792)
+// @COCOAPODS_SILENCE_WARNINGS@ //
+#include "../pods-debug.xcconfig"

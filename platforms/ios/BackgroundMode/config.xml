@@ -37,14 +37,18 @@
     <preference name="PageLength" value="0" />
     <preference name="PaginationBreakingMode" value="page" />
     <preference name="PaginationMode" value="unpaginated" />
+    <preference name="windows-target-version" value="10.0" />
+    <feature name="Device">
+        <param name="ios-package" value="CDVDevice" />
+    </feature>
     <feature name="Badge">
         <param name="ios-package" value="APPBadge" />
     </feature>
     <feature name="Console">
         <param name="ios-package" value="CDVLogger" />
     </feature>
-    <feature name="Device">
-        <param name="ios-package" value="CDVDevice" />
+    <feature name="Vibration">
+        <param name="ios-package" value="CDVVibration" />
     </feature>
     <feature name="BackgroundMode">
         <param name="ios-package" value="APPBackgroundMode" />

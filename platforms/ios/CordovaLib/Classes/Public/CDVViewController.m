@@ -37,7 +37,6 @@
 @property (nonatomic, readwrite, strong) NSMutableDictionary* pluginObjects;
 @property (nonatomic, readwrite, strong) NSMutableArray* startupPluginNames;
 @property (nonatomic, readwrite, strong) NSDictionary* pluginsMap;
-@property (nonatomic, readwrite, strong) NSArray* supportedOrientations;
 @property (nonatomic, readwrite, strong) id <CDVWebViewEngineProtocol> webViewEngine;
 
 @property (readwrite, assign) BOOL initialized;
@@ -148,13 +147,13 @@
         }
         path = absolutePath;
     }
-    
+
     // Assert file exists
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
         NSAssert(NO, @"ERROR: %@ does not exist. Please run cordova-ios/bin/cordova_plist_to_config_xml path/to/project.", path);
         return nil;
     }
-    
+
     return path;
 }
 
@@ -162,7 +161,7 @@
 {
     // read from config.xml in the app bundle
     NSString* path = [self configFilePath];
-    
+
     NSURL* url = [NSURL fileURLWithPath:path];
 
     self.configParser = [[NSXMLParser alloc] initWithContentsOfURL:url];
@@ -273,7 +272,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     // Load settings
     [self loadSettings];
 
@@ -284,7 +283,7 @@
         backupWebStorageType = backupWebStorage;
     }
     [self.settings setCordovaSetting:backupWebStorageType forKey:@"BackupWebStorage"];
-    
+
     [CDVLocalStorage __fixupDatabaseLocationsWithBackupType:backupWebStorageType];
 
     // // Instantiate the WebView ///////////////
@@ -342,6 +341,48 @@
             }
         }
     }];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVViewWillAppearNotification object:nil]];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVViewDidAppearNotification object:nil]];
+}
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVViewWillDisappearNotification object:nil]];
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVViewDidDisappearNotification object:nil]];
+}
+
+-(void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVViewWillLayoutSubviewsNotification object:nil]];
+}
+
+-(void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVViewDidLayoutSubviewsNotification object:nil]];
+}
+
+-(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVViewWillTransitionToSizeNotification object:[NSValue valueWithCGSize:size]]];
 }
 
 - (NSArray*)parseInterfaceOrientations:(NSArray*)orientations
@@ -405,9 +446,12 @@
 
 - (UIView*)newCordovaViewWithFrame:(CGRect)bounds
 {
-    NSString* defaultWebViewEngineClass = @"CDVUIWebViewEngine";
+    NSString* defaultWebViewEngineClass = [self.settings cordovaSettingForKey:@"CordovaDefaultWebViewEngine"];
     NSString* webViewEngineClass = [self.settings cordovaSettingForKey:@"CordovaWebViewEngine"];
 
+    if (!defaultWebViewEngineClass) {
+        defaultWebViewEngineClass = @"CDVUIWebViewEngine";
+    }
     if (!webViewEngineClass) {
         webViewEngineClass = defaultWebViewEngineClass;
     }

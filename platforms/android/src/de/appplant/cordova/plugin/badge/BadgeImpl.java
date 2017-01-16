@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2015 by appPlant UG. All rights reserved.
+ * Copyright (c) 2014-2015 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
  *
@@ -40,7 +40,7 @@ class BadgeImpl {
     /**
      * The name for the shared preferences key
      */
-    protected static final String KEY = "badge";
+    private static final String KEY = "badge";
 
     /**
      * Clears the badge of the app icon.
@@ -48,7 +48,7 @@ class BadgeImpl {
      * @param ctx
      * The application context.
      */
-    protected void clearBadge (Context ctx) {
+    void clearBadge (Context ctx) {
         saveBadge(0, ctx);
         ShortcutBadger.removeCount(ctx);
     }
@@ -61,7 +61,7 @@ class BadgeImpl {
      * @param callback
      * The function to be exec as the callback.
      */
-    protected void getBadge (CallbackContext callback, Context ctx) {
+    void getBadge (CallbackContext callback, Context ctx) {
         SharedPreferences settings = getSharedPreferences(ctx);
         int badge = settings.getInt(KEY, 0);
         PluginResult result;
@@ -79,7 +79,7 @@ class BadgeImpl {
      * @param ctx
      * The application context
      */
-    protected void setBadge (JSONArray args, Context ctx) {
+    void setBadge (JSONArray args, Context ctx) {
         int badge = args.optInt(0);
 
         saveBadge(badge, ctx);
@@ -95,7 +95,7 @@ class BadgeImpl {
      * @param ctx
      * The application context.
      */
-    protected void saveBadge (int badge, Context ctx) {
+    private void saveBadge (int badge, Context ctx) {
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
 
         editor.putInt(KEY, badge);
@@ -108,7 +108,7 @@ class BadgeImpl {
      * @param callback
      * The function to be exec as the callback
      */
-    protected void hasPermission (final CallbackContext callback) {
+    void hasPermission (final CallbackContext callback) {
         PluginResult result = new PluginResult(PluginResult.Status.OK, true);
 
         callback.sendPluginResult(result);

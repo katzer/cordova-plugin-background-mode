@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2016 by appPlant UG. All rights reserved.
+ * Copyright (c) 2013-2016 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
  *
@@ -26,5 +26,5 @@ repositories {
 }
 
 dependencies {
-    compile 'me.leolin:ShortcutBadger:1.1.4@aar'
+    compile 'me.leolin:ShortcutBadger:1.1.11@aar'
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2016 by appPlant UG. All rights reserved.
+ * Copyright (c) 2013-2016 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
  *
@@ -20,7 +20,6 @@
  *
  * @APPPLANT_LICENSE_HEADER_END@
  */
-
 
 exports.defineAutoTests = function() {
 

@@ -23,11 +23,12 @@ var fs = require('fs');
 var path = require('path');
 var unorm = require('unorm');
 var projectFile = require('./lib/projectFile');
-
 var CordovaError = require('cordova-common').CordovaError;
 var CordovaLogger = require('cordova-common').CordovaLogger;
 var events = require('cordova-common').events;
 var PluginManager = require('cordova-common').PluginManager;
+var Q = require('q');
+var util = require('util');
 
 function setupEvents(externalEventEmitter) {
     if (externalEventEmitter) {
@@ -54,7 +55,6 @@ function setupEvents(externalEventEmitter) {
 function Api(platform, platformRootDir, events) {
     // 'platform' property is required as per PlatformApi spec
     this.platform = platform || 'ios';
-
     this.root = platformRootDir || path.resolve(__dirname, '..');
 
     setupEvents(events);
@@ -115,15 +115,22 @@ Api.createPlatform = function (destination, config, options, events) {
     // because node and shell scripts handles unicode symbols differently
     // We need to normalize the name to NFD form since iOS uses NFD unicode form
     var name = unorm.nfd(config.name());
-
-    return require('../../../lib/create')
-    .createProject(destination, config.packageName(), name, options)
-    .then(function () {
-        // after platform is created we return Api instance based on new Api.js location
-        // This is required to correctly resolve paths in the future api calls
-        var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
-        return new PlatformApi('ios', destination, events);
-    });
+    var result;
+    try {
+        result = require('../../../lib/create')
+        .createProject(destination, config.packageName(), name, options)
+        .then(function () {
+            // after platform is created we return Api instance based on new Api.js location
+            // This is required to correctly resolve paths in the future api calls
+            var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
+            return new PlatformApi('ios', destination, events);
+        });
+    }
+    catch(e) {
+        events.emit('error','createPlatform is not callable from the iOS project API.');
+        throw(e);
+    }
+    return result;
 };
 
 /**
@@ -145,12 +152,20 @@ Api.createPlatform = function (destination, config, options, events) {
 Api.updatePlatform = function (destination, options, events) {
     setupEvents(events);
 
-    return require('../../../lib/create')
-    .updateProject(destination, options)
-    .then(function () {
-        var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
-        return new PlatformApi('ios', destination, events);
-    });
+    var result;
+    try {
+        result = require('../../../lib/create')
+        .updateProject(destination, options)
+        .then(function () {
+            var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
+            return new PlatformApi('ios', destination, events);
+        });
+    }
+    catch (e) {
+        events.emit('error','updatePlatform is not callable from the iOS project API, you will need to do this manually.');
+        throw(e);
+    }
+    return result;
 };
 
 /**
@@ -207,6 +222,7 @@ Api.prototype.prepare = function (cordovaProject) {
  */
 Api.prototype.addPlugin = function (plugin, installOptions) {
     var xcodeproj = projectFile.parse(this.locations);
+    var self = this;
 
     installOptions = installOptions || {};
     installOptions.variables = installOptions.variables || {};
@@ -215,8 +231,68 @@ Api.prototype.addPlugin = function (plugin, installOptions) {
         installOptions.variables.PACKAGE_NAME = xcodeproj.getPackageName();
     }
 
-    return PluginManager.get(this.platform, this.locations, xcodeproj)
+    return PluginManager.get(self.platform, self.locations, xcodeproj)
         .addPlugin(plugin, installOptions)
+        .then(function(){
+            var frameworkTags = plugin.getFrameworks(self.platform);
+            var frameworkPods = frameworkTags.filter(function(obj){
+                return (obj.type == 'podspec'); 
+            });
+
+            return Q.resolve(frameworkPods);
+        })
+        .then(function(frameworkPods) {
+            if (!(frameworkPods.length)) {
+                return Q.resolve();
+            }
+
+            var project_dir = self.locations.root;
+            var project_name = self.locations.xcodeCordovaProj.split('/').pop();
+
+            var Podfile = require('./lib/Podfile').Podfile;
+            var PodsJson = require('./lib/PodsJson').PodsJson;
+
+            events.emit('verbose', 'Adding pods since the plugin contained <framework>(s) with type="podspec"');
+
+            var podsjsonFile = new PodsJson(path.join(project_dir, PodsJson.FILENAME));
+            var podfileFile = new Podfile(path.join(project_dir, Podfile.FILENAME), project_name); 
+
+            frameworkPods.forEach(function(obj) {
+                var podJson = {
+                    name: obj.src,
+                    type: obj.type,
+                    spec: obj.spec
+                };
+
+                var val = podsjsonFile.get(podJson.name);
+                if (val) { // found 
+                    if (podJson.spec !== val.spec) { // exists, different spec, print warning
+                        events.emit('warn', plugin.id + ' depends on ' + podJson.name + '@' + podJson.spec + ', which conflicts with another plugin. ' + podJson.name + '@' + val.spec + ' is already installed and was not overwritten.'); 
+                    }
+                    // increment count, but don't add in Podfile because it already exists
+                    podsjsonFile.increment(podJson.name);
+                } else { // not found, write new
+                    podJson.count = 1;
+                    podsjsonFile.setJson(podJson.name, podJson);
+                    // add to Podfile
+                    podfileFile.addSpec(podJson.name, podJson.spec);
+                }
+            });
+
+            // now that all the pods have been processed, write to pods.json
+            podsjsonFile.write();
+
+            // only write and pod install if the Podfile changed
+            if (podfileFile.isDirty()) {
+                podfileFile.write();
+                events.emit('verbose', 'Running `pod install` (to install plugins)');
+
+                var check_reqs = require('./lib/check_reqs');
+                return podfileFile.install(check_reqs.check_cocoapods);
+            } else {
+                events.emit('verbose', 'Podfile unchanged, skipping `pod install`');
+            }
+        })
         // CB-11022 return non-falsy value to indicate
         // that there is no need to run prepare after
         .thenResolve(true);
@@ -236,10 +312,67 @@ Api.prototype.addPlugin = function (plugin, installOptions) {
  *   CordovaError instance.
  */
 Api.prototype.removePlugin = function (plugin, uninstallOptions) {
-
     var xcodeproj = projectFile.parse(this.locations);
-    return PluginManager.get(this.platform, this.locations, xcodeproj)
+    var self = this;
+
+    return PluginManager.get(self.platform, self.locations, xcodeproj)
         .removePlugin(plugin, uninstallOptions)
+        .then(function(){
+            var frameworkTags = plugin.getFrameworks(self.platform);
+            var frameworkPods = frameworkTags.filter(function(obj){
+                return (obj.type == 'podspec'); 
+            });
+
+            return Q.resolve(frameworkPods);
+        })
+        .then(function(frameworkPods) {
+            if (!(frameworkPods.length)) {
+                return Q.resolve();
+            }
+
+            var project_dir = self.locations.root;
+            var project_name = self.locations.xcodeCordovaProj.split('/').pop();
+
+            var Podfile = require('./lib/Podfile').Podfile;
+            var PodsJson = require('./lib/PodsJson').PodsJson;
+
+            events.emit('verbose', 'Adding pods since the plugin contained <framework>(s) with type=\"podspec\"');
+
+            var podsjsonFile = new PodsJson(path.join(project_dir, PodsJson.FILENAME));
+            var podfileFile = new Podfile(path.join(project_dir, Podfile.FILENAME), project_name); 
+                
+            frameworkPods.forEach(function(obj) {
+                var podJson = {
+                    name: obj.src,
+                    type: obj.type,
+                    spec: obj.spec
+                };
+
+                var val = podsjsonFile.get(podJson.name);
+                if (val) { // found, decrement count
+                    podsjsonFile.decrement(podJson.name);
+                } else { // not found (perhaps a sync error)
+                    var message = util.format('plugin \"%s\" podspec \"%s\" does not seem to be in pods.json, nothing to remove. Will attempt to remove from Podfile.', plugin.id, podJson.name);
+                    events.emit('verbose', message);
+                }
+
+                // always remove from the Podfile
+                podfileFile.removeSpec(podJson.name);
+            });
+
+            // now that all the pods have been processed, write to pods.json
+            podsjsonFile.write();
+
+            if (podfileFile.isDirty()) {
+                podfileFile.write();
+                events.emit('verbose', 'Running `pod install` (to uninstall pods)');
+
+                var check_reqs = require('./lib/check_reqs');
+                return podfileFile.install(check_reqs.check_cocoapods);
+            } else {
+                events.emit('verbose', 'Podfile unchanged, skipping `pod install`');
+            }
+        })
         // CB-11022 return non-falsy value to indicate
         // that there is no need to run prepare after
         .thenResolve(true);

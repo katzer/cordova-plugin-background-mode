@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- * Copyright (c) 2013-2016 by appPlant UG. All rights reserved.
+ * Copyright (c) 2013-2016 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
  *
@@ -25,19 +25,17 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-badge"
-        version="0.7.2">
+        version="0.7.4">
 
     <name>Badges</name>
 
-    <description>
-        Shows the count of unread messages as a badge on the app icon.
-    </description>
+    <description>Shows the count of unread messages as a badge on the app icon.</description>
 
     <repo>https://github.com/katzer/cordova-plugin-badge.git</repo>
 
     <issue>https://github.com/katzer/cordova-plugin-badge/issues</issue>
 
-    <keywords>appplant, badge</keywords>
+    <keywords>appplant, badge, shortcutbadger</keywords>
 
     <license>Apache 2.0</license>
 
@@ -58,14 +56,6 @@
         <clobbers target="plugin.notification.badge" />
         <clobbers target="cordova.plugins.notification.badge" />
     </js-module>
-
-    <!-- info -->
-    <info>
-        Your support is needed. If you use the badge plugin please support us in order to ensure further development.
-        https://github.com/katzer/cordova-plugin-badge#supporting
-
-        Thank you!
-    </info>
 
     <!-- ios -->
     <platform name="ios">

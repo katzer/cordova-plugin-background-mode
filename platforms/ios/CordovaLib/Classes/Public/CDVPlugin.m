@@ -46,6 +46,13 @@ NSString* const CDVPluginResetNotification = @"CDVPluginResetNotification";
 NSString* const CDVLocalNotification = @"CDVLocalNotification";
 NSString* const CDVRemoteNotification = @"CDVRemoteNotification";
 NSString* const CDVRemoteNotificationError = @"CDVRemoteNotificationError";
+NSString* const CDVViewWillAppearNotification = @"CDVViewWillAppearNotification";
+NSString* const CDVViewDidAppearNotification = @"CDVViewDidAppearNotification";
+NSString* const CDVViewWillDisappearNotification = @"CDVViewWillDisappearNotification";
+NSString* const CDVViewDidDisappearNotification = @"CDVViewDidDisappearNotification";
+NSString* const CDVViewWillLayoutSubviewsNotification = @"CDVViewWillLayoutSubviewsNotification";
+NSString* const CDVViewDidLayoutSubviewsNotification = @"CDVViewDidLayoutSubviewsNotification";
+NSString* const CDVViewWillTransitionToSizeNotification = @"CDVViewWillTransitionToSizeNotification";
 
 @interface CDVPlugin ()
 
@@ -85,11 +92,16 @@ NSString* const CDVRemoteNotificationError = @"CDVRemoteNotificationError";
     // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onOrientationWillChange) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
     // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onOrientationDidChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 
-    // Added in 2.3.0
-    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLocalNotification:) name:CDVLocalNotification object:nil];
-
     // Added in 2.5.0
     // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageDidLoad:) name:CDVPageDidLoadNotification object:self.webView];
+    //Added in 4.3.0
+    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillAppear:) name:CDVViewWillAppearNotification object:nil];
+    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewDidAppear:) name:CDVViewDidAppearNotification object:nil];
+    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillDisappear:) name:CDVViewWillDisappearNotification object:nil];
+    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewDidDisappear:) name:CDVViewDidDisappearNotification object:nil];
+    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillLayoutSubviews:) name:CDVViewWillLayoutSubviewsNotification object:nil];
+    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewDidLayoutSubviews:) name:CDVViewDidLayoutSubviewsNotification object:nil];
+    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillTransitionToSize:) name:CDVViewWillTransitionToSizeNotification object:nil];
 }
 
 - (void)dispose
@@ -146,18 +158,12 @@ NSString* const CDVRemoteNotificationError = @"CDVRemoteNotificationError";
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];   // this will remove all notification unless added using addObserverForName:object:queue:usingBlock:
+    [[NSNotificationCenter defaultCenter] removeObserver:self];   // this will remove all notifications unless added using addObserverForName:object:queue:usingBlock:
 }
 
 - (id)appDelegate
 {
     return [[UIApplication sharedApplication] delegate];
 }
-
-// default implementation does nothing, ideally, we are not registered for notification if we aren't going to do anything.
-// - (void)didReceiveLocalNotification:(NSNotification *)notification
-// {
-//    // UILocalNotification* localNotification = [notification object]; // get the payload as a LocalNotification
-// }
 
 @end

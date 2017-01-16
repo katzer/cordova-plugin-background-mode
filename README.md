@@ -24,16 +24,16 @@ A click on the _Background_ enables the mode and starts them once the app is goi
 cordova.plugins.backgroundMode.enable();
 
 // 2) Now the app runs ins background but stays awake
-cordova.plugins.backgroundMode.onactivate = function () {
+cordova.plugins.backgroundMode.on('activate', function () {
     setInterval(function () {
         cordova.plugins.notification.badge.increase();
     }, 1000);
-};
+});
 
 // 3) App is back to foreground
-cordova.plugins.backgroundMode.ondeactivate = function () {
+cordova.plugins.backgroundMode.on('deactivate', function () {
     cordova.plugins.notification.badge.clear();
-};
+});
 ```
 
 <img height="350px" align="right" src="images/android.png"></img>
@@ -60,7 +60,7 @@ This software is released under the [Apache 2.0 License][apache2_license].
 
 Made with :yum: from Leipzig
 
-© 2016 [appPlant GmbH][appplant]
+© 2017 [appPlant GmbH][appplant]
 
 
 [cordova]: https://cordova.apache.org

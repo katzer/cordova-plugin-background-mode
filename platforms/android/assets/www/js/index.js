@@ -34,11 +34,7 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-        cordova.plugins.backgroundMode.setDefaults({ color: 'F26A33' });
-        cordova.plugins.backgroundMode.onactivate = app.onModeActivated;
-        cordova.plugins.backgroundMode.ondeactivate = app.onModeDeactivated;
-        document.getElementById('silent').onclick = app.toggleSilent;
-        document.getElementById('mode').onclick = app.toggleMode;
+        app.pluginInitialize();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -49,7 +45,16 @@ var app = {
         listeningElement.setAttribute('style', 'display:none;');
         receivedElement.setAttribute('style', 'display:block;');
 
+        document.getElementById('silent').onclick = app.toggleSilent;
+        document.getElementById('mode').onclick   = app.toggleMode;
+
         console.log('Received Event: ' + id);
+    },
+    // Initialize plugin
+    pluginInitialize: function() {
+        cordova.plugins.backgroundMode.setDefaults({ color: 'F14F4D' });
+        cordova.plugins.backgroundMode.on('activate', app.onModeActivated);
+        cordova.plugins.backgroundMode.on('deactivate', app.onModeDeactivated);
     },
     // Toggle the silent mode
     toggleSilent: function() {
@@ -102,6 +107,10 @@ var app = {
                 cordova.plugins.backgroundMode.configure({
                     text: 'Running since ' + counter + ' sec'
                 });
+
+                if (navigator.vibrate) {
+                    navigator.vibrate(1000);
+                }
             }
         }, 1000);
     },

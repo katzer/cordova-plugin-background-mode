@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
- * Copyright (c) 2013-2016 by appPlant UG. All rights reserved.
+ * Copyright (c) 2013-2016 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
  *
@@ -25,10 +26,11 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="de.appplant.cordova.plugin.badge-tests"
-        version="0.7.0dev">
+        version="0.7.4">
 
     <name>Cordova Badge Plugin Tests</name>
     <license>Apache 2.0</license>
 
     <js-module src="tests.js" name="tests" />
+
 </plugin>

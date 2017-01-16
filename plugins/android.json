@@ -7,21 +7,24 @@
         "files": {}
     },
     "installed_plugins": {
+        "cordova-plugin-background-mode": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        },
         "cordova-plugin-badge": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         },
         "cordova-plugin-console": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         },
-        "cordova-plugin-background-mode": {
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        },
+        "cordova-plugin-vibration": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         }
     },
     "dependent_plugins": {
         "cordova-plugin-app-event": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
-        },
-        "cordova-plugin-device": {
             "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
         }
     }

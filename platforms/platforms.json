@@ -1,4 +1,5 @@
 {
+    "windows": "4.4.2",
     "ios": "latest",
     "android": "latest"
 }

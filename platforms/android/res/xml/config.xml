@@ -1,5 +1,17 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="de.appplant.cordova.plugin.backgroundmode.example" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <feature name="Device">
+        <param name="android-package" value="org.apache.cordova.device.Device" />
+    </feature>
+    <feature name="BackgroundMode">
+        <param name="android-package" value="de.appplant.cordova.plugin.background.BackgroundMode" />
+    </feature>
+    <feature name="Badge">
+        <param name="android-package" value="de.appplant.cordova.plugin.badge.Badge" />
+    </feature>
+    <feature name="Vibration">
+        <param name="android-package" value="org.apache.cordova.vibration.Vibration" />
+    </feature>
     <name>BackgroundMode</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -10,14 +22,6 @@
     <content src="index.html" />
     <access origin="*" />
     <preference name="loglevel" value="DEBUG" />
-    <feature name="Badge">
-        <param name="android-package" value="de.appplant.cordova.plugin.badge.Badge" />
-    </feature>
-    <feature name="Device">
-        <param name="android-package" value="org.apache.cordova.device.Device" />
-    </feature>
-    <feature name="BackgroundMode">
-        <param name="android-package" value="de.appplant.cordova.plugin.background.BackgroundMode" />
-    </feature>
     <preference name="KeepRunning" value="true" />
+    <preference name="windows-target-version" value="10.0" />
 </widget>

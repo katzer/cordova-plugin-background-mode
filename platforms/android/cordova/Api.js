@@ -18,14 +18,17 @@
 */
 
 var path = require('path');
+var Q = require('q');
 
 var AndroidProject = require('./lib/AndroidProject');
+var AndroidStudio = require('./lib/AndroidStudio');
 var PluginManager = require('cordova-common').PluginManager;
 
 var CordovaLogger = require('cordova-common').CordovaLogger;
 var selfEvents = require('cordova-common').events;
 
 var PLATFORM = 'android';
+
 
 function setupEvents(externalEventEmitter) {
     if (externalEventEmitter) {
@@ -39,6 +42,7 @@ function setupEvents(externalEventEmitter) {
     CordovaLogger.get().subscribe(selfEvents);
     return selfEvents;
 }
+
 
 /**
  * Class, that acts as abstraction over particular platform. Encapsulates the
@@ -62,15 +66,28 @@ function Api(platform, platformRootDir, events) {
     this.locations = {
         root: self.root,
         www: path.join(self.root, 'assets/www'),
+        res: path.join(self.root, 'res'),
         platformWww: path.join(self.root, 'platform_www'),
         configXml: path.join(self.root, 'res/xml/config.xml'),
         defaultConfigXml: path.join(self.root, 'cordova/defaults.xml'),
         strings: path.join(self.root, 'res/values/strings.xml'),
         manifest: path.join(self.root, 'AndroidManifest.xml'),
+        build: path.join(self.root, 'build'),
         // NOTE: Due to platformApi spec we need to return relative paths here
         cordovaJs: 'bin/templates/project/assets/www/cordova.js',
         cordovaJsSrc: 'cordova-js-src'
     };
+
+    // XXX Override some locations for Android Studio projects
+    if(AndroidStudio.isAndroidStudioProject(self.root) === true) {
+      selfEvents.emit('log', 'Android Studio project detected');
+      this.android_studio = true;
+      this.locations.configXml = path.join(self.root, 'app/src/main/res/xml/config.xml');
+      this.locations.strings = path.join(self.root, 'app/src/main/res/xml/strings.xml');
+      this.locations.manifest = path.join(self.root, 'app/src/main/AndroidManifest.xml');
+      this.locations.www = path.join(self.root, 'app/src/main/assets/www');
+      this.locations.res = path.join(self.root, 'app/src/main/res');
+    }
 }
 
 /**
@@ -93,13 +110,20 @@ function Api(platform, platformRootDir, events) {
  */
 Api.createPlatform = function (destination, config, options, events) {
     events = setupEvents(events);
-
-    return require('../../lib/create')
-    .create(destination, config, options, events)
-    .then(function (destination) {
-        var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
-        return new PlatformApi(PLATFORM, destination, events);
-    });
+    var result;
+    try {
+        result = require('../../lib/create')
+        .create(destination, config, options, events)
+        .then(function (destination) {
+            var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
+            return new PlatformApi(PLATFORM, destination, events);
+        });
+    }
+    catch (e) {
+        events.emit('error','createPlatform is not callable from the android project API.');
+        throw(e);
+    }
+    return result;
 };
 
 /**
@@ -120,13 +144,20 @@ Api.createPlatform = function (destination, config, options, events) {
  */
 Api.updatePlatform = function (destination, options, events) {
     events = setupEvents(events);
-
-    return require('../../lib/create')
-    .update(destination, options, events)
-    .then(function (destination) {
-        var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
-        return new PlatformApi('android', destination, events);
-    });
+    var result;
+    try {
+        result = require('../../lib/create')
+        .update(destination, options, events)
+        .then(function (destination) {
+            var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
+            return new PlatformApi('android', destination, events);
+        });
+    }
+    catch (e) {
+        events.emit('error','updatePlatform is not callable from the android project API, you will need to do this manually.');
+        throw(e);
+    }
+    return result;
 };
 
 /**
@@ -186,6 +217,7 @@ Api.prototype.prepare = function (cordovaProject, prepareOptions) {
  */
 Api.prototype.addPlugin = function (plugin, installOptions) {
     var project = AndroidProject.getProjectFile(this.root);
+    var self = this;
 
     installOptions = installOptions || {};
     installOptions.variables = installOptions.variables || {};
@@ -194,15 +226,40 @@ Api.prototype.addPlugin = function (plugin, installOptions) {
         installOptions.variables.PACKAGE_NAME = project.getPackageName();
     }
 
-    return PluginManager.get(this.platform, this.locations, project)
-        .addPlugin(plugin, installOptions)
-        .then(function () {
+    if(this.android_studio === true) {
+      installOptions.android_studio = true;
+    }
+
+    return Q()
+       .then(function () {
+            //CB-11964: Do a clean when installing the plugin code to get around
+            //the Gradle bug introduced by the Android Gradle Plugin Version 2.2
+            //TODO: Delete when the next version of Android Gradle plugin comes out
+
+           // Since clean doesn't just clean the build, it also wipes out www, we need
+           // to pass additional options.
+
+           // Do some basic argument parsing
+            var opts = {};
+
+             // Skip cleaning prepared files when not invoking via cordova CLI.
+            opts.noPrepare = true;
+
+            if(!AndroidStudio.isAndroidStudioProject(self.root) && !project.isClean()) {
+              return self.clean(opts);
+            }
+        })
+       .then(function () {
+            return PluginManager.get(self.platform, self.locations, project)
+                .addPlugin(plugin, installOptions);
+        })
+      .then(function () {
             if (plugin.getFrameworks(this.platform).length === 0) return;
 
             selfEvents.emit('verbose', 'Updating build files since android plugin contained <framework>');
             require('./lib/builders/builders').getBuilder('gradle').prepBuildFiles();
         }.bind(this))
-        // CB-11022 Return truthy value to prevent running prepare after
+       // CB-11022 Return truthy value to prevent running prepare after
         .thenResolve(true);
 };
 
@@ -221,6 +278,12 @@ Api.prototype.addPlugin = function (plugin, installOptions) {
  */
 Api.prototype.removePlugin = function (plugin, uninstallOptions) {
     var project = AndroidProject.getProjectFile(this.root);
+
+    if(uninstallOptions && uninstallOptions.usePlatformWww === true && this.android_studio === true) {
+      uninstallOptions.usePlatformWww = false;
+      uninstallOptions.android_studio = true;
+    }
+
     return PluginManager.get(this.platform, this.locations, project)
         .removePlugin(plugin, uninstallOptions)
         .then(function () {
@@ -318,7 +381,8 @@ Api.prototype.run = function(runOptions) {
 };
 
 /**
- * Cleans out the build artifacts from platform's directory.
+ * Cleans out the build artifacts from platform's directory, and also
+ * cleans out the platform www directory if called without options specified.
  *
  * @return  {Promise}  Return a promise either fulfilled, or rejected with
  *   CordovaError.
@@ -326,13 +390,15 @@ Api.prototype.run = function(runOptions) {
 Api.prototype.clean = function(cleanOptions) {
     var self = this;
     return require('./lib/check_reqs').run()
-    .then(function () {
-        return require('./lib/build').runClean.call(self, cleanOptions);
-    })
-    .then(function () {
-        return require('./lib/prepare').clean.call(self, cleanOptions);
-    });
+      .then(function () {
+          return require('./lib/build').runClean.call(self, cleanOptions);
+      })
+      .then(function () {
+          return require('./lib/prepare').clean.call(self, cleanOptions);
+      });
 };
+
+
 
 /**
  * Performs a requirements check for current platform. Each platform defines its

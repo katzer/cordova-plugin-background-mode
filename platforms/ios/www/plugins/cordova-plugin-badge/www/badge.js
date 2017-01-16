@@ -1,6 +1,6 @@
 cordova.define("cordova-plugin-badge.Badge", function(require, exports, module) {
 /*
- * Copyright (c) 2013-2016 by appPlant UG. All rights reserved.
+ * Copyright (c) 2013-2016 by appPlant GmbH. All rights reserved.
  *
  * @APPPLANT_LICENSE_HEADER_START@
  *
