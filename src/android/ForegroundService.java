@@ -35,7 +35,6 @@ import android.os.PowerManager;
 
 import org.json.JSONObject;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -251,18 +250,13 @@ public class ForegroundService extends Service {
         if (Build.VERSION.SDK_INT < 21 || hex == null)
             return;
 
-        int aRGB = Integer.parseInt(hex, 16) + 0xFF000000;
-
         try {
+            int aRGB = Integer.parseInt(hex, 16) + 0xFF000000;
             Method setColorMethod = notification.getClass().getMethod(
                     "setColor", int.class);
 
             setColorMethod.invoke(notification, aRGB);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

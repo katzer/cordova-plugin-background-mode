@@ -87,8 +87,7 @@ public class BackgroundMode extends CordovaPlugin {
      * @param callback The callback context used when
      *                 calling back into JavaScript.
      *
-     * @return
-     *      Returning false results in a "MethodNotFound" error.
+     * @return Returning false results in a "MethodNotFound" error.
      *
      * @throws JSONException
      */
@@ -131,8 +130,7 @@ public class BackgroundMode extends CordovaPlugin {
     /**
      * Called when the system is about to start resuming a previous activity.
      *
-     * @param multitasking
-     *      Flag indicating if multitasking is turned on for app
+     * @param multitasking Flag indicating if multitasking is turned on for app.
      */
     @Override
     public void onPause(boolean multitasking) {
@@ -144,8 +142,7 @@ public class BackgroundMode extends CordovaPlugin {
     /**
      * Called when the activity will start interacting with the user.
      *
-     * @param multitasking
-     *      Flag indicating if multitasking is turned on for app
+     * @param multitasking Flag indicating if multitasking is turned on for app.
      */
     @Override
     public void onResume(boolean multitasking) {
