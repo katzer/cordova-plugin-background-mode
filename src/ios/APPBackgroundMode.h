@@ -19,9 +19,7 @@
     under the License.
 */
 
-#import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <AudioToolbox/AudioToolbox.h>
 #import <Cordova/CDVPlugin.h>
 
 @interface APPBackgroundMode : CDVPlugin  {
@@ -30,8 +28,8 @@
 }
 
 // Activate the background mode
-- (void) enable:(CDVInvokedUrlCommand *)command;
+- (void) enable:(CDVInvokedUrlCommand*)command;
 // Deactivate the background mode
-- (void) disable:(CDVInvokedUrlCommand *)command;
+- (void) disable:(CDVInvokedUrlCommand*)command;
 
 @end
