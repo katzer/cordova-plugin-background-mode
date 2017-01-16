@@ -155,7 +155,7 @@ public class ForegroundService extends Service {
                 .setTicker(settings.optString("ticker", ""))
                 .setOngoing(true)
                 .setPriority(Notification.PRIORITY_MIN)
-                .setSmallIcon(getIconResId());
+                .setSmallIcon(getIconResId(settings));
 
         if (bigText || text.contains("\n")) {
             notification.setStyle(
@@ -196,9 +196,10 @@ public class ForegroundService extends Service {
 
     /**
      * Retrieves the resource ID of the app icon.
+     *
+     * @param settings A JSON dict containing the icon name.
      */
-    private int getIconResId() {
-        JSONObject settings = BackgroundMode.getSettings();
+    private int getIconResId(JSONObject settings) {
         Context context = getApplicationContext();
         Resources res   = context.getResources();
         String pkgName  = context.getPackageName();
