@@ -23,10 +23,10 @@
 
 @implementation APPBackgroundMode
 
-NSString *const kAPPBackgroundJsNamespace = @"cordova.plugins.backgroundMode";
-NSString *const kAPPBackgroundEventActivate = @"activate";
-NSString *const kAPPBackgroundEventDeactivate = @"deactivate";
-NSString *const kAPPBackgroundEventFailure = @"failure";
+NSString* const kAPPBackgroundJsNamespace = @"cordova.plugins.backgroundMode";
+NSString* const kAPPBackgroundEventActivate = @"activate";
+NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
+NSString* const kAPPBackgroundEventFailure = @"failure";
 
 #pragma mark -
 #pragma mark Initialization
@@ -36,10 +36,12 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
  */
 - (void) pluginInitialize
 {
-    [self disable:NULL];
-    [self configureAudioPlayer];
-    [self configureAudioSession];
-    [self observeLifeCycle];
+    [self.commandDelegate runInBackground:^{
+        enabled = NO;
+        [self configureAudioPlayer];
+        [self configureAudioSession];
+        [self observeLifeCycle];
+    }];
 }
 
 /**
@@ -47,9 +49,8 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
  */
 - (void) observeLifeCycle
 {
-    NSNotificationCenter* listener = [NSNotificationCenter defaultCenter];
-
-    if (UIApplicationDidEnterBackgroundNotification && UIApplicationWillEnterForegroundNotification) {
+    NSNotificationCenter* listener = [NSNotificationCenter
+                                      defaultCenter];
 
         [listener addObserver:self
                      selector:@selector(keepAwake)
@@ -65,11 +66,6 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
                      selector:@selector(handleAudioSessionInterruption:)
                          name:AVAudioSessionInterruptionNotification
                        object:nil];
-
-    } else {
-        [self enable:NULL];
-        [self keepAwake];
-    }
 }
 
 #pragma mark -
@@ -82,6 +78,7 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
 - (void) enable:(CDVInvokedUrlCommand*)command
 {
     enabled = YES;
+    [self execCallback:command];
 }
 
 /**
@@ -91,8 +88,8 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
 - (void) disable:(CDVInvokedUrlCommand*)command
 {
     enabled = NO;
-
     [self stopKeepingAwake];
+    [self execCallback:command];
 }
 
 #pragma mark -
@@ -103,10 +100,11 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
  */
 - (void) keepAwake
 {
-    if (enabled) {
-        [audioPlayer play];
-        [self fireEvent:kAPPBackgroundEventActivate withParams:NULL];
-    }
+    if (!enabled)
+        return;
+
+    [audioPlayer play];
+    [self fireEvent:kAPPBackgroundEventActivate];
 }
 
 /**
@@ -114,13 +112,12 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
  */
 - (void) stopKeepingAwake
 {
-
     if (TARGET_IPHONE_SIMULATOR) {
         NSLog(@"BackgroundMode: On simulator apps never pause in background!");
     }
 
     if (audioPlayer.isPlaying) {
-        [self fireEvent:kAPPBackgroundEventDeactivate withParams:NULL];
+        [self fireEvent:kAPPBackgroundEventDeactivate];
     }
 
     [audioPlayer pause];
@@ -169,29 +166,42 @@ NSString *const kAPPBackgroundEventFailure = @"failure";
 #pragma mark Helper
 
 /**
+ * Simply invokes the callback without any parameter.
+ */
+- (void) execCallback:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult *result = [CDVPluginResult
+                               resultWithStatus:CDVCommandStatus_OK];
+
+    [self.commandDelegate sendPluginResult:result
+                                callbackId:command.callbackId];
+}
+
+/**
  * Restart playing sound when interrupted by phone calls.
  */
 - (void) handleAudioSessionInterruption:(NSNotification*)notification
 {
-    [self fireEvent:kAPPBackgroundEventDeactivate withParams:NULL];
+    [self fireEvent:kAPPBackgroundEventDeactivate];
     [self keepAwake];
 }
 
 /**
  * Method to fire an event with some parameters in the browser.
  */
-- (void) fireEvent:(NSString*)event withParams:(NSString*)params
+- (void) fireEvent:(NSString*)event
 {
-    NSString* active = [event isEqualToString:kAPPBackgroundEventActivate] ? @"true" : @"false";
+    NSString* active =
+    [event isEqualToString:kAPPBackgroundEventActivate] ? @"true" : @"false";
 
     NSString* flag = [NSString stringWithFormat:@"%@._isActive=%@;",
                       kAPPBackgroundJsNamespace, active];
 
-    NSString* depFn = [NSString stringWithFormat:@"%@.on%@(%@);",
-                       kAPPBackgroundJsNamespace, event, params];
-    
-    NSString* fn = [NSString stringWithFormat:@"%@.fireEvent('%@',%@);",
-                    kAPPBackgroundJsNamespace, event, params];
+    NSString* depFn = [NSString stringWithFormat:@"%@.on%@();",
+                       kAPPBackgroundJsNamespace, event];
+
+    NSString* fn = [NSString stringWithFormat:@"%@.fireEvent('%@');",
+                    kAPPBackgroundJsNamespace, event];
 
     NSString* js = [NSString stringWithFormat:@"%@%@%@", flag, depFn, fn];
 
