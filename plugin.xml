@@ -84,7 +84,7 @@
             target-dir="src/de/appplant/cordova/plugin/background" />
     </platform>
 
-    <!-- windows -->
+    <!-- windows
     <platform name="windows">
         <config-file target="config.xml" parent="/*">
             <feature name="BackgroundMode" >
@@ -95,6 +95,6 @@
         <js-module src="src/windows/backgroundmodeProxy.js" name="backgroundmodeProxy">
             <merges target="" />
         </js-module>
-    </platform>
+    </platform> -->
 
 </plugin>
