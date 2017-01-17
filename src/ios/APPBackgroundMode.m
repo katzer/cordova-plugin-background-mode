@@ -1,35 +1,50 @@
 /*
-    Copyright 2013-2017 appPlant GmbH
+  Copyright 2013-2017 appPlant GmbH
 
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
 */
 
+#import "APPMethodMagic.h"
 #import "APPBackgroundMode.h"
+#import <Cordova/CDVAvailability.h>
 
 @implementation APPBackgroundMode
+
+#pragma mark -
+#pragma mark Constants
 
 NSString* const kAPPBackgroundJsNamespace = @"cordova.plugins.backgroundMode";
 NSString* const kAPPBackgroundEventActivate = @"activate";
 NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
 NSString* const kAPPBackgroundEventFailure = @"failure";
 
+
 #pragma mark -
-#pragma mark Initialization
+#pragma mark Life Cycle
+
+/**
+ * Called by runtime once the Class has been loaded.
+ * Exchange method implementations to hook into their execution.
+ */
++ (void) load
+{
+    [self swizzleWKWebViewEngine];
+}
 
 /**
  * Initialize the plugin.
@@ -206,6 +221,35 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
     NSString* js = [NSString stringWithFormat:@"%@%@%@", flag, depFn, fn];
 
     [self.commandDelegate evalJs:js];
+}
+
+#pragma mark -
+#pragma mark Swizzling
+
+/**
+ * Swizzle some implementations of CDVWKWebViewEngine.
+ */
++ (void) swizzleWKWebViewEngine
+{
+    if (!IsAtLeastiOSVersion(@"8.0"))
+        return;
+    
+    Class wkWebViewEngineCls = NSClassFromString(@"CDVWKWebViewEngine");
+    SEL selector = NSSelectorFromString(@"createConfigurationFromSettings:");
+    
+    if (!wkWebViewEngineCls)
+        return;
+    
+    SwizzleSelectorWithBlock_Begin(wkWebViewEngineCls, selector)
+    ^(CDVPlugin *self, NSDictionary *settings) {
+        id obj = ((id (*)(id, SEL, NSDictionary*))_imp)(self, _cmd, settings);
+        
+        SEL sel = NSSelectorFromString(@"_setAlwaysRunsAtForegroundPriority:");
+        ((void (*)(id, SEL, BOOL))[obj methodForSelector:selector])(obj, sel, YES);
+        
+        return sel;
+    }
+    SwizzleSelectorWithBlock_End;
 }
 
 @end

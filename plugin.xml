@@ -40,7 +40,6 @@
             </feature>
         </config-file>
 
-        <!-- The app is able to run in background through audio mode -->
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
             <array>
                 <string>audio</string>
@@ -51,6 +50,8 @@
 
         <header-file src="src/ios/APPBackgroundMode.h" />
         <source-file src="src/ios/APPBackgroundMode.m" />
+        <header-file src="src/ios/APPMethodMagic.h" />
+        <source-file src="src/ios/APPMethodMagic.m" />
     </platform>
 
     <!-- android -->
@@ -67,11 +68,6 @@
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <!--
-             * Puts the service in a foreground state, where the system considers
-             * it to be something the user is actively aware of and thus not a
-             * candidate for killing when low on memory.
-            -->
             <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
         </config-file>
 
@@ -86,43 +82,19 @@
         <source-file
             src="src/android/ForegroundService.java"
             target-dir="src/de/appplant/cordova/plugin/background" />
-
     </platform>
 
-    <!-- wp8 -->
-    <platform name="wp8">
+    <!-- windows -->
+    <platform name="windows">
         <config-file target="config.xml" parent="/*">
-            <feature name="BackgroundMode">
-                <param name="wp-package" value="BackgroundMode" />
+            <feature name="BackgroundMode" >
+                <param name="windows-package" value="BackgroundMode"/>
             </feature>
         </config-file>
 
-        <!-- The app is able to run in background through location-tracking mode -->
-        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Tasks/DefaultTask">
-            <BackgroundExecution>
-                <ExecutionType Name="LocationTracking" />
-            </BackgroundExecution>
-        </config-file>
-
-        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
-            <Capability Name="ID_CAP_LOCATION" />
-        </config-file>
-
-        <source-file src="src/wp8/BackgroundMode.cs" />
+        <js-module src="src/windows/backgroundmodeProxy.js" name="backgroundmodeProxy">
+            <merges target="" />
+        </js-module>
     </platform>
-	
-
-	<!-- windows -->
-	<platform name="windows">
-		<config-file target="config.xml" parent="/*">
-			<feature name="BackgroundMode" >
-				<param name="windows-package" value="BackgroundMode"/>
-			</feature>
-		</config-file>
-
-		<js-module src="src/windows/backgroundmodeProxy.js" name="backgroundmodeProxy">
-			<merges target="" />
-		</js-module>
-	</platform>
 
 </plugin>
