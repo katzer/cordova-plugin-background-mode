@@ -233,21 +233,21 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 {
     if (!IsAtLeastiOSVersion(@"8.0"))
         return;
-    
+
     Class wkWebViewEngineCls = NSClassFromString(@"CDVWKWebViewEngine");
     SEL selector = NSSelectorFromString(@"createConfigurationFromSettings:");
-    
+
     if (!wkWebViewEngineCls)
         return;
-    
+
     SwizzleSelectorWithBlock_Begin(wkWebViewEngineCls, selector)
     ^(CDVPlugin *self, NSDictionary *settings) {
         id obj = ((id (*)(id, SEL, NSDictionary*))_imp)(self, _cmd, settings);
-        
+
         SEL sel = NSSelectorFromString(@"_setAlwaysRunsAtForegroundPriority:");
-        ((void (*)(id, SEL, BOOL))[obj methodForSelector:selector])(obj, sel, YES);
-        
-        return sel;
+        ((void (*)(id, SEL, BOOL))[obj methodForSelector:sel])(obj, sel, YES);
+
+        return obj;
     }
     SwizzleSelectorWithBlock_End;
 }
