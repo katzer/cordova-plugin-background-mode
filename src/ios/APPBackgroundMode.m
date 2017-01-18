@@ -52,7 +52,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 - (void) pluginInitialize
 {
     [self.commandDelegate runInBackground:^{
-        enabled = NO;
+        enabled = [self.class isRunningWebKit];
         [self configureAudioPlayer];
         [self configureAudioSession];
         [self observeLifeCycle];
@@ -66,7 +66,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 {
     NSNotificationCenter* listener = [NSNotificationCenter
                                       defaultCenter];
-
+    
         [listener addObserver:self
                      selector:@selector(keepAwake)
                          name:UIApplicationDidEnterBackgroundNotification
@@ -76,6 +76,9 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
                      selector:@selector(stopKeepingAwake)
                          name:UIApplicationWillEnterForegroundNotification
                        object:nil];
+    
+    if ([self.class isRunningWebKit])
+        return;
 
         [listener addObserver:self
                      selector:@selector(handleAudioSessionInterruption:)
@@ -92,6 +95,9 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
  */
 - (void) enable:(CDVInvokedUrlCommand*)command
 {
+    if (enabled)
+        return;
+    
     enabled = YES;
     [self execCallback:command];
 }
@@ -102,6 +108,9 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
  */
 - (void) disable:(CDVInvokedUrlCommand*)command
 {
+    if (!enabled || [self.class isRunningWebKit])
+        return;
+    
     enabled = NO;
     [self stopKeepingAwake];
     [self execCallback:command];
@@ -118,7 +127,10 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
     if (!enabled)
         return;
 
-    [audioPlayer play];
+    if (![self.class isRunningWebKit]) {
+        [audioPlayer play];
+    }
+    
     [self fireEvent:kAPPBackgroundEventActivate];
 }
 
@@ -131,7 +143,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
         NSLog(@"BackgroundMode: On simulator apps never pause in background!");
     }
 
-    if (audioPlayer.isPlaying) {
+    if (audioPlayer.isPlaying || [self.class isRunningWebKit]) {
         [self fireEvent:kAPPBackgroundEventDeactivate];
     }
 
@@ -164,6 +176,9 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
     AVAudioSession* session = [AVAudioSession
                                sharedInstance];
 
+    if ([self.class isRunningWebKit])
+        return;
+    
     // Don't activate the audio session yet
     [session setActive:NO error:NULL];
 
@@ -202,6 +217,14 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 }
 
 /**
+ * Find out if the app runs inside the webkit powered webview.
+ */
++ (BOOL) isRunningWebKit
+{
+    return IsAtLeastiOSVersion(@"8.0") && NSClassFromString(@"CDVWKWebViewEngine");
+}
+
+/**
  * Method to fire an event with some parameters in the browser.
  */
 - (void) fireEvent:(NSString*)event
@@ -231,14 +254,11 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
  */
 + (void) swizzleWKWebViewEngine
 {
-    if (!IsAtLeastiOSVersion(@"8.0"))
+    if (![self isRunningWebKit])
         return;
 
     Class wkWebViewEngineCls = NSClassFromString(@"CDVWKWebViewEngine");
     SEL selector = NSSelectorFromString(@"createConfigurationFromSettings:");
-
-    if (!wkWebViewEngineCls)
-        return;
 
     SwizzleSelectorWithBlock_Begin(wkWebViewEngineCls, selector)
     ^(CDVPlugin *self, NSDictionary *settings) {

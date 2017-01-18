@@ -36,11 +36,12 @@ exports.enable = function () {
     if (this.isEnabled())
         return;
 
-    var me        = this,
-        fireEvent = function () { me.fireEvent('enable'); };
+    var fn = function () {
+            exports._isEnabled = true;
+            exports.fireEvent('enable');
+        };
 
-    this._isEnabled = true;
-    cordova.exec(fireEvent, null, 'BackgroundMode', 'enable', []);
+    cordova.exec(fn, null, 'BackgroundMode', 'enable', []);
 };
 
 /**
@@ -51,11 +52,12 @@ exports.disable = function () {
     if (!this.isEnabled())
         return;
 
-    var me        = this,
-        fireEvent = function () { me.fireEvent('disable'); };
+    var fn = function () {
+            exports._isEnabled = false;
+            exports.fireEvent('disable');
+        };
 
-    this._isEnabled = false;
-    cordova.exec(fireEvent, null, 'BackgroundMode', 'disable', []);
+    cordova.exec(fn, null, 'BackgroundMode', 'disable', []);
 };
 
 /**
@@ -302,7 +304,7 @@ exports.mergeWithDefaults = function (options) {
  *
  * Flag indicates if the mode is enabled.
  */
-exports._isEnabled = false;
+exports._isEnabled = window.webkit !== undefined;
 
 /**
  * @private
@@ -317,14 +319,14 @@ exports._isActive = false;
  * Default values of all available options.
  */
 exports._defaults = {
-    title:  'App is running in background',
-    text:   "Doing heavy tasks.",
-    ticker: 'Running in background',
+    title:   'App is running in background',
+    text:    'Doing heavy tasks.',
+    ticker:  'Running in background',
     bigText: false,
-    resume: true,
-    silent: false,
-    color:  undefined,
-    icon:   'icon'
+    resume:  true,
+    silent:  false,
+    color:   undefined,
+    icon:    'icon'
 };
 
 // Called before 'deviceready' listener will be called
