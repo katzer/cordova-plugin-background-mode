@@ -72,22 +72,39 @@ More informations can be found [here][PGB_plugin].
 
 
 ## ChangeLog
-#### Version 0.6.4 (03.03.2015)
-- Resolve possibly dependency conflict
-
-#### Version 0.6.3 (01.01.2015)
-- [feature:] Silent mode for Android
-
-#### Version 0.6.2 (14.12.2014)
-- [bugfix:] Type error
-- [bugfix:] Wrong default values for `isEnabled` and `isActive`.
+#### Version 0.7.0 (not yet released)
+- __Features__
+ - Ability to configure icon and color on Android
+ - Allow app to move to foreground on Android
+ - Allow app to move to background on Android
+ - Allow app to override back button behaviour on Android
+ - New events for when the mode has been enabled/disabled
+- __Improvements__
+ - Various enhancements and bug fixes for all platforms
+ - Support for latest platform and OS versions
+ - Multi line text on Android
+ - Multiple listeners for same event
+ - Compatibility with cordova-plugin-geolocation
+ - Compatibility with cordova-plugin-crosswalk-webview
+ - Compatibility with cordova-plugin-wkwebview-engine
+ - New sample app
+- __Fixes__
+ - Silent mode issues on Android
+ - Lock screen issues on Android
+ - Callback not called on Android  
+ - Notification shows app info with cordova-android@6
+ - Other apps audio interruption on iOS
+- __Changes__
+ - Deprecate event callbacks
+ - Notification not visible anymore on lock screen
+ - Remove unexpected back button handler
+ - Remove support for wp8 platform
 
 #### Further informations
-- The former `plugin.backgroundMode` namespace has been deprecated and will be removed with the next major release.
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
 
 #### Known issues
-- Plug-in is broken on Windows Phone 8.1 platform.
+- README is out of date !!!
 
 
 ## Usage
