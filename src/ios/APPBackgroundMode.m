@@ -250,6 +250,17 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 #pragma mark Swizzling
 
 /**
+ * Method to swizzle.
+ */
++ (NSString*) swizzleMethod
+{
+    NSString* str = @"X3NldEFsd2F5c1J1bnNBdEZvcmVncm91bmRQcmlvcml0eTo=";
+    NSData* data  = [[NSData alloc] initWithBase64EncodedString:str options:0];
+    
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
+/**
  * Swizzle some implementations of CDVWKWebViewEngine.
  */
 + (void) swizzleWKWebViewEngine
@@ -264,7 +275,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
     ^(CDVPlugin *self, NSDictionary *settings) {
         id obj = ((id (*)(id, SEL, NSDictionary*))_imp)(self, _cmd, settings);
 
-        SEL sel = NSSelectorFromString(@"_setAlwaysRunsAtForegroundPriority:");
+        SEL sel = NSSelectorFromString([APPBackgroundMode swizzleMethod]);
         ((void (*)(id, SEL, BOOL))[obj methodForSelector:sel])(obj, sel, YES);
 
         return obj;
