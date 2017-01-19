@@ -61,6 +61,21 @@ exports.disable = function () {
 };
 
 /**
+ * Enable or disable the background mode.
+ *
+ * @param [ Bool ] enable The status to set for.
+ *
+ * @return [ Void ]
+ */
+exports.setEnabled = function (enable) {
+    if (enable) {
+        this.enable();
+    } else {
+        this.disable();
+    }
+};
+
+/**
  * List of all available options with their default value.
  *
  * @return {Object}
