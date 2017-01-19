@@ -350,3 +350,10 @@ channel.onCordovaReady.subscribe(function () {
         exports.setDefaults({});
     });
 });
+
+// Called after 'deviceready' event
+channel.deviceready.subscribe(function () {
+    if (window.webkit && exports.isEnabled()) {
+        exports.fireEvent('enable');
+    }
+});
