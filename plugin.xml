@@ -84,7 +84,7 @@
             target-dir="src/de/appplant/cordova/plugin/background" />
     </platform>
 
-    <!-- windows
+    <!-- windows (10.14393) -->
     <platform name="windows">
         <config-file target="config.xml" parent="/*">
             <feature name="BackgroundMode" >
@@ -92,9 +92,17 @@
             </feature>
         </config-file>
 
-        <js-module src="src/windows/backgroundmodeProxy.js" name="backgroundmodeProxy">
+        <config-file target="package.appxmanifest" parent="/Package/Capabilities" device-target="windows">
+            <!-- https://issues.apache.org/jira/browse/CB-12380 -->
+            <Capability Name="backgroundMediaPlayback" />
+        </config-file>
+
+        <!-- https://github.com/apache/cordova-windows/pull/213 -->
+        <resource-file src="appbeep.wma" target="appbeep.wma" />
+
+        <js-module src="src/windows/BackgroundModeProxy.js" name="BackgroundModeProxy">
             <merges target="" />
         </js-module>
-    </platform> -->
+    </platform>
 
 </plugin>
