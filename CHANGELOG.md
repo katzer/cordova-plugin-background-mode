@@ -25,6 +25,7 @@
 - __Changes__
  - Deprecate event callbacks
  - Notification not visible anymore on lock screen
+ - Remove ticker property on Android
  - Remove unexpected back button handler
  - Remove support for wp8 platform
 

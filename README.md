@@ -98,11 +98,13 @@ More informations can be found [here][PGB_plugin].
 - __Changes__
  - Deprecate event callbacks
  - Notification not visible anymore on lock screen
+ - Remove ticker property on Android
  - Remove unexpected back button handler
  - Remove support for wp8 platform
 
 #### Further informations
 - See [CHANGELOG.md][changelog] to get the full changelog for the plugin.
+- Master branch contains experimental support for the windows platform. See #222
 
 #### Known issues
 - README is out of date !!!
