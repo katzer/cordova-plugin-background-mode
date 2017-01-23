@@ -347,8 +347,8 @@ exports._defaults = {
 // Called before 'deviceready' listener will be called
 channel.onCordovaReady.subscribe(function () {
     channel.onCordovaInfoReady.subscribe(function () {
-        exports.setDefaults({});
         exports._isAndroid = device.platform.match(/^android|amazon/i) !== null;
+        exports.setDefaults({});
     });
 });
 
