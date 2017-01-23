@@ -99,7 +99,7 @@ exports.setDefaults = function (overrides) {
         }
     }
 
-    if (device.platform == 'Android') {
+    if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'configure', [defaults, false]);
     }
 };
@@ -114,7 +114,7 @@ exports.setDefaults = function (overrides) {
 exports.configure = function (options) {
     var settings = this.mergeWithDefaults(options);
 
-    if (device.platform == 'Android') {
+    if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'configure', [settings, true]);
     }
 };
@@ -123,7 +123,7 @@ exports.configure = function (options) {
  * Enable GPS-tracking in background (Android).
  */
 exports.disableWebViewOptimizations = function () {
-    if (device.platform == 'Android') {
+    if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'disableWebViewOptimizations', []);
     }
 };
@@ -134,7 +134,7 @@ exports.disableWebViewOptimizations = function () {
  * @return [ Void ]
  */
 exports.moveToBackground = function () {
-    if (device.platform == 'Android') {
+    if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'background', []);
     }
 };
@@ -145,7 +145,7 @@ exports.moveToBackground = function () {
  * @return [ Void ]
  */
 exports.moveToForeground = function () {
-    if (this.isActive() && device.platform == 'Android') {
+    if (this.isActive() && this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'foreground', []);
     }
 };
@@ -348,6 +348,7 @@ exports._defaults = {
 channel.onCordovaReady.subscribe(function () {
     channel.onCordovaInfoReady.subscribe(function () {
         exports.setDefaults({});
+        exports._isAndroid = device.platform.match(/^android|amazon/i) !== null;
     });
 });
 

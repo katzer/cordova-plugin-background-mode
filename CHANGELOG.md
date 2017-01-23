@@ -1,6 +1,7 @@
 ## ChangeLog
 #### Version 0.7.0 (not yet released)
 - __Features__
+ - Support for Amazon FireOS
  - Ability to configure icon and color on Android
  - Allow app to move to foreground on Android
  - Allow app to move to background on Android
