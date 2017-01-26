@@ -165,8 +165,11 @@ public class ForegroundService extends Service {
                 .setContentTitle(title)
                 .setContentText(text)
                 .setOngoing(true)
-                .setPriority(Notification.PRIORITY_MIN)
                 .setSmallIcon(getIconResId(settings));
+
+        if (settings.optBoolean("hidden", true)) {
+            notification.setPriority(Notification.PRIORITY_MIN);
+        }
 
         if (bigText || text.contains("\n")) {
             notification.setStyle(
