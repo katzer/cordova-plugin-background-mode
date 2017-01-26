@@ -48,7 +48,7 @@ before_script:
 - cordova create myApp org.apache.cordova.myApp myApp
 - cd myApp
 - cordova platform add ios@latest android@latest
-- cordova plugin add cordova-plugin-background-mode --searchpath ../
+- cordova plugin add cordova-plugin-background-mode --searchpath $TRAVIS_BUILD_DIR
 - cordova platform ls
 - cordova plugin ls
 
