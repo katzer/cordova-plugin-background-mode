@@ -68,9 +68,10 @@
     </ItemGroup>
     <Import Label="Shared" Project="CordovaApp.projitems" />
     <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
-    <ItemGroup>
-        <ProjectReference Include="..\..\plugins\cordova-plugin-vibration\src\windows\Vibration\Vibration.csproj" />
-    </ItemGroup>
+    <PropertyGroup>
+        <PreBuildEvent>node "$(ProjectDir)\\cordova\\prebuild-phone-81.js"</PreBuildEvent>
+        <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\plugins\cordova-plugin-vibration\src\windows\Vibration\Vibration.csproj" />
     </ItemGroup>

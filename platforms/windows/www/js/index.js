@@ -34,11 +34,7 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-        cordova.plugins.backgroundMode.setDefaults({ color: 'F26A33' });
-        cordova.plugins.backgroundMode.onactivate = app.onModeActivated;
-        cordova.plugins.backgroundMode.ondeactivate = app.onModeDeactivated;
-        document.getElementById('silent').onclick = app.toggleSilent;
-        document.getElementById('mode').onclick = app.toggleMode;
+        app.pluginInitialize();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -51,39 +47,61 @@ var app = {
 
         console.log('Received Event: ' + id);
     },
-    // Toggle the silent mode
-    toggleSilent: function() {
-        var el       = document.getElementById('silent'),
-            isActive = app.toggleActive(el),
-            plugin   = cordova.plugins.backgroundMode;
+    // Initialize plugin
+    pluginInitialize: function() {
+        var silentBtn = document.getElementById('silent'),
+            modeBtn   = document.getElementById('mode'),
+            plugin    = cordova.plugins.backgroundMode;
 
-        plugin.setDefaults({ silent: isActive });
+        plugin.setDefaults({ color: 'F14F4D' });
+        plugin.overrideBackButton();
+        plugin.disableWebViewOptimizations();
+
+        plugin.on('activate', app.onModeActivated);
+        plugin.on('deactivate', app.onModeDeactivated);
+        plugin.on('enable', app.onModeEnabled);
+        plugin.on('disable', app.onModeDisabled);
+
+        modeBtn.onclick = app.onModeButtonClicked;
+
+        if (device.platform == 'Android') {
+            silentBtn.onclick = app.onSilentButtonClicked;
+        } else {
+            app.onSilentButtonClicked();
+        }
+    },
+    // Toggle the silent mode
+    onSilentButtonClicked: function() {
+        var plugin   = cordova.plugins.backgroundMode,
+            btn      = document.getElementById('silent'),
+            isSilent = !plugin.getDefaults().silent;
+
+        app.setButtonClass(btn, isSilent);
+        plugin.setDefaults({ silent: isSilent });
     },
     // Enable or disable the backgroud mode
-    toggleMode: function() {
-        var el       = document.getElementById('mode'),
-            isActive = app.toggleActive(el),
-            plugin   = cordova.plugins.backgroundMode;
-
-        if (!isActive) {
-            plugin.disable();
-            return;
-        }
-
-        cordova.plugins.notification.badge
-            .registerPermission(plugin.enable, plugin);
+    onModeButtonClicked: function() {
+        var plugin = cordova.plugins.backgroundMode;
+        plugin.setEnabled(!plugin.isEnabled());
+    },
+    // Update CSS classes
+    onModeEnabled: function() {
+        var btn = document.getElementById('mode');
+        app.setButtonClass(btn, true);
+        cordova.plugins.notification.badge.registerPermission();
+    },
+    // Update CSS classes
+    onModeDisabled: function() {
+        var btn = document.getElementById('mode');
+        app.setButtonClass(btn, false);
     },
     // Toggle 'active' CSS class and return new status
-    toggleActive: function(el) {
-        var isActive = el.className.indexOf('active') != -1;
-
-        if (isActive) {
-            el.className = el.className.replace(' active', '');
-        } else {
+    setButtonClass: function(el, setActive) {
+        if (setActive) {
             el.className += ' active';
+        } else {
+            el.className = el.className.replace(' active', '');
         }
-
-        return !isActive;
     },
     // To update the badge in intervals
     timer: null,
@@ -94,11 +112,7 @@ var app = {
         app.timer = setInterval(function () {
             counter++;
 
-            // WinJS.Utilities.startLog({ type: "customType", tags: "custom" });
-
-            // WinJS.log && WinJS.log('Running since ' + counter + ' sec');
-
-            // console && console.log('Running since ' + counter + ' sec');
+            console.log('Running since ' + counter + ' sec');
 
             cordova.plugins.notification.badge.set(counter);
 
@@ -107,16 +121,16 @@ var app = {
                     text: 'Running since ' + counter + ' sec'
                 });
 
-                navigator.notification.vibrate(1000);
+                if (navigator.vibrate) {
+                    navigator.vibrate(1000);
+                }
             }
-
-            if (counter >= 100) counter = 0;
-        }, 1000);
+        }, 1000 * 1);
     },
     // Reset badge once deactivated
     onModeDeactivated: function() {
-        clearInterval(app.timer);
         cordova.plugins.notification.badge.clear();
+        clearInterval(app.timer);
     }
 };
 

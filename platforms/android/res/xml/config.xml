@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="de.appplant.cordova.plugin.backgroundmode.example" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <feature name="Device">
-        <param name="android-package" value="org.apache.cordova.device.Device" />
-    </feature>
-    <feature name="BackgroundMode">
-        <param name="android-package" value="de.appplant.cordova.plugin.background.BackgroundMode" />
-    </feature>
     <feature name="Badge">
         <param name="android-package" value="de.appplant.cordova.plugin.badge.Badge" />
     </feature>
     <feature name="Vibration">
         <param name="android-package" value="org.apache.cordova.vibration.Vibration" />
+    </feature>
+    <feature name="Device">
+        <param name="android-package" value="org.apache.cordova.device.Device" />
+    </feature>
+    <feature name="BackgroundMode">
+        <param name="android-package" value="de.appplant.cordova.plugin.background.BackgroundMode" />
     </feature>
     <name>BackgroundMode</name>
     <description>
@@ -23,5 +23,9 @@
     <access origin="*" />
     <preference name="loglevel" value="DEBUG" />
     <preference name="KeepRunning" value="true" />
-    <preference name="windows-target-version" value="10.0" />
+    <preference name="AndroidLaunchMode" value="singleInstance" />
+    <preference name="windows-target-version" value="UAP" />
+    <preference name="uap-target-min-version" value="10.0.14393.0" />
+    <preference name="Windows.Universal-MinVersion" value="10.0.14393.0" />
+    <preference name="Windows.Universal" value="10.0.14393.0" />
 </widget>

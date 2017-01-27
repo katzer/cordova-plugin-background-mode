@@ -121,7 +121,7 @@ jsprojManager.prototype = {
         copyToOutputDirectory.text = 'Always';
         children.push(copyToOutputDirectory);
 
-        var item = createItemGroupElement('ItemGroup/Content', sourcePath, targetConditions, children);
+        var item = createItemGroupElement('ItemGroup/None', sourcePath, targetConditions, children);
         this._getMatchingProjects(targetConditions).forEach(function (project) {
             project.appendToRoot(item);
         });
@@ -130,7 +130,7 @@ jsprojManager.prototype = {
     removeResourceFileFromProject: function (relPath, targetConditions) {
         events.emit('verbose', 'jsprojManager.removeResourceFile(relPath: ' + relPath + ', targetConditions: ' + JSON.stringify(targetConditions) + ')');
         this._getMatchingProjects(targetConditions).forEach(function (project) {
-            project.removeItemGroupElement('ItemGroup/Content', relPath, targetConditions);
+            project.removeItemGroupElement('ItemGroup/None', relPath, targetConditions);
         });
     },
 
@@ -182,9 +182,9 @@ jsprojManager.prototype = {
         // relative_path is the actual path to the file in the current OS, where-as inserted_path is what we write in
         // the project file, and is always in Windows format.
         relative_path = path.normalize(relative_path);
-        var inserted_path = path.join('..', '..', relative_path).split('/').join('\\');
+        var inserted_path = relative_path.split('/').join('\\');
 
-        var pluginProjectXML = xml_helpers.parseElementtreeSync(relative_path);
+        var pluginProjectXML = xml_helpers.parseElementtreeSync(path.resolve(this.projectFolder, relative_path));
 
         // find the guid + name of the referenced project
         var projectGuid = pluginProjectXML.find("PropertyGroup/ProjectGuid").text;
@@ -265,7 +265,7 @@ jsprojManager.prototype = {
         var inserted_path = relative_path.split('/').join('\\');
 
         // find the guid + name of the referenced project
-        var pluginProjectXML = xml_helpers.parseElementtreeSync(relative_path);
+        var pluginProjectXML = xml_helpers.parseElementtreeSync(path.resolve(this.projectFolder, relative_path));
         var projectGuid = pluginProjectXML.find("PropertyGroup/ProjectGuid").text;
         var projName = getProjectName(pluginProjectXML, relative_path);
 

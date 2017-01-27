@@ -484,7 +484,7 @@ module.exports.clean = function (options) {
     var self = this;
     return Q().then(function () {
         cleanWww(projectRoot, self.locations);
-        cleanImages(projectRoot, projectConfig);
+        cleanImages(projectRoot, projectConfig, self.locations);
     });
 };
 
@@ -497,23 +497,36 @@ module.exports.clean = function (options) {
  */
 function addBOMSignature(directory) {
     shell.ls('-R', directory)
-    .forEach(function (file) {
-        if (!file.match(/\.(js|htm|html|css|json)$/i)) {
-            return;
-        }
-
-        var filePath = path.join(directory, file);
-        // skip if this is a folder
-        if (!fs.lstatSync(filePath).isFile()) {
-            return;
-        }
-
-        var content = fs.readFileSync(filePath);
-        if (content[0] !== 0xEF && content[1] !== 0xBE && content[2] !== 0xBB) {
-            fs.writeFileSync(filePath, '\ufeff' + content);
-        }
-    });
+    .map(function (file) {
+        return path.join(directory, file);
+    })
+    .forEach(addBOMToFile);
 }
+
+/**
+ * Adds BOM signature at the beginning of file, specified by absolute
+ * path. Ignores directories and non-js, -html or -css files.
+ *
+ * @param {String} file Absolute path to file to add BOM to
+ */
+function addBOMToFile(file) {
+    if (!file.match(/\.(js|htm|html|css|json)$/i)) {
+        return;
+    }
+
+    // skip if this is a folder
+    if (!fs.lstatSync(file).isFile()) {
+        return;
+    }
+
+    var content = fs.readFileSync(file);
+    if (content[0] !== 0xEF && content[1] !== 0xBE && content[2] !== 0xBB) {
+        fs.writeFileSync(file, '\ufeff' + content);
+    }
+}
+
+module.exports.addBOMSignature = addBOMSignature;
+module.exports.addBOMToFile = addBOMToFile;
 
 /**
  * Updates config files in project based on app's config.xml and config munge,

@@ -150,7 +150,7 @@ function getInstalledVSVersions() {
         .fail(function () {
             // if we got any errors on previous steps, we're assuming that
             // required VS update is not installed.
-            installedVersions.splice(installedVersions.indexOf('12.0'));
+            installedVersions.splice(installedVersions.indexOf('12.0'), 1);
             return installedVersions;
         });
     });
@@ -346,7 +346,7 @@ module.exports.run = function () {
 
 /** Checks if Windows SDK required to build the target_platform is present
  * @param {String}  target_platorm        Target platform ('8.1' or '10.0')
- */ 
+ */
 module.exports.isWinSDKPresent = function (target_platform) {
     return checkWinSdk(target_platform, '8.1');
 };
@@ -421,9 +421,9 @@ module.exports.check_all = function() {
                     if (requirement.isFatal) fatalIsHit = true;
                     requirement.metadata.reason = err;
                     result.push(requirement);
-                });  
+                });
             });
-            
+
         });
     }, Q())
     .then(function () {

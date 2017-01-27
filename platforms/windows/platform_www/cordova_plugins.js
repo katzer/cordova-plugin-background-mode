@@ -17,12 +17,19 @@ module.exports = [
         ]
     },
     {
-        "id": "cordova-plugin-background-mode.backgroundmodeProxy",
-        "file": "plugins/cordova-plugin-background-mode/src/windows/backgroundmodeProxy.js",
+        "id": "cordova-plugin-background-mode.BackgroundMode",
+        "file": "plugins/cordova-plugin-background-mode/www/background-mode.js",
         "pluginId": "cordova-plugin-background-mode",
-        "merges": [
-            ""
+        "clobbers": [
+            "cordova.plugins.backgroundMode",
+            "plugin.backgroundMode"
         ]
+    },
+    {
+        "id": "cordova-plugin-background-mode.BackgroundMode.Proxy",
+        "file": "plugins/cordova-plugin-background-mode/src/windows/BackgroundModeProxy.js",
+        "pluginId": "cordova-plugin-background-mode",
+        "runs": true
     },
     {
         "id": "cordova-plugin-badge.Badge",
@@ -69,26 +76,17 @@ module.exports = [
         "file": "plugins/cordova-plugin-vibration/src/windows/VibrationProxy.js",
         "pluginId": "cordova-plugin-vibration",
         "runs": true
-    },
-    {
-        "id": "cordova-plugin-background-mode.BackgroundMode",
-        "file": "plugins/cordova-plugin-background-mode/www/background-mode.js",
-        "pluginId": "cordova-plugin-background-mode",
-        "clobbers": [
-            "cordova.plugins.backgroundMode",
-            "plugin.backgroundMode"
-        ]
     }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "cordova-plugin-device": "1.1.4",
     "cordova-plugin-app-event": "1.2.0",
+    "cordova-plugin-device": "1.1.4",
+    "cordova-plugin-background-mode": "0.7.0",
     "cordova-plugin-badge": "0.7.4",
     "cordova-plugin-console": "1.0.5",
-    "cordova-plugin-vibration": "2.1.3",
-    "cordova-plugin-background-mode": "0.6.6-dev"
+    "cordova-plugin-vibration": "2.1.3"
 };
 // BOTTOM OF METADATA
 });

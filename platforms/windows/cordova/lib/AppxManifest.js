@@ -72,6 +72,13 @@ function AppxManifest(path, prefix) {
     this.hasPhoneIdentity = this.prefix === 'uap:' || this.prefix === 'm3:';
 }
 
+//  Static read-only property to get capabilities which need to be prefixed with uap
+Object.defineProperty(AppxManifest, 'CapsNeedUapPrefix', {
+    writable: false,
+    configurable: false,
+    value: CAPS_NEEDING_UAPNS
+});
+
 /**
  * @static
  * @constructs AppxManifest|Win10AppxManifest

@@ -7,24 +7,24 @@
         "files": {}
     },
     "installed_plugins": {
+        "cordova-plugin-background-mode": {
+            "PACKAGE_NAME": "BackgroundMode"
+        },
         "cordova-plugin-badge": {
             "PACKAGE_NAME": "BackgroundMode"
         },
         "cordova-plugin-console": {
             "PACKAGE_NAME": "BackgroundMode"
         },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "BackgroundMode"
-        },
         "cordova-plugin-vibration": {
-            "PACKAGE_NAME": "BackgroundMode"
-        },
-        "cordova-plugin-background-mode": {
             "PACKAGE_NAME": "BackgroundMode"
         }
     },
     "dependent_plugins": {
         "cordova-plugin-app-event": {
+            "PACKAGE_NAME": "BackgroundMode"
+        },
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "BackgroundMode"
         }
     }

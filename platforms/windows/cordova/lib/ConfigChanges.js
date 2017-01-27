@@ -15,7 +15,12 @@
 */
 
 var util = require('util');
+var path = require('path');
 var CommonMunger = require('cordova-common').ConfigChanges.PlatformMunger;
+var CapsNeedUapPrefix = require(path.join(__dirname, 'AppxManifest')).CapsNeedUapPrefix;
+
+var CAPS_SELECTOR = '/Package/Capabilities';
+var WINDOWS10_MANIFEST = 'package.windows10.appxmanifest';
 
 function PlatformMunger(platform, project_dir, platformJson, pluginInfoProvider) {
     CommonMunger.apply(this, arguments);
@@ -34,19 +39,90 @@ util.inherits(PlatformMunger, CommonMunger);
  *   need to be removed or added to the file
  */
 PlatformMunger.prototype.apply_file_munge = function (file, munge, remove) {
-    // Call parent class' method
-    PlatformMunger.super_.prototype.apply_file_munge.call(this, file, munge, remove);
 
-    // CB-11066 If this is a windows10 manifest and we're removing the changes
-    // then we also need to check if there are <Capability> elements were previously
-    // added and schedule removal of corresponding <uap:Capability> elements
-    if (remove && file === 'package.windows10.appxmanifest') {
-        var uapCapabilitiesMunge = generateUapCapabilities(munge);
-        // We do not check whether generated munge is empty or not before calling
-        // 'apply_file_munge' since applying empty one is just a no-op
-        PlatformMunger.super_.prototype.apply_file_munge.call(this, file, uapCapabilitiesMunge, remove);
+    // Create a copy to avoid modification of original munge
+    var mungeCopy = cloneObject(munge);
+    var capabilities = mungeCopy.parents[CAPS_SELECTOR];
+
+    if (capabilities) {
+        // Add 'uap' prefixes for windows 10 manifest
+        if (file === WINDOWS10_MANIFEST) {
+            capabilities = generateUapCapabilities(capabilities);
+        }
+
+        // Remove duplicates and sort capabilities when installing plugin
+        if (!remove) {
+            capabilities = getUniqueCapabilities(capabilities).sort(compareCapabilities);
+        }
+
+        // Put back capabilities into munge's copy
+        mungeCopy.parents[CAPS_SELECTOR] = capabilities;
     }
+
+    PlatformMunger.super_.prototype.apply_file_munge.call(this, file, mungeCopy, remove);
 };
+
+// Recursive function to clone an object
+function cloneObject(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+
+    var copy = obj.constructor();
+    Object.keys(obj).forEach(function(key) {
+        copy[key] = cloneObject(obj[key]);
+    });
+
+    return copy;
+}
+
+/**
+ * Retrieve capabality name from xml field
+ * @param {Object} capability with xml field like <Capability Name="CapabilityName">
+ * @return {String} name of capability
+ */
+function getCapabilityName(capability) {
+    var reg = /Name="(\w+)"/i;
+    return capability.xml.match(reg)[1];
+}
+
+/**
+ * Remove capabilities with same names
+ * @param {Object} an array of capabilities
+ * @return {Object} an unique array of capabilities
+ */
+function getUniqueCapabilities(capabilities) {
+    return capabilities.reduce(function(uniqueCaps, currCap) {
+
+        var isRepeated = uniqueCaps.some(function(cap) {
+            return getCapabilityName(cap) === getCapabilityName(currCap);
+        });
+
+        return isRepeated ? uniqueCaps : uniqueCaps.concat([currCap]);
+    }, []);
+}
+
+/**
+ * Comparator function to pass to Array.sort
+ * @param {Object} firstCap first capability
+ * @param {Object} secondCap second capability
+ * @return {Number} either -1, 0 or 1
+ */
+function compareCapabilities(firstCap, secondCap) {
+    var firstCapName = getCapabilityName(firstCap);
+    var secondCapName = getCapabilityName(secondCap);
+
+    if (firstCapName < secondCapName) {
+        return -1;
+    }
+
+    if (firstCapName > secondCapName) {
+        return 1;
+    }
+
+    return 0;
+}
+
 
 /**
  * Generates a new munge that contains <uap:Capability> elements created based on
@@ -54,16 +130,20 @@ PlatformMunger.prototype.apply_file_munge = function (file, munge, remove) {
  * found in base munge, the empty munge is returned (selectors might be present under
  * the 'parents' key, but they will contain no changes).
  *
- * @param {Object} munge A munge that we need to check for <Capability> elements
- * @return {Object} A munge with 'uap'-prefixed capabilities or empty one
+ * @param {Object} capabilities A list of capabilities
+ * @return {Object} A list with 'uap'-prefixed capabilities
  */
-function generateUapCapabilities(munge) {
+function generateUapCapabilities(capabilities) {
 
     function hasCapabilityChange(change) {
         return /^\s*<Capability\s/.test(change.xml);
     }
 
     function createPrefixedCapabilityChange(change) {
+        if (CapsNeedUapPrefix.indexOf(getCapabilityName(change)) < 0) {
+            return change;
+        }
+
         return {
             xml: change.xml.replace(/Capability/, 'uap:Capability'),
             count: change.count,
@@ -71,17 +151,12 @@ function generateUapCapabilities(munge) {
         };
     }
 
-    // Iterate through all selectors in munge
-    return Object.keys(munge.parents)
-    .reduce(function (result, selector) {
-        result.parents[selector] = munge.parents[selector]
-        // For every xml change check if it adds a <Capability> element ...
-        .filter(hasCapabilityChange)
-        // ... and create a duplicate with 'uap:' prefix
-        .map(createPrefixedCapabilityChange);
+    return capabilities
+     // For every xml change check if it adds a <Capability> element ...
+    .filter(hasCapabilityChange)
+    // ... and create a duplicate with 'uap:' prefix
+    .map(createPrefixedCapabilityChange);
 
-        return result;
-    }, { parents: {} });
 }
 
 exports.PlatformMunger = PlatformMunger;

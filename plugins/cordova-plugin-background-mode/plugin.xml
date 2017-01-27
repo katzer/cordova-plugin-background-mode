@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-background-mode"
-        version="0.6.6-dev">
+        version="0.7.0">
 
     <name>BackgroundMode</name>
 
@@ -22,8 +22,9 @@
 
     <!-- cordova -->
     <engines>
-        <engine name="cordova" version=">=3.0.0" />
-        <engine name="android-sdk" version=">=16" />
+        <engine name="cordova" version="&gt;=3.0.0" />
+        <engine name="android-sdk" version="&gt;=16" />
+        <engine name="windows-sdk" version="&gt;=10.0.14393.0" />
     </engines>
 
     <!-- js -->
@@ -40,7 +41,6 @@
             </feature>
         </config-file>
 
-        <!-- The app is able to run in background through audio mode -->
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
             <array>
                 <string>audio</string>
@@ -51,6 +51,8 @@
 
         <header-file src="src/ios/APPBackgroundMode.h" />
         <source-file src="src/ios/APPBackgroundMode.m" />
+        <header-file src="src/ios/APPMethodMagic.h" />
+        <source-file src="src/ios/APPMethodMagic.m" />
     </platform>
 
     <!-- android -->
@@ -64,14 +66,10 @@
 
         <config-file target="res/xml/config.xml" parent="/*">
             <preference name="KeepRunning" value="true" />
+            <preference name="AndroidLaunchMode" value="singleInstance"/>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <!--
-             * Puts the service in a foreground state, where the system considers
-             * it to be something the user is actively aware of and thus not a
-             * candidate for killing when low on memory.
-            -->
             <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
         </config-file>
 
@@ -86,43 +84,41 @@
         <source-file
             src="src/android/ForegroundService.java"
             target-dir="src/de/appplant/cordova/plugin/background" />
-
     </platform>
 
-    <!-- wp8 -->
-    <platform name="wp8">
+    windows
+    <platform name="windows">
         <config-file target="config.xml" parent="/*">
-            <feature name="BackgroundMode">
-                <param name="wp-package" value="BackgroundMode" />
+            <feature name="BackgroundMode" >
+                <param name="windows-package" value="BackgroundMode"/>
             </feature>
         </config-file>
 
-        <!-- The app is able to run in background through location-tracking mode -->
-        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Tasks/DefaultTask">
-            <BackgroundExecution>
-                <ExecutionType Name="LocationTracking" />
-            </BackgroundExecution>
+        <config-file target="config.xml" parent="/*">
+            <preference name="windows-target-version" value="UAP" />
+            <preference name="uap-target-min-version" value="10.0.14393.0" />
+            <preference name="Windows.Universal-MinVersion" value="10.0.14393.0" />
+            <preference name="Windows.Universal" value="10.0.14393.0" />
         </config-file>
 
-        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
-            <Capability Name="ID_CAP_LOCATION" />
-        </config-file>
+        <!-- <resource-file src="appbeep.wma" target="appbeep.wma" /> -->
 
-        <source-file src="src/wp8/BackgroundMode.cs" />
+        <js-module src="src/windows/BackgroundModeProxy.js" name="BackgroundMode.Proxy">
+            <runs />
+        </js-module>
     </platform>
-	
 
-	<!-- windows -->
-	<platform name="windows">
-		<config-file target="config.xml" parent="/*">
-			<feature name="BackgroundMode" >
-				<param name="windows-package" value="BackgroundMode"/>
-			</feature>
-		</config-file>
+    <!-- browser -->
+    <platform name="browser">
+        <config-file target="config.xml" parent="/*">
+            <feature name="BackgroundMode">
+                <param name="browser-package" value="BackgroundMode"/>
+            </feature>
+        </config-file>
 
-		<js-module src="src/windows/backgroundmodeProxy.js" name="backgroundmodeProxy">
-			<merges target="" />
-		</js-module>
-	</platform>
+        <js-module src="src/browser/BackgroundModeProxy.js" name="BackgroundMode.Proxy">
+            <runs />
+        </js-module>
+    </platform>
 
 </plugin>

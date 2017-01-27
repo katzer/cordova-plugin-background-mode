@@ -1,4 +1,35 @@
 ## ChangeLog
+#### Version 0.7.0 (27.01.2017)
+- __Features__
+ - Support for tAmazon FireOS
+ - Support for the browser platform
+ - Ability to configure icon and color on Android
+ - Allow app to move to foreground on Android
+ - Allow app to move to background on Android
+ - Allow app to override back button behaviour on Android
+ - New events for when the mode has been enabled/disabled
+- __Improvements__
+ - Various enhancements and bug fixes for all platforms
+ - Support for latest platform and OS versions
+ - Multi line text on Android
+ - Multiple listeners for same event
+ - Compatibility with cordova-plugin-geolocation
+ - Compatibility with cordova-plugin-crosswalk-webview
+ - Compatibility with cordova-plugin-wkwebview-engine
+ - New sample app
+- __Fixes__
+ - Silent mode issues on Android
+ - Lock screen issues on Android
+ - Callback not called on Android  
+ - Notification shows app info with cordova-android@6
+ - Other apps audio interruption on iOS
+- __Changes__
+ - Deprecate event callbacks
+ - Notification not visible by default on lock screen
+ - Remove ticker property on Android
+ - Remove unexpected back button handler
+ - Remove support for wp8 platform
+
 #### Version 0.6.5 (29.02.2016)
 - Published on npm
 - Updated dependency ID for the device plug-in

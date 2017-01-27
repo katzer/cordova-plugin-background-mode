@@ -88,7 +88,7 @@ var handlers = {
             var targetDir = obj.targetDir || '';
 
             if(type === 'projectReference') {
-                dest = path.join('plugins', plugin.id, targetDir, src);
+                dest = path.join(path.relative(project.projectFolder, plugin.dir), targetDir, src);
                 project.addProjectReference(dest, getTargetConditions(obj));
             } else {
                 // path.join ignores empty paths passed so we don't check whether targetDir is not empty
@@ -105,7 +105,7 @@ var handlers = {
             var type = obj.type;
 
             if(type === 'projectReference') {
-                project.removeProjectReference(path.join(plugin.dir, src), getTargetConditions(obj));
+                project.removeProjectReference(path.join(path.relative(project.projectFolder, plugin.dir), src), getTargetConditions(obj));
             }
             else {
                 var targetPath = path.join('plugins', plugin.id);

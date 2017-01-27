@@ -47,6 +47,17 @@ public class ForegroundService extends Service {
     // Fixed ID for the 'foreground' notification
     public static final int NOTIFICATION_ID = -574543954;
 
+    // Default title of the background notification
+    private static final String NOTIFICATION_TITLE =
+            "App is running in background";
+
+    // Default text of the background notification
+    private static final String NOTIFICATION_TEXT =
+            "Doing heavy tasks.";
+
+    // Default icon of the background notification
+    private static final String NOTIFICATION_ICON = "icon";
+
     // Binder given to clients
     private final IBinder mBinder = new ForegroundBinder();
 
@@ -141,7 +152,8 @@ public class ForegroundService extends Service {
      * @param settings The config settings
      */
     private Notification makeNotification(JSONObject settings) {
-        String text     = settings.optString("text", "");
+        String title    = settings.optString("title", NOTIFICATION_TITLE);
+        String text     = settings.optString("text", NOTIFICATION_TEXT);
         boolean bigText = settings.optBoolean("bigText", false);
 
         Context context = getApplicationContext();
@@ -150,12 +162,14 @@ public class ForegroundService extends Service {
                 .getLaunchIntentForPackage(pkgName);
 
         Notification.Builder notification = new Notification.Builder(context)
-                .setContentTitle(settings.optString("title", ""))
+                .setContentTitle(title)
                 .setContentText(text)
-                .setTicker(settings.optString("ticker", ""))
                 .setOngoing(true)
-                .setPriority(Notification.PRIORITY_MIN)
                 .setSmallIcon(getIconResId(settings));
+
+        if (settings.optBoolean("hidden", true)) {
+            notification.setPriority(Notification.PRIORITY_MIN);
+        }
 
         if (bigText || text.contains("\n")) {
             notification.setStyle(
@@ -203,7 +217,7 @@ public class ForegroundService extends Service {
         Context context = getApplicationContext();
         Resources res   = context.getResources();
         String pkgName  = context.getPackageName();
-        String icon     = settings.optString("icon", "icon");
+        String icon     = settings.optString("icon", NOTIFICATION_ICON);
 
         // cordova-android 6 uses mipmaps
         int resId = getIconResId(res, icon, "mipmap", pkgName);

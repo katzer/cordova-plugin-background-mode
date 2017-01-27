@@ -1,90 +1,123 @@
+/*
+    Copyright 2013-2017 appPlant GmbH
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+ */
+
+var plugin  = cordova.plugins.backgroundMode;
+
+var Uri               = Windows.Foundation.Uri,
+    MediaSource       = Windows.Media.Core.MediaSource,
+    MediaPlaybackItem = Windows.Media.Playback.MediaPlaybackItem,
+    MediaPlaybackList = Windows.Media.Playback.MediaPlaybackList,
+    AudioCategory     = Windows.Media.Playback.MediaPlayerAudioCategory,
+    MediaPlayer       = Windows.Media.Playback.MediaPlayer,
+    WebUIApplication  = Windows.UI.WebUI.WebUIApplication;
+
 /**
- *  BackgroundMode plugin for Windows 10 Universal
+ * Activates the background mode. When activated the application
+ * will be prevented from going to sleep while in background
+ * for the next time.
  *
- *  Copyright (c) 2015 Next Wave Software, Inc.
-**/
-var backgroundMode = {
-    extendedSession: null,
-    settings: { text: "Background processing" },
-
-    /**
-     * Called internally to enable background execution.
-     */
-    requestExtendedExecution: function () {
-
-        // Release the current active extended session if we have one.
-        backgroundMode.releaseExtendedExecution();
-
-        // Set up to request an extended session
-        backgroundMode.extendedSession = new Windows.ApplicationModel.ExtendedExecution.ExtendedExecutionSession();
-        backgroundMode.extendedSession.description = backgroundMode.settings.text;
-        backgroundMode.extendedSession.reason = Windows.ApplicationModel.ExtendedExecution.ExtendedExecutionReason.unspecified;
-
-        // When our app is running in the background and returns to the foreground, Windows will revoke our extended session permission.
-        // This is normal, so just request another session.
-        backgroundMode.extendedSession.onrevoked = function (args) {
-            backgroundMode.requestExtendedExecution();
-        };
-
-        // Request the session
-        backgroundMode.extendedSession.requestExtensionAsync().done(
-            function success() {
-                cordova.plugins.backgroundMode.onactivate();
-            },
-            function error(error) {
-                cordova.plugins.backgroundMode.onfailure(0);
-            }
-        );
-    },
-
-    /**
-     * Called internally to disable background execution.
-     */
-    releaseExtendedExecution: function () {
-
-        if (backgroundMode.extendedSession != null) {
-            backgroundMode.extendedSession.close();
-            backgroundMode.extendedSession = null;
-        }
-    }
+ * @param [ Function ] success The success callback to use.
+ * @param [ Function ] error The error callback to use.
+ *
+ * @return [ Void ]
+ */
+exports.enable = function (success, error) {
+    success();
 };
 
-cordova.commandProxy.add("BackgroundMode", {
+/**
+ * Deactivates the background mode. When deactivated the application
+ * will not stay awake while in background.
+ *
+ * @param [ Function ] success The success callback to use.
+ * @param [ Function ] error The error callback to use.
+ *
+ * @return [ Void ]
+ */
+exports.disable = function (success, error) {
+    exports.stopKeepingAwake();
+    success();
+};
 
-    /**
-     * Enables background execution.
-     */
-    // exec(null, null, 'BackgroundMode', 'enable', []);
-    enable: function () {
+/**
+ * Keep the app awake.
+ *
+ * @return [ Void ]
+ */
+exports.keepAwake = function () {
+    if (!plugin.isEnabled() || plugin.isActive())
+       return;
 
-		// Whenever our app is launched, request permission to continue running in the background the next time Windows wants to suspend us.
-		WinJS.Application.addEventListener("activated", function (args) {
-			if (args.detail.kind === Windows.ApplicationModel.Activation.ActivationKind.launch)
-			    backgroundMode.requestExtendedExecution();
-		});
-	
-		// Whenever Windows tries to suspend us, again request permission to continue running in the background.
-		WinJS.Application.addEventListener("checkpoint", function (args) {
-		    backgroundMode.requestExtendedExecution();
-		});
-    },
+    exports.configureAudioPlayer();
+    exports.audioPlayer.play();
 
-    /**
-     * Disables background execution.
-     */
-    // exec(null, null, 'BackgroundMode', 'disable', []);
-    disable: function () {
+    plugin._isActive = true;
+    plugin.fireEvent('activate');
+};
 
-        backgroundMode.releaseExtendedExecution();
-		cordova.plugins.backgroundMode.ondeactivate();
-    },
+/**
+ * Let the app going to sleep.
+ *
+ * @return [ Void ]
+ */
+exports.stopKeepingAwake = function () {
+    if (!exports.audioPlayer)
+        return;
 
-    /**
-     * Sets configuration values.
-     */
-    // exec(null, null, 'BackgroundMode', 'configure', [settingsObject, isUpdate]);
-    configure: function (args) {
+    exports.audioPlayer.close();
+    exports.audioPlayer = null;
 
-        backgroundMode.settings = args[0];
-    }
-});
+    cordova.plugins.backgroundMode._isActive = false;
+    cordova.plugins.backgroundMode.fireEvent('deactivate');
+};
+
+/**
+ * Configure the audio player for playback in background.
+ *
+ * @return [ Void ]
+ */
+exports.configureAudioPlayer = function () {
+    if (exports.audioPlayer)
+        return;
+
+    var pkg     = Windows.ApplicationModel.Package.current,
+        pkgName = pkg.id.name;
+
+    var audioPlayer = new MediaPlayer(),
+        audioFile   = new Uri('ms-appx://' + pkgName + '/appbeep.wma'),
+        audioSource = MediaSource.createFromUri(audioFile),
+        playList    = new MediaPlaybackList();
+
+        playList.items.append(new MediaPlaybackItem(audioSource));
+        playList.autoRepeatEnabled = true;
+
+        audioPlayer.source        = playList;
+        audioPlayer.autoPlay      = false;
+        audioPlayer.audioCategory = AudioCategory.soundEffects;
+        audioPlayer.volume        = 0;
+
+    exports.audioPlayer = audioPlayer;
+};
+
+WebUIApplication.addEventListener('enteredbackground', exports.keepAwake, false);
+WebUIApplication.addEventListener('leavingbackground', exports.stopKeepingAwake, false);
+
+cordova.commandProxy.add('BackgroundMode', exports);

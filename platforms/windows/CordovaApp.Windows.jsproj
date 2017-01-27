@@ -97,4 +97,8 @@
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   -->
+  <PropertyGroup>
+    <PreBuildEvent>node "$(ProjectDir)\\cordova\\prebuild-81.js"</PreBuildEvent>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
 </Project>

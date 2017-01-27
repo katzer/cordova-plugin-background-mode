@@ -1,5 +1,6 @@
 {
-    "windows": "4.4.2",
     "ios": "latest",
-    "android": "latest"
+    "browser": "latest",
+    "android": "latest",
+    "windows": "4.4.3"
 }

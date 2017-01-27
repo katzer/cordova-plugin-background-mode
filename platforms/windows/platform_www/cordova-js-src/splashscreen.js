@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,8 +24,11 @@ var isWp81 = navigator.appVersion.indexOf("Windows Phone 8.1") !== -1;
 var isWp10 = navigator.appVersion.indexOf("Windows Phone 10") !== -1;
 var isWin10UWP = navigator.appVersion.indexOf('MSAppHost/3.0') !== -1;
 var isHosted = window.location.protocol.indexOf('http') === 0;
-var splashImageSrc = ((isHosted || isWin10UWP) ? 'ms-appx-web' : 'ms-appx') + ':///images/'
-    + (isPhone ? 'splashscreenphone.png' : 'splashscreen.png');
+var isMsAppxWeb = window.location.protocol.indexOf('ms-appx-web') === 0;
+
+var schema = (isHosted || isWin10UWP && isMsAppxWeb) ? 'ms-appx-web' : 'ms-appx';
+var fileName = isPhone ? 'splashscreenphone.png' : 'splashscreen.png';
+var splashImageSrc = schema + ':///images/' + fileName;
 
 var splashElement = null, extendedSplashImage = null, extendedSplashProgress = null;
 

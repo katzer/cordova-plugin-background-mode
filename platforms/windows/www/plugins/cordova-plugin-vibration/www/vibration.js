@@ -1,4 +1,4 @@
-cordova.define("cordova-plugin-vibration.notification", function(require, exports, module) {
+﻿cordova.define("cordova-plugin-vibration.notification", function(require, exports, module) {
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one

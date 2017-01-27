@@ -1,0 +1,129 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {
+            "config.xml": {
+                "parents": {
+                    "/*": [
+                        {
+                            "xml": "<feature name=\"Badge\"><param name=\"browser-package\" value=\"Badge\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Device\"><param name=\"browser-package\" value=\"Device\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"BackgroundMode\"><param name=\"browser-package\" value=\"BackgroundMode\" /></feature>",
+                            "count": 1
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "installed_plugins": {
+        "cordova-plugin-app-event": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        },
+        "cordova-plugin-badge": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        },
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        },
+        "cordova-plugin-vibration": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        },
+        "cordova-plugin-background-mode": {
+            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+        }
+    },
+    "dependent_plugins": {},
+    "modules": [
+        {
+            "file": "plugins/cordova-plugin-badge/www/badge.js",
+            "id": "cordova-plugin-badge.Badge",
+            "pluginId": "cordova-plugin-badge",
+            "clobbers": [
+                "plugin.notification.badge",
+                "cordova.plugins.notification.badge"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-badge/src/browser/favico.min.js",
+            "id": "cordova-plugin-badge.Badge.Favico",
+            "pluginId": "cordova-plugin-badge",
+            "clobbers": [
+                "cordova.plugins.notification.badge.Favico"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-badge/src/browser/BadgeProxy.js",
+            "id": "cordova-plugin-badge.Badge.Proxy",
+            "pluginId": "cordova-plugin-badge",
+            "runs": true
+        },
+        {
+            "file": "plugins/cordova-plugin-vibration/www/vibration.js",
+            "id": "cordova-plugin-vibration.notification",
+            "pluginId": "cordova-plugin-vibration",
+            "merges": [
+                "navigator.notification",
+                "navigator"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-vibration/src/browser/Vibration.js",
+            "id": "cordova-plugin-vibration.Vibration",
+            "pluginId": "cordova-plugin-vibration",
+            "merges": [
+                "navigator.notification",
+                "navigator"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-device/www/device.js",
+            "id": "cordova-plugin-device.device",
+            "pluginId": "cordova-plugin-device",
+            "clobbers": [
+                "device"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-device/src/browser/DeviceProxy.js",
+            "id": "cordova-plugin-device.DeviceProxy",
+            "pluginId": "cordova-plugin-device",
+            "runs": true
+        },
+        {
+            "file": "plugins/cordova-plugin-background-mode/www/background-mode.js",
+            "id": "cordova-plugin-background-mode.BackgroundMode",
+            "pluginId": "cordova-plugin-background-mode",
+            "clobbers": [
+                "cordova.plugins.backgroundMode",
+                "plugin.backgroundMode"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-background-mode/src/browser/BackgroundModeProxy.js",
+            "id": "cordova-plugin-background-mode.BackgroundMode.Proxy",
+            "pluginId": "cordova-plugin-background-mode",
+            "runs": true
+        }
+    ],
+    "plugin_metadata": {
+        "cordova-plugin-app-event": "1.2.0",
+        "cordova-plugin-badge": "0.7.4",
+        "cordova-plugin-console": "1.0.5",
+        "cordova-plugin-vibration": "2.1.3",
+        "cordova-plugin-device": "1.1.4",
+        "cordova-plugin-background-mode": "0.7.0"
+    }
+}

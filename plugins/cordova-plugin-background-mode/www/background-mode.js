@@ -31,47 +31,69 @@ var exec    = require('cordova/exec'),
  * Activates the background mode. When activated the application
  * will be prevented from going to sleep while in background
  * for the next time.
+ *
+ * @return [ Void ]
  */
 exports.enable = function () {
     if (this.isEnabled())
         return;
 
-    var me        = this,
-        fireEvent = function () { me.fireEvent('enable'); };
+    var fn = function () {
+            exports._isEnabled = true;
+            exports.fireEvent('enable');
+        };
 
-    this._isEnabled = true;
-    cordova.exec(fireEvent, null, 'BackgroundMode', 'enable', []);
+    cordova.exec(fn, null, 'BackgroundMode', 'enable', []);
 };
 
 /**
  * Deactivates the background mode. When deactivated the application
  * will not stay awake while in background.
+ *
+ * @return [ Void ]
  */
 exports.disable = function () {
     if (!this.isEnabled())
         return;
 
-    var me        = this,
-        fireEvent = function () { me.fireEvent('disable'); };
+    var fn = function () {
+            exports._isEnabled = false;
+            exports.fireEvent('disable');
+        };
 
-    this._isEnabled = false;
-    cordova.exec(fireEvent, null, 'BackgroundMode', 'disable', []);
+    cordova.exec(fn, null, 'BackgroundMode', 'disable', []);
+};
+
+/**
+ * Enable or disable the background mode.
+ *
+ * @param [ Bool ] enable The status to set for.
+ *
+ * @return [ Void ]
+ */
+exports.setEnabled = function (enable) {
+    if (enable) {
+        this.enable();
+    } else {
+        this.disable();
+    }
 };
 
 /**
  * List of all available options with their default value.
  *
- * @return {Object}
+ * @return [ Object ]
  */
 exports.getDefaults = function () {
     return this._defaults;
 };
 
 /**
- * Overwrite default settings
+ * Overwrite the default settings.
  *
- * @param {Object} overrides
- *      Dict of options which shall be overridden
+ * @param [ Object ] overrides Dict of options to be overridden.
+ *
+ * @return [ Void ]
  */
 exports.setDefaults = function (overrides) {
     var defaults = this.getDefaults();
@@ -82,7 +104,7 @@ exports.setDefaults = function (overrides) {
         }
     }
 
-    if ((device.platform == 'Android') || (device.platform == 'Windows')){
+    if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'configure', [defaults, false]);
     }
 };
@@ -91,22 +113,25 @@ exports.setDefaults = function (overrides) {
  * Configures the notification settings for Android.
  * Will be merged with the defaults.
  *
- * @param {Object} options
- *      Dict with key/value pairs
+ * @param [ Object ] overrides Dict of options to be overridden.
+ *
+ * @return [ Void ]
  */
 exports.configure = function (options) {
     var settings = this.mergeWithDefaults(options);
 
-    if ((device.platform == 'Android') || (device.platform == 'Windows')){
+    if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'configure', [settings, true]);
     }
 };
 
 /**
  * Enable GPS-tracking in background (Android).
+ *
+ * @return [ Void ]
  */
 exports.disableWebViewOptimizations = function () {
-    if (device.platform == 'Android') {
+    if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'disableWebViewOptimizations', []);
     }
 };
@@ -117,7 +142,7 @@ exports.disableWebViewOptimizations = function () {
  * @return [ Void ]
  */
 exports.moveToBackground = function () {
-    if (device.platform == 'Android') {
+    if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'background', []);
     }
 };
@@ -128,7 +153,7 @@ exports.moveToBackground = function () {
  * @return [ Void ]
  */
 exports.moveToForeground = function () {
-    if (this.isActive() && device.platform == 'Android') {
+    if (this.isActive() && this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'foreground', []);
     }
 };
@@ -140,13 +165,15 @@ exports.moveToForeground = function () {
  * @return [ Void ]
  */
 exports.overrideBackButton = function () {
-    document.addEventListener('backbutton', this.moveToBackground, false);
+    document.addEventListener('backbutton', function() {
+        exports.moveToBackground();
+    }, false);
 };
 
 /**
  * If the mode is enabled or disabled.
  *
- * @return {Boolean}
+ * @return [ Boolean ]
  */
 exports.isEnabled = function () {
     return this._isEnabled !== false;
@@ -155,7 +182,7 @@ exports.isEnabled = function () {
 /**
  * If the mode is active.
  *
- * @return {Boolean}
+ * @return [ Boolean ]
  */
 exports.isActive = function () {
     return this._isActive !== false;
@@ -172,7 +199,7 @@ exports._listener = {};
  * Fire event with given arguments.
  *
  * @param [ String ] event The event's name.
- * @param {args*} The callback's arguments.
+ * @param [ Array<Object> ] The callback's arguments.
  *
  * @return [ Void ]
  */
@@ -272,12 +299,9 @@ exports.onfailure = function () {};
  *
  * Merge settings with default values.
  *
- * @param {Object} options
- *      The custom options
+ * @param [ Object ] options The custom options.
  *
- * @return {Object}
- *      Default values merged
- *      with custom values
+ * @return [ Object ] Default values merged with custom values.
  */
 exports.mergeWithDefaults = function (options) {
     var defaults = this.getDefaults();
@@ -292,6 +316,23 @@ exports.mergeWithDefaults = function (options) {
     return options;
 };
 
+/**
+ * @private
+ *
+ * Initialize the plugin.
+ *
+ * Method should be called after the 'deviceready' event
+ * but before the event listeners will be called.
+ *
+ * @return [ Void ]
+ */
+exports.pluginInitialize = function () {
+    this._isAndroid = device.platform.match(/^android|amazon/i) !== null;
+    this._isEnabled = this._isEnabled || device.platform == 'browser';
+    this._isActive  = this._isActive || device.platform == 'browser';
+    this.setDefaults({});
+};
+
 
 /***********
  * PRIVATE *
@@ -302,7 +343,7 @@ exports.mergeWithDefaults = function (options) {
  *
  * Flag indicates if the mode is enabled.
  */
-exports._isEnabled = false;
+exports._isEnabled = window.webkit !== undefined;
 
 /**
  * @private
@@ -317,19 +358,30 @@ exports._isActive = false;
  * Default values of all available options.
  */
 exports._defaults = {
-    title:  'App is running in background',
-    text:   "Doing heavy tasks.",
-    ticker: 'Running in background',
+    title:   'App is running in background',
+    text:    'Doing heavy tasks.',
     bigText: false,
-    resume: true,
-    silent: false,
-    color:  undefined,
-    icon:   'icon'
+    resume:  true,
+    silent:  false,
+    hidden:  true,
+    color:   undefined,
+    icon:    'icon'
 };
 
 // Called before 'deviceready' listener will be called
 channel.onCordovaReady.subscribe(function () {
     channel.onCordovaInfoReady.subscribe(function () {
-        exports.setDefaults({});
+        exports.pluginInitialize();
     });
+});
+
+// Called after 'deviceready' event
+channel.deviceready.subscribe(function () {
+    if (exports.isEnabled()) {
+        exports.fireEvent('enable');
+    }
+
+    if (exports.isActive()) {
+        exports.fireEvent('activate');
+    }
 });

@@ -39,7 +39,7 @@ module.exports.run = function (options) {
 
     // parse arg
     var args  = nopt({
-        'archs': String,
+        'archs': [String],
         'phone': Boolean,
         'win': Boolean,
         'appx': String,
@@ -58,9 +58,14 @@ module.exports.run = function (options) {
     }
 
     // Get build/deploy options
-    var buildType    = options.release ? 'release' : 'debug',
-        buildArchs   = args.archs ? args.archs.split(' ') : ['anycpu'],
-        deployTarget = options.target ? options.target : (options.emulator ? 'emulator' : 'device');
+    var buildType    = options.release ? 'release' : 'debug';
+    // CB-11478 Allow to specify 'archs' parameter as either cli or platform
+    // option i.e. 'cordova run --archs' vs. 'cordova run -- --archs'
+    var archs = options.archs || args.archs || ['anycpu'];
+    if (typeof archs === 'string') { archs = archs.split(' '); }
+
+    var buildArchs = archs.map(function (arch) { return arch.toLowerCase(); });
+    var deployTarget = options.target ? options.target : (options.emulator ? 'emulator' : 'device');
 
      var buildTargets = build.getBuildTargets(args.win, args.phone, args.appx);
 
@@ -73,7 +78,7 @@ module.exports.run = function (options) {
      var projectType = projFileToType(buildTargets[0]);
 
     // if --nobuild isn't specified then build app first
-    var buildPackages = options.nobuild ? packages.getPackage(projectType, buildType, buildArchs) : build.run.call(this, options);
+    var buildPackages = options.nobuild ? packages.getPackage(projectType, buildType, buildArchs[0]) : build.run.call(this, options);
 
     // buildPackages also deploys bundles
     return buildPackages

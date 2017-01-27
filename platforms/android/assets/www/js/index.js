@@ -45,50 +45,63 @@ var app = {
         listeningElement.setAttribute('style', 'display:none;');
         receivedElement.setAttribute('style', 'display:block;');
 
-        document.getElementById('silent').onclick = app.toggleSilent;
-        document.getElementById('mode').onclick   = app.toggleMode;
-
         console.log('Received Event: ' + id);
     },
     // Initialize plugin
     pluginInitialize: function() {
-        cordova.plugins.backgroundMode.setDefaults({ color: 'F14F4D' });
-        cordova.plugins.backgroundMode.on('activate', app.onModeActivated);
-        cordova.plugins.backgroundMode.on('deactivate', app.onModeDeactivated);
+        var silentBtn = document.getElementById('silent'),
+            modeBtn   = document.getElementById('mode'),
+            plugin    = cordova.plugins.backgroundMode;
+
+        plugin.setDefaults({ color: 'F14F4D' });
+        plugin.overrideBackButton();
+        plugin.disableWebViewOptimizations();
+
+        plugin.on('activate', app.onModeActivated);
+        plugin.on('deactivate', app.onModeDeactivated);
+        plugin.on('enable', app.onModeEnabled);
+        plugin.on('disable', app.onModeDisabled);
+
+        modeBtn.onclick = app.onModeButtonClicked;
+
+        if (device.platform == 'Android') {
+            silentBtn.onclick = app.onSilentButtonClicked;
+        } else {
+            app.onSilentButtonClicked();
+        }
     },
     // Toggle the silent mode
-    toggleSilent: function() {
-        var el       = document.getElementById('silent'),
-            isActive = app.toggleActive(el),
-            plugin   = cordova.plugins.backgroundMode;
+    onSilentButtonClicked: function() {
+        var plugin   = cordova.plugins.backgroundMode,
+            btn      = document.getElementById('silent'),
+            isSilent = !plugin.getDefaults().silent;
 
-        plugin.setDefaults({ silent: isActive });
+        app.setButtonClass(btn, isSilent);
+        plugin.setDefaults({ silent: isSilent });
     },
     // Enable or disable the backgroud mode
-    toggleMode: function() {
-        var el       = document.getElementById('mode'),
-            isActive = app.toggleActive(el),
-            plugin   = cordova.plugins.backgroundMode;
-
-        if (!isActive) {
-            plugin.disable();
-            return;
-        }
-
-        cordova.plugins.notification.badge
-            .registerPermission(plugin.enable, plugin);
+    onModeButtonClicked: function() {
+        var plugin = cordova.plugins.backgroundMode;
+        plugin.setEnabled(!plugin.isEnabled());
+    },
+    // Update CSS classes
+    onModeEnabled: function() {
+        var btn = document.getElementById('mode');
+        app.setButtonClass(btn, true);
+        cordova.plugins.notification.badge.registerPermission();
+    },
+    // Update CSS classes
+    onModeDisabled: function() {
+        var btn = document.getElementById('mode');
+        app.setButtonClass(btn, false);
     },
     // Toggle 'active' CSS class and return new status
-    toggleActive: function(el) {
-        var isActive = el.className.indexOf('active') != -1;
-
-        if (isActive) {
-            el.className = el.className.replace(' active', '');
-        } else {
+    setButtonClass: function(el, setActive) {
+        if (setActive) {
             el.className += ' active';
+        } else {
+            el.className = el.className.replace(' active', '');
         }
-
-        return !isActive;
     },
     // To update the badge in intervals
     timer: null,
@@ -112,12 +125,12 @@ var app = {
                     navigator.vibrate(1000);
                 }
             }
-        }, 1000);
+        }, 1000 * 1);
     },
     // Reset badge once deactivated
     onModeDeactivated: function() {
-        clearInterval(app.timer);
         cordova.plugins.notification.badge.clear();
+        clearInterval(app.timer);
     }
 };
 
