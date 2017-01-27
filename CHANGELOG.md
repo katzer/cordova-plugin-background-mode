@@ -1,5 +1,5 @@
 ## ChangeLog
-#### Version 0.7.0 (not yet released)
+#### Version 0.7.0 (27.01.2017)
 - __Features__
  - Support for tAmazon FireOS
  - Support for the browser platform
