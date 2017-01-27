@@ -151,7 +151,7 @@ cordova.plugins.backgroundMode.configure({ silent: true });
 Various APIs like playing media or tracking GPS position in background might not work while in background even the background mode is active. To fix such issues the plugin provides a method to disable most optimizations done by Android/CrossWalk.
 
 ```javascript
-cordova.plugins.backgroundMode.on('active', function() {
+cordova.plugins.backgroundMode.on('activate', function() {
    cordova.plugins.backgroundMode.disableWebViewOptimizations(); 
 });
 ```
