@@ -31,7 +31,6 @@
 NSString* const kAPPBackgroundJsNamespace = @"cordova.plugins.backgroundMode";
 NSString* const kAPPBackgroundEventActivate = @"activate";
 NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
-NSString* const kAPPBackgroundEventFailure = @"failure";
 
 
 #pragma mark -
@@ -66,7 +65,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 {
     NSNotificationCenter* listener = [NSNotificationCenter
                                       defaultCenter];
-    
+
         [listener addObserver:self
                      selector:@selector(keepAwake)
                          name:UIApplicationDidEnterBackgroundNotification
@@ -76,7 +75,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
                      selector:@selector(stopKeepingAwake)
                          name:UIApplicationWillEnterForegroundNotification
                        object:nil];
-    
+
     if ([self.class isRunningWebKit])
         return;
 
@@ -97,7 +96,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 {
     if (enabled)
         return;
-    
+
     enabled = YES;
     [self execCallback:command];
 }
@@ -110,7 +109,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 {
     if (!enabled || [self.class isRunningWebKit])
         return;
-    
+
     enabled = NO;
     [self stopKeepingAwake];
     [self execCallback:command];
@@ -130,7 +129,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
     if (![self.class isRunningWebKit]) {
         [audioPlayer play];
     }
-    
+
     [self fireEvent:kAPPBackgroundEventActivate];
 }
 
@@ -178,7 +177,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 
     if ([self.class isRunningWebKit])
         return;
-    
+
     // Don't activate the audio session yet
     [session setActive:NO error:NULL];
 
@@ -256,7 +255,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 {
     NSString* str = @"X2Fsd2F5c1J1bnNBdEZvcmVncm91bmRQcmlvcml0eQ==";
     NSData* data  = [[NSData alloc] initWithBase64EncodedString:str options:0];
-    
+
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
