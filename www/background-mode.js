@@ -31,6 +31,8 @@ var exec    = require('cordova/exec'),
  * Activates the background mode. When activated the application
  * will be prevented from going to sleep while in background
  * for the next time.
+ *
+ * @return [ Void ]
  */
 exports.enable = function () {
     if (this.isEnabled())
@@ -47,6 +49,8 @@ exports.enable = function () {
 /**
  * Deactivates the background mode. When deactivated the application
  * will not stay awake while in background.
+ *
+ * @return [ Void ]
  */
 exports.disable = function () {
     if (!this.isEnabled())
@@ -78,17 +82,18 @@ exports.setEnabled = function (enable) {
 /**
  * List of all available options with their default value.
  *
- * @return {Object}
+ * @return [ Object ]
  */
 exports.getDefaults = function () {
     return this._defaults;
 };
 
 /**
- * Overwrite default settings
+ * Overwrite the default settings.
  *
- * @param {Object} overrides
- *      Dict of options which shall be overridden
+ * @param [ Object ] overrides Dict of options to be overridden.
+ *
+ * @return [ Void ]
  */
 exports.setDefaults = function (overrides) {
     var defaults = this.getDefaults();
@@ -108,8 +113,9 @@ exports.setDefaults = function (overrides) {
  * Configures the notification settings for Android.
  * Will be merged with the defaults.
  *
- * @param {Object} options
- *      Dict with key/value pairs
+ * @param [ Object ] overrides Dict of options to be overridden.
+ *
+ * @return [ Void ]
  */
 exports.configure = function (options) {
     var settings = this.mergeWithDefaults(options);
@@ -121,6 +127,8 @@ exports.configure = function (options) {
 
 /**
  * Enable GPS-tracking in background (Android).
+ *
+ * @return [ Void ]
  */
 exports.disableWebViewOptimizations = function () {
     if (this._isAndroid) {
@@ -163,7 +171,7 @@ exports.overrideBackButton = function () {
 /**
  * If the mode is enabled or disabled.
  *
- * @return {Boolean}
+ * @return [ Boolean ]
  */
 exports.isEnabled = function () {
     return this._isEnabled !== false;
@@ -172,7 +180,7 @@ exports.isEnabled = function () {
 /**
  * If the mode is active.
  *
- * @return {Boolean}
+ * @return [ Boolean ]
  */
 exports.isActive = function () {
     return this._isActive !== false;
@@ -189,7 +197,7 @@ exports._listener = {};
  * Fire event with given arguments.
  *
  * @param [ String ] event The event's name.
- * @param {args*} The callback's arguments.
+ * @param [ Array<Object> ] The callback's arguments.
  *
  * @return [ Void ]
  */
@@ -289,12 +297,9 @@ exports.onfailure = function () {};
  *
  * Merge settings with default values.
  *
- * @param {Object} options
- *      The custom options
+ * @param [ Object ] options The custom options.
  *
- * @return {Object}
- *      Default values merged
- *      with custom values
+ * @return [ Object ] Default values merged with custom values.
  */
 exports.mergeWithDefaults = function (options) {
     var defaults = this.getDefaults();
@@ -307,6 +312,23 @@ exports.mergeWithDefaults = function (options) {
     }
 
     return options;
+};
+
+/**
+ * @private
+ *
+ * Initialize the plugin.
+ *
+ * Method should be called after the 'deviceready' event
+ * but before the event listeners will be called.
+ *
+ * @return [ Void ]
+ */
+exports.pluginInitialize = function () {
+    this._isAndroid = device.platform.match(/^android|amazon/i) !== null;
+    this._isEnabled = this._isEnabled || device.platform == 'browser';
+    this._isActive  = this._isActive || device.platform == 'browser';
+    this.setDefaults({});
 };
 
 
@@ -347,14 +369,17 @@ exports._defaults = {
 // Called before 'deviceready' listener will be called
 channel.onCordovaReady.subscribe(function () {
     channel.onCordovaInfoReady.subscribe(function () {
-        exports._isAndroid = device.platform.match(/^android|amazon/i) !== null;
-        exports.setDefaults({});
+        exports.pluginInitialize();
     });
 });
 
 // Called after 'deviceready' event
 channel.deviceready.subscribe(function () {
-    if (window.webkit && exports.isEnabled()) {
+    if (exports.isEnabled()) {
         exports.fireEvent('enable');
+    }
+
+    if (exports.isActive()) {
+        exports.fireEvent('activate');
     }
 });
