@@ -165,7 +165,9 @@ exports.moveToForeground = function () {
  * @return [ Void ]
  */
 exports.overrideBackButton = function () {
-    document.addEventListener('backbutton', this.moveToBackground, false);
+    document.addEventListener('backbutton', function() {
+        exports.moveToBackground();
+    }, false);
 };
 
 /**
