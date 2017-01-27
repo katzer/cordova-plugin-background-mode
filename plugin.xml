@@ -22,8 +22,9 @@
 
     <!-- cordova -->
     <engines>
-        <engine name="cordova" version=">=3.0.0" />
-        <engine name="android-sdk" version=">=16" />
+        <engine name="cordova" version="&gt;=3.0.0" />
+        <engine name="android-sdk" version="&gt;=16" />
+        <engine name="windows-sdk" version="&gt;=10.0.14393.0" />
     </engines>
 
     <!-- js -->
@@ -65,6 +66,7 @@
 
         <config-file target="res/xml/config.xml" parent="/*">
             <preference name="KeepRunning" value="true" />
+            <preference name="AndroidLaunchMode" value="singleInstance"/>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -84,7 +86,7 @@
             target-dir="src/de/appplant/cordova/plugin/background" />
     </platform>
 
-    <!-- windows (10.14393)
+    <!-- windows
     <platform name="windows">
         <config-file target="config.xml" parent="/*">
             <feature name="BackgroundMode" >
@@ -93,15 +95,19 @@
         </config-file>
 
         <config-file target="package.appxmanifest" parent="/Package/Capabilities" device-target="windows">
-            https://issues.apache.org/jira/browse/CB-12380
             <Capability Name="backgroundMediaPlayback" />
         </config-file>
 
-        https://github.com/apache/cordova-windows/pull/213
+        <config-file target="config.xml" parent="/*">
+            <preference name="windows-target-version" value="UAP" />
+            <preference name="uap-target-min-version" value="10.0.14393.0" />
+            <preference name="Windows.Universal-MinVersion" value="10.0.14393.0" />
+        </config-file>
+
         <resource-file src="appbeep.wma" target="appbeep.wma" />
 
-        <js-module src="src/windows/BackgroundModeProxy.js" name="BackgroundModeProxy">
-            <merges target="" />
+        <js-module src="src/windows/BackgroundModeProxy.js" name="BackgroundMode.Proxy">
+            <runs />
         </js-module>
     </platform> -->
 
