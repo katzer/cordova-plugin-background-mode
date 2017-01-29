@@ -113,6 +113,13 @@ Override the back button on Android to go to background instead of closing the a
 cordova.plugins.backgroundMode.overrideBackButton();
 ```
 
+### Recent task list
+Exclude the app from the recent task list works on Android 5.0+.
+
+```javascript
+cordova.plugins.backgroundMode.excludeFromTaskList();
+```
+
 ### Notification
 To indicate that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
 

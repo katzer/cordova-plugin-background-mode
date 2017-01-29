@@ -159,6 +159,17 @@ exports.moveToForeground = function () {
 };
 
 /**
+ * Exclude the app from the recent tasks list (Android only).
+ *
+ * @return [ Void ]
+ */
+exports.excludeFromTaskList = function () {
+    if (this._isAndroid) {
+        cordova.exec(null, null, 'BackgroundMode', 'tasklist', []);
+    }
+};
+
+/**
  * Override the back button on Android to go to background
  * instead of closing the app.
  *

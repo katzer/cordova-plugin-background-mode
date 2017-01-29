@@ -22,10 +22,12 @@
 package de.appplant.cordova.plugin.background;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.IBinder;
 import android.view.View;
 
@@ -36,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -112,6 +115,10 @@ public class BackgroundMode extends CordovaPlugin {
 
         if (action.equalsIgnoreCase("foreground")) {
             moveToForeground();
+        }
+
+        if (action.equalsIgnoreCase("tasklist")) {
+            excludeFromTaskList();
         }
 
         if (action.equalsIgnoreCase("enable")) {
@@ -331,6 +338,33 @@ public class BackgroundMode extends CordovaPlugin {
         };
 
         thread.start();
+    }
+
+    /**
+     * Exclude the app from the recent tasks list.
+     */
+    private void excludeFromTaskList() {
+        ActivityManager am = (ActivityManager) cordova.getActivity()
+                .getSystemService(Context.ACTIVITY_SERVICE);
+
+        if (am == null || Build.VERSION.SDK_INT < 21)
+            return;
+
+        try {
+            Method getAppTasks = am.getClass().getMethod("getAppTasks");
+            List tasks = (List) getAppTasks.invoke(am);
+
+            if (tasks == null || tasks.isEmpty())
+                return;
+
+            ActivityManager.AppTask task = (ActivityManager.AppTask) tasks.get(0);
+            Method setExcludeFromRecents = task.getClass()
+                    .getMethod("setExcludeFromRecents", boolean.class);
+
+            setExcludeFromRecents.invoke(task, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

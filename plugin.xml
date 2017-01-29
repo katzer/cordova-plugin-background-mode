@@ -102,6 +102,7 @@
             <preference name="windows-target-version" value="UAP" />
             <preference name="uap-target-min-version" value="10.0.14393.0" />
             <preference name="Windows.Universal-MinVersion" value="10.0.14393.0" />
+            <preference name="Windows.Universal" value="10.0.14393.0" />
         </config-file>
 
         <resource-file src="appbeep.wma" target="appbeep.wma" />
