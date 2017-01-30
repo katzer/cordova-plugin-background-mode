@@ -78,7 +78,7 @@ public class BackgroundMode extends CordovaPlugin {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            fireEvent(Event.FAILURE, "service disconnected");
+            fireEvent(Event.FAILURE, "'service disconnected'");
         }
     };
 
@@ -278,7 +278,7 @@ public class BackgroundMode extends CordovaPlugin {
 
             context.startService(intent);
         } catch (Exception e) {
-            fireEvent(Event.FAILURE, e.getMessage());
+            fireEvent(Event.FAILURE, String.format("'%s'", e.getMessage()));
         }
 
         isBind = true;
