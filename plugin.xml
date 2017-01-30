@@ -82,6 +82,10 @@
             target-dir="src/de/appplant/cordova/plugin/background" />
 
         <source-file
+            src="src/android/BackgroundModeExt.java"
+            target-dir="src/de/appplant/cordova/plugin/background" />
+
+        <source-file
             src="src/android/ForegroundService.java"
             target-dir="src/de/appplant/cordova/plugin/background" />
     </platform>

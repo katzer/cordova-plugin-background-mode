@@ -132,7 +132,7 @@ exports.configure = function (options) {
  */
 exports.disableWebViewOptimizations = function () {
     if (this._isAndroid) {
-        cordova.exec(null, null, 'BackgroundMode', 'disableWebViewOptimizations', []);
+        cordova.exec(null, null, 'BackgroundMode', 'optimizations', []);
     }
 };
 
