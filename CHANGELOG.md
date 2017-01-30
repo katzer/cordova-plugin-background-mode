@@ -1,4 +1,8 @@
 ## ChangeLog
+#### Version 0.7.1 (not yet released)
+- Bug fixes for iOS9 and Android
+- Allow app to be excluded from recent list on Android
+
 #### Version 0.7.0 (27.01.2017)
 - __Features__
  - Support for tAmazon FireOS
