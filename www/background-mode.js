@@ -339,9 +339,13 @@ exports.mergeWithDefaults = function (options) {
  */
 exports.pluginInitialize = function () {
     this._isAndroid = device.platform.match(/^android|amazon/i) !== null;
-    this._isEnabled = this._isEnabled || device.platform == 'browser';
-    this._isActive  = this._isActive || device.platform == 'browser';
     this.setDefaults({});
+
+    if (device.platform == 'browser' || window.webkit !== undefined) {
+        this.enable();
+    }
+
+    this._isActive  = this._isActive || device.platform == 'browser';
 };
 
 
@@ -354,7 +358,7 @@ exports.pluginInitialize = function () {
  *
  * Flag indicates if the mode is enabled.
  */
-exports._isEnabled = window.webkit !== undefined;
+exports._isEnabled = false;
 
 /**
  * @private
