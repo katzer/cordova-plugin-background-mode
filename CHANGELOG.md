@@ -1,5 +1,5 @@
 ## ChangeLog
-#### Version 0.7.1 (not yet released)
+#### Version 0.7.1 (30.01.2017)
 - Bug fixes for iOS9 and Android
 - Allow app to be excluded from recent list on Android
 

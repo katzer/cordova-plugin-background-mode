@@ -128,8 +128,8 @@ The title, text and icon for that notification can be customized as below. Also,
 
 ```javascript
 cordova.plugins.backgroundMode.setDefaults({
-    title:  String,
-    text:   String,
+    title: String,
+    text: String,
     icon: 'icon' // this will look for icon.png in platforms/android/res/drawable|mipmap
     color: String // hex format like 'F14F4D'
     resume: Boolean,
