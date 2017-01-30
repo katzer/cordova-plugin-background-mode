@@ -35,7 +35,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.List;
 
-class BackgroundModeExt {
+class BackgroundExt {
 
     // Weak reference to the cordova interface passed by the plugin
     private final WeakReference<CordovaInterface> cordova;
@@ -49,15 +49,44 @@ class BackgroundModeExt {
      * @param cordova The cordova interface.
      * @param webView The cordova web view.
      */
-    BackgroundModeExt(CordovaInterface cordova, CordovaWebView webView) {
+    private BackgroundExt(CordovaInterface cordova, CordovaWebView webView) {
         this.cordova = new WeakReference<CordovaInterface>(cordova);
         this.webView = new WeakReference<CordovaWebView>(webView);
     }
 
     /**
+     * Executes the request.
+     *
+     * @param action  The action to execute.
+     * @param cordova The cordova interface.
+     * @param webView The cordova web view.
+     */
+    static void execute(String action, CordovaInterface cordova,
+                        CordovaWebView webView) {
+
+        BackgroundExt ext = new BackgroundExt(cordova, webView);
+
+        if (action.equalsIgnoreCase("optimizations")) {
+            ext.disableWebViewOptimizations();
+        }
+
+        if (action.equalsIgnoreCase("background")) {
+            ext.moveToBackground();
+        }
+
+        if (action.equalsIgnoreCase("foreground")) {
+            ext.moveToForeground();
+        }
+
+        if (action.equalsIgnoreCase("tasklist")) {
+            ext.excludeFromTaskList();
+        }
+    }
+
+    /**
      * Move app to background.
      */
-    void moveToBackground() {
+    private void moveToBackground() {
         Intent intent = new Intent(Intent.ACTION_MAIN);
 
         intent.addCategory(Intent.CATEGORY_HOME);
@@ -67,7 +96,7 @@ class BackgroundModeExt {
     /**
      * Move app to foreground.
      */
-    void moveToForeground() {
+    private void moveToForeground() {
         Activity    app = getActivity();
         String pkgName  = app.getPackageName();
 
@@ -75,8 +104,8 @@ class BackgroundModeExt {
                 .getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
-        intent.addFlags(
-                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(  Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         app.startActivity(intent);
     }
@@ -84,7 +113,7 @@ class BackgroundModeExt {
     /**
      * Enable GPS position tracking while in background.
      */
-    void disableWebViewOptimizations() {
+    private void disableWebViewOptimizations() {
         Thread thread = new Thread(){
             public void run() {
                 try {
@@ -119,7 +148,7 @@ class BackgroundModeExt {
     /**
      * Exclude the app from the recent tasks list.
      */
-    void excludeFromTaskList() {
+    private void excludeFromTaskList() {
         ActivityManager am = (ActivityManager) getActivity()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 

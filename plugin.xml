@@ -82,7 +82,7 @@
             target-dir="src/de/appplant/cordova/plugin/background" />
 
         <source-file
-            src="src/android/BackgroundModeExt.java"
+            src="src/android/BackgroundExt.java"
             target-dir="src/de/appplant/cordova/plugin/background" />
 
         <source-file

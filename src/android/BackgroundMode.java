@@ -60,9 +60,6 @@ public class BackgroundMode extends CordovaPlugin {
     // Service that keeps the app awake
     private ForegroundService service;
 
-    // Plugin extensions
-    private BackgroundModeExt ext;
-
     // Used to (un)bind the service to with the activity
     private final ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -78,14 +75,6 @@ public class BackgroundMode extends CordovaPlugin {
             fireEvent(Event.FAILURE, "'service disconnected'");
         }
     };
-
-    /**
-     * Called after plugin construction and fields have been initialized.
-     */
-    @Override
-    protected void pluginInitialize() {
-        ext = new BackgroundModeExt(cordova, webView);
-    }
 
     /**
      * Executes the request.
@@ -109,29 +98,16 @@ public class BackgroundMode extends CordovaPlugin {
 
             configure(settings, update);
         }
-
+        else
         if (action.equalsIgnoreCase("enable")) {
             enableMode();
         }
-
+        else
         if (action.equalsIgnoreCase("disable")) {
             disableMode();
         }
-
-        if (action.equalsIgnoreCase("optimizations")) {
-            ext.disableWebViewOptimizations();
-        }
-
-        if (action.equalsIgnoreCase("background")) {
-            ext.moveToBackground();
-        }
-
-        if (action.equalsIgnoreCase("foreground")) {
-            ext.moveToForeground();
-        }
-
-        if (action.equalsIgnoreCase("tasklist")) {
-            ext.excludeFromTaskList();
+        else {
+            BackgroundExt.execute(action, cordova, webView);
         }
 
         callback.success();
