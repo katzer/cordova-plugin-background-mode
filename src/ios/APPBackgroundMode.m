@@ -50,12 +50,10 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
  */
 - (void) pluginInitialize
 {
-    [self.commandDelegate runInBackground:^{
-        enabled = [self.class isRunningWebKit];
-        [self configureAudioPlayer];
-        [self configureAudioSession];
-        [self observeLifeCycle];
-    }];
+    enabled = [self.class isRunningWebKit];
+    [self configureAudioPlayer];
+    [self configureAudioSession];
+    [self observeLifeCycle];
 }
 
 /**
