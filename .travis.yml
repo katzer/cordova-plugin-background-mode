@@ -60,7 +60,7 @@ script:
 - cordova build android
 - cordova build browser
 - cordova build ios
-# - cordova plugin add cordova-plugin-crosswalk-webview
+- cordova plugin add cordova-plugin-crosswalk-webview
 - cordova plugin add cordova-plugin-wkwebview-engine
-# - cordova build android
+- cordova build android
 - cordova build ios
