@@ -50,7 +50,7 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
  */
 - (void) pluginInitialize
 {
-    enabled = [self.class isRunningWebKit];
+    enabled = NO;
     [self configureAudioPlayer];
     [self configureAudioSession];
     [self observeLifeCycle];
@@ -73,9 +73,6 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
                      selector:@selector(stopKeepingAwake)
                          name:UIApplicationWillEnterForegroundNotification
                        object:nil];
-
-    if ([self.class isRunningWebKit])
-        return;
 
         [listener addObserver:self
                      selector:@selector(handleAudioSessionInterruption:)
@@ -105,7 +102,7 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
  */
 - (void) disable:(CDVInvokedUrlCommand*)command
 {
-    if (!enabled || [self.class isRunningWebKit])
+    if (!enabled)
         return;
 
     enabled = NO;
@@ -124,10 +121,7 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
     if (!enabled)
         return;
 
-    if (![self.class isRunningWebKit]) {
-        [audioPlayer play];
-    }
-
+    [audioPlayer play];
     [self fireEvent:kAPPBackgroundEventActivate];
 }
 
@@ -140,7 +134,7 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
         NSLog(@"BackgroundMode: On simulator apps never pause in background!");
     }
 
-    if (audioPlayer.isPlaying || [self.class isRunningWebKit]) {
+    if (audioPlayer.isPlaying) {
         [self fireEvent:kAPPBackgroundEventDeactivate];
     }
 
@@ -172,9 +166,6 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
 {
     AVAudioSession* session = [AVAudioSession
                                sharedInstance];
-
-    if ([self.class isRunningWebKit])
-        return;
 
     // Don't activate the audio session yet
     [session setActive:NO error:NULL];
@@ -274,6 +265,9 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
 
         [obj setValue:[NSNumber numberWithBool:YES]
                forKey:[APPBackgroundMode wkProperty]];
+
+        [obj setValue:[NSNumber numberWithBool:NO]
+               forKey:@"_requiresUserActionForMediaPlayback"];
 
         return obj;
     }

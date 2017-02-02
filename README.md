@@ -43,8 +43,6 @@ Or install from local source:
 
     $ cordova plugin add cordova-plugin-background-mode --searchpath <path>
 
-__Note:__ In combination with the `cordova-plugin-wkwebview-engine` plugin the UIBackgroundModes section added by the plugin inside the *-Info.plist can be removed. That might increase the chance to submit the app to the app store.
-
 
 ## Usage
 The plugin creates the object `cordova.plugins.backgroundMode` and is accessible after the *deviceready* event has been fired.
@@ -70,8 +68,6 @@ cordova.plugins.backgroundMode.disable();
 // or
 cordova.plugins.backgroundMode.setEnabled(false);
 ```
-
-__Note:__ By using `wkwebview-engine` on iOS, the plugin is enabled by default and cannot be disabled.
 
 ### Check if running in background
 Once the plugin has been enabled and the app has entered the background, the background mode becomes active.
