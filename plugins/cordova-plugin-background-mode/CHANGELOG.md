@@ -1,4 +1,12 @@
 ## ChangeLog
+#### Version 0.7.2 (02.02.2017)
+- Fixed app freeze on iOS using wkwebview-engine
+- Websocket sample in SampleApp
+
+#### Version 0.7.1 (30.01.2017)
+- Bug fixes for iOS9 and Android
+- Allow app to be excluded from recent list on Android
+
 #### Version 0.7.0 (27.01.2017)
 - __Features__
  - Support for tAmazon FireOS

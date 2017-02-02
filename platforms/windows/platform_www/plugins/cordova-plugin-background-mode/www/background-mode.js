@@ -133,7 +133,7 @@ exports.configure = function (options) {
  */
 exports.disableWebViewOptimizations = function () {
     if (this._isAndroid) {
-        cordova.exec(null, null, 'BackgroundMode', 'disableWebViewOptimizations', []);
+        cordova.exec(null, null, 'BackgroundMode', 'optimizations', []);
     }
 };
 
@@ -156,6 +156,17 @@ exports.moveToBackground = function () {
 exports.moveToForeground = function () {
     if (this.isActive() && this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'foreground', []);
+    }
+};
+
+/**
+ * Exclude the app from the recent tasks list (Android only).
+ *
+ * @return [ Void ]
+ */
+exports.excludeFromTaskList = function () {
+    if (this._isAndroid) {
+        cordova.exec(null, null, 'BackgroundMode', 'tasklist', []);
     }
 };
 
@@ -329,9 +340,14 @@ exports.mergeWithDefaults = function (options) {
  */
 exports.pluginInitialize = function () {
     this._isAndroid = device.platform.match(/^android|amazon/i) !== null;
-    this._isEnabled = this._isEnabled || device.platform == 'browser';
-    this._isActive  = this._isActive || device.platform == 'browser';
     this.setDefaults({});
+
+    if (device.platform == 'browser') {
+        this.enable();
+        this._isEnabled = true;
+    }
+
+    this._isActive  = this._isActive || device.platform == 'browser';
 };
 
 
@@ -344,7 +360,7 @@ exports.pluginInitialize = function () {
  *
  * Flag indicates if the mode is enabled.
  */
-exports._isEnabled = window.webkit !== undefined;
+exports._isEnabled = false;
 
 /**
  * @private

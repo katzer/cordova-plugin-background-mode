@@ -1,8 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="de.appplant.cordova.plugin.backgroundmode.example" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <feature name="BackgroundMode">
-        <param name="windows-package" value="BackgroundMode" />
-    </feature>
     <name>BackgroundMode</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.

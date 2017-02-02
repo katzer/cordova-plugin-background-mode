@@ -18,7 +18,6 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
-    <preference name="windows-phone-target-version" value="UAP" />
     <preference name="windows-target-version" value="UAP" />
     <preference name="uap-target-min-version" value="10.0.14393.0" />
     <preference name="Windows.Universal-MinVersion" value="10.0.14393.0" />

@@ -43,8 +43,6 @@ Or install from local source:
 
     $ cordova plugin add cordova-plugin-background-mode --searchpath <path>
 
-__Note:__ In combination with the `cordova-plugin-wkwebview-engine` plugin the UIBackgroundModes section added by the plugin inside the *-Info.plist can be removed. That might increase the chance to submit the app to the app store.
-
 
 ## Usage
 The plugin creates the object `cordova.plugins.backgroundMode` and is accessible after the *deviceready* event has been fired.
@@ -70,8 +68,6 @@ cordova.plugins.backgroundMode.disable();
 // or
 cordova.plugins.backgroundMode.setEnabled(false);
 ```
-
-__Note:__ By using `wkwebview-engine` on iOS, the plugin is enabled by default and cannot be disabled.
 
 ### Check if running in background
 Once the plugin has been enabled and the app has entered the background, the background mode becomes active.
@@ -113,6 +109,13 @@ Override the back button on Android to go to background instead of closing the a
 cordova.plugins.backgroundMode.overrideBackButton();
 ```
 
+### Recent task list
+Exclude the app from the recent task list works on Android 5.0+.
+
+```javascript
+cordova.plugins.backgroundMode.excludeFromTaskList();
+```
+
 ### Notification
 To indicate that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
 
@@ -121,8 +124,8 @@ The title, text and icon for that notification can be customized as below. Also,
 
 ```javascript
 cordova.plugins.backgroundMode.setDefaults({
-    title:  String,
-    text:   String,
+    title: String,
+    text: String,
     icon: 'icon' // this will look for icon.png in platforms/android/res/drawable|mipmap
     color: String // hex format like 'F14F4D'
     resume: Boolean,
@@ -151,7 +154,7 @@ cordova.plugins.backgroundMode.configure({ silent: true });
 Various APIs like playing media or tracking GPS position in background might not work while in background even the background mode is active. To fix such issues the plugin provides a method to disable most optimizations done by Android/CrossWalk.
 
 ```javascript
-cordova.plugins.backgroundMode.on('active', function() {
+cordova.plugins.backgroundMode.on('activate', function() {
    cordova.plugins.backgroundMode.disableWebViewOptimizations(); 
 });
 ```

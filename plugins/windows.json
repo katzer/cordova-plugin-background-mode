@@ -7,9 +7,6 @@
         "files": {}
     },
     "installed_plugins": {
-        "cordova-plugin-background-mode": {
-            "PACKAGE_NAME": "BackgroundMode"
-        },
         "cordova-plugin-badge": {
             "PACKAGE_NAME": "BackgroundMode"
         },
@@ -17,6 +14,9 @@
             "PACKAGE_NAME": "BackgroundMode"
         },
         "cordova-plugin-vibration": {
+            "PACKAGE_NAME": "BackgroundMode"
+        },
+        "cordova-plugin-background-mode": {
             "PACKAGE_NAME": "BackgroundMode"
         }
     },

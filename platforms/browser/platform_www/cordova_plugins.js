@@ -79,7 +79,7 @@ module.exports.metadata =
     "cordova-plugin-console": "1.0.5",
     "cordova-plugin-vibration": "2.1.3",
     "cordova-plugin-device": "1.1.4",
-    "cordova-plugin-background-mode": "0.7.0"
+    "cordova-plugin-background-mode": "0.7.2"
 }
 // BOTTOM OF METADATA
 });

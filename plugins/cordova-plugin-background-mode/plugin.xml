@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-background-mode"
-        version="0.7.0">
+        version="0.7.2">
 
     <name>BackgroundMode</name>
 
@@ -82,16 +82,24 @@
             target-dir="src/de/appplant/cordova/plugin/background" />
 
         <source-file
+            src="src/android/BackgroundExt.java"
+            target-dir="src/de/appplant/cordova/plugin/background" />
+
+        <source-file
             src="src/android/ForegroundService.java"
             target-dir="src/de/appplant/cordova/plugin/background" />
     </platform>
 
-    windows
+    <!-- windows
     <platform name="windows">
         <config-file target="config.xml" parent="/*">
             <feature name="BackgroundMode" >
                 <param name="windows-package" value="BackgroundMode"/>
             </feature>
+        </config-file>
+
+        <config-file target="package.appxmanifest" parent="/Package/Capabilities" device-target="windows">
+            <Capability Name="backgroundMediaPlayback" />
         </config-file>
 
         <config-file target="config.xml" parent="/*">
@@ -101,12 +109,12 @@
             <preference name="Windows.Universal" value="10.0.14393.0" />
         </config-file>
 
-        <!-- <resource-file src="appbeep.wma" target="appbeep.wma" /> -->
+        <resource-file src="appbeep.wma" target="appbeep.wma" />
 
         <js-module src="src/windows/BackgroundModeProxy.js" name="BackgroundMode.Proxy">
             <runs />
         </js-module>
-    </platform>
+    </platform> -->
 
     <!-- browser -->
     <platform name="browser">

@@ -27,15 +27,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.view.View;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.lang.reflect.Method;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -75,7 +72,7 @@ public class BackgroundMode extends CordovaPlugin {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            // Nothing to do here
+            fireEvent(Event.FAILURE, "'service disconnected'");
         }
     };
 
@@ -101,25 +98,16 @@ public class BackgroundMode extends CordovaPlugin {
 
             configure(settings, update);
         }
-
-        if (action.equalsIgnoreCase("disableWebViewOptimizations")) {
-            disableWebViewOptimizations();
-        }
-
-        if (action.equalsIgnoreCase("background")) {
-            moveToBackground();
-        }
-
-        if (action.equalsIgnoreCase("foreground")) {
-            moveToForeground();
-        }
-
+        else
         if (action.equalsIgnoreCase("enable")) {
             enableMode();
         }
-
+        else
         if (action.equalsIgnoreCase("disable")) {
             disableMode();
+        }
+        else {
+            BackgroundExt.execute(action, cordova, webView);
         }
 
         callback.success();
@@ -158,33 +146,6 @@ public class BackgroundMode extends CordovaPlugin {
     public void onDestroy() {
         super.onDestroy();
         stopService();
-    }
-
-    /**
-     * Move app to background.
-     */
-    private void moveToBackground() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-
-        intent.addCategory(Intent.CATEGORY_HOME);
-        cordova.getActivity().startActivity(intent);
-    }
-
-    /**
-     * Move app to foreground.
-     */
-    private void moveToForeground() {
-        Context context = cordova.getActivity();
-        String pkgName  = context.getPackageName();
-
-        Intent intent = context
-                .getPackageManager()
-                .getLaunchIntentForPackage(pkgName);
-
-        intent.addFlags(
-                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        context.startActivity(intent);
     }
 
     /**
@@ -271,7 +232,7 @@ public class BackgroundMode extends CordovaPlugin {
 
             context.startService(intent);
         } catch (Exception e) {
-            fireEvent(Event.FAILURE, e.getMessage());
+            fireEvent(Event.FAILURE, String.format("'%s'", e.getMessage()));
         }
 
         isBind = true;
@@ -296,41 +257,6 @@ public class BackgroundMode extends CordovaPlugin {
         context.stopService(intent);
 
         isBind = false;
-    }
-
-    /**
-     * Enable GPS position tracking while in background.
-     */
-    private void disableWebViewOptimizations() {
-        Thread thread = new Thread(){
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                    cordova.getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            View view = webView.getEngine().getView();
-
-                            try {
-                                Class<?> xWalkCls = Class.forName(
-                                        "org.crosswalk.engine.XWalkCordovaView");
-
-                                Method onShowMethod =
-                                        xWalkCls.getMethod("onShow");
-
-                                onShowMethod.invoke(view);
-                            } catch (Exception e){
-                                view.dispatchWindowVisibilityChanged(View.VISIBLE);
-                            }
-                        }
-                    });
-                } catch (InterruptedException e) {
-                    // do nothing
-                }
-            }
-        };
-
-        thread.start();
     }
 
     /**

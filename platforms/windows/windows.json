@@ -7,40 +7,13 @@
         "files": {
             "config.xml": {
                 "parents": {
-                    "/*": [
-                        {
-                            "xml": "<feature name=\"BackgroundMode\"><param name=\"windows-package\" value=\"BackgroundMode\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"windows-target-version\" value=\"UAP\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"uap-target-min-version\" value=\"10.0.14393.0\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"Windows.Universal-MinVersion\" value=\"10.0.14393.0\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"Windows.Universal\" value=\"10.0.14393.0\" />",
-                            "count": 1
-                        }
-                    ]
+                    "/*": []
                 }
             }
         }
     },
     "installed_plugins": {
         "cordova-plugin-app-event": {
-            "PACKAGE_NAME": "BackgroundMode"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "BackgroundMode"
-        },
-        "cordova-plugin-background-mode": {
             "PACKAGE_NAME": "BackgroundMode"
         },
         "cordova-plugin-badge": {
@@ -51,41 +24,16 @@
         },
         "cordova-plugin-vibration": {
             "PACKAGE_NAME": "BackgroundMode"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "BackgroundMode"
+        },
+        "cordova-plugin-background-mode": {
+            "PACKAGE_NAME": "BackgroundMode"
         }
     },
     "dependent_plugins": {},
     "modules": [
-        {
-            "id": "cordova-plugin-device.device",
-            "file": "plugins/cordova-plugin-device/www/device.js",
-            "pluginId": "cordova-plugin-device",
-            "clobbers": [
-                "device"
-            ]
-        },
-        {
-            "id": "cordova-plugin-device.DeviceProxy",
-            "file": "plugins/cordova-plugin-device/src/windows/DeviceProxy.js",
-            "pluginId": "cordova-plugin-device",
-            "merges": [
-                ""
-            ]
-        },
-        {
-            "id": "cordova-plugin-background-mode.BackgroundMode",
-            "file": "plugins/cordova-plugin-background-mode/www/background-mode.js",
-            "pluginId": "cordova-plugin-background-mode",
-            "clobbers": [
-                "cordova.plugins.backgroundMode",
-                "plugin.backgroundMode"
-            ]
-        },
-        {
-            "id": "cordova-plugin-background-mode.BackgroundMode.Proxy",
-            "file": "plugins/cordova-plugin-background-mode/src/windows/BackgroundModeProxy.js",
-            "pluginId": "cordova-plugin-background-mode",
-            "runs": true
-        },
         {
             "id": "cordova-plugin-badge.Badge",
             "file": "plugins/cordova-plugin-badge/www/badge.js",
@@ -131,14 +79,39 @@
             "file": "plugins/cordova-plugin-vibration/src/windows/VibrationProxy.js",
             "pluginId": "cordova-plugin-vibration",
             "runs": true
+        },
+        {
+            "id": "cordova-plugin-device.device",
+            "file": "plugins/cordova-plugin-device/www/device.js",
+            "pluginId": "cordova-plugin-device",
+            "clobbers": [
+                "device"
+            ]
+        },
+        {
+            "id": "cordova-plugin-device.DeviceProxy",
+            "file": "plugins/cordova-plugin-device/src/windows/DeviceProxy.js",
+            "pluginId": "cordova-plugin-device",
+            "merges": [
+                ""
+            ]
+        },
+        {
+            "id": "cordova-plugin-background-mode.BackgroundMode",
+            "file": "plugins/cordova-plugin-background-mode/www/background-mode.js",
+            "pluginId": "cordova-plugin-background-mode",
+            "clobbers": [
+                "cordova.plugins.backgroundMode",
+                "plugin.backgroundMode"
+            ]
         }
     ],
     "plugin_metadata": {
         "cordova-plugin-app-event": "1.2.0",
-        "cordova-plugin-device": "1.1.4",
-        "cordova-plugin-background-mode": "0.7.0",
         "cordova-plugin-badge": "0.7.4",
         "cordova-plugin-console": "1.0.5",
-        "cordova-plugin-vibration": "2.1.3"
+        "cordova-plugin-vibration": "2.1.3",
+        "cordova-plugin-device": "1.1.4",
+        "cordova-plugin-background-mode": "0.7.2"
     }
 }

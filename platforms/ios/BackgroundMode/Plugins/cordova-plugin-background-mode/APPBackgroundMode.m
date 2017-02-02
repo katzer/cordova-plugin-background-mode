@@ -31,7 +31,6 @@
 NSString* const kAPPBackgroundJsNamespace = @"cordova.plugins.backgroundMode";
 NSString* const kAPPBackgroundEventActivate = @"activate";
 NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
-NSString* const kAPPBackgroundEventFailure = @"failure";
 
 
 #pragma mark -
@@ -51,12 +50,10 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
  */
 - (void) pluginInitialize
 {
-    [self.commandDelegate runInBackground:^{
-        enabled = [self.class isRunningWebKit];
-        [self configureAudioPlayer];
-        [self configureAudioSession];
-        [self observeLifeCycle];
-    }];
+    enabled = NO;
+    [self configureAudioPlayer];
+    [self configureAudioSession];
+    [self observeLifeCycle];
 }
 
 /**
@@ -66,7 +63,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 {
     NSNotificationCenter* listener = [NSNotificationCenter
                                       defaultCenter];
-    
+
         [listener addObserver:self
                      selector:@selector(keepAwake)
                          name:UIApplicationDidEnterBackgroundNotification
@@ -76,9 +73,6 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
                      selector:@selector(stopKeepingAwake)
                          name:UIApplicationWillEnterForegroundNotification
                        object:nil];
-    
-    if ([self.class isRunningWebKit])
-        return;
 
         [listener addObserver:self
                      selector:@selector(handleAudioSessionInterruption:)
@@ -97,7 +91,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 {
     if (enabled)
         return;
-    
+
     enabled = YES;
     [self execCallback:command];
 }
@@ -108,9 +102,9 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
  */
 - (void) disable:(CDVInvokedUrlCommand*)command
 {
-    if (!enabled || [self.class isRunningWebKit])
+    if (!enabled)
         return;
-    
+
     enabled = NO;
     [self stopKeepingAwake];
     [self execCallback:command];
@@ -127,10 +121,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
     if (!enabled)
         return;
 
-    if (![self.class isRunningWebKit]) {
-        [audioPlayer play];
-    }
-    
+    [audioPlayer play];
     [self fireEvent:kAPPBackgroundEventActivate];
 }
 
@@ -143,7 +134,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
         NSLog(@"BackgroundMode: On simulator apps never pause in background!");
     }
 
-    if (audioPlayer.isPlaying || [self.class isRunningWebKit]) {
+    if (audioPlayer.isPlaying) {
         [self fireEvent:kAPPBackgroundEventDeactivate];
     }
 
@@ -176,9 +167,6 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
     AVAudioSession* session = [AVAudioSession
                                sharedInstance];
 
-    if ([self.class isRunningWebKit])
-        return;
-    
     // Don't activate the audio session yet
     [session setActive:NO error:NULL];
 
@@ -256,7 +244,7 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 {
     NSString* str = @"X2Fsd2F5c1J1bnNBdEZvcmVncm91bmRQcmlvcml0eQ==";
     NSData* data  = [[NSData alloc] initWithBase64EncodedString:str options:0];
-    
+
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
@@ -277,6 +265,9 @@ NSString* const kAPPBackgroundEventFailure = @"failure";
 
         [obj setValue:[NSNumber numberWithBool:YES]
                forKey:[APPBackgroundMode wkProperty]];
+
+        [obj setValue:[NSNumber numberWithBool:NO]
+               forKey:@"_requiresUserActionForMediaPlayback"];
 
         return obj;
     }
