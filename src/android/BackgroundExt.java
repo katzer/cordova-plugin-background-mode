@@ -21,8 +21,10 @@
 
 package de.appplant.cordova.plugin.background;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -148,6 +150,7 @@ class BackgroundExt {
     /**
      * Exclude the app from the recent tasks list.
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void excludeFromTaskList() {
         ActivityManager am = (ActivityManager) getActivity()
                 .getSystemService(Context.ACTIVITY_SERVICE);
@@ -155,21 +158,12 @@ class BackgroundExt {
         if (am == null || Build.VERSION.SDK_INT < 21)
             return;
 
-        try {
-            Method getAppTasks = am.getClass().getMethod("getAppTasks");
-            List tasks = (List) getAppTasks.invoke(am);
+        List<AppTask> tasks = am.getAppTasks();
 
-            if (tasks == null || tasks.isEmpty())
-                return;
+        if (tasks == null || tasks.isEmpty())
+            return;
 
-            ActivityManager.AppTask task = (ActivityManager.AppTask) tasks.get(0);
-            Method setExcludeFromRecents = task.getClass()
-                    .getMethod("setExcludeFromRecents", boolean.class);
-
-            setExcludeFromRecents.invoke(task, true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        tasks.get(0).setExcludeFromRecents(true);
     }
 
     /**
