@@ -126,13 +126,9 @@ class BackgroundExt {
                             View view = webView.get().getEngine().getView();
 
                             try {
-                                Class<?> xWalkCls = Class.forName(
-                                        "org.crosswalk.engine.XWalkCordovaView");
-
-                                Method onShowMethod =
-                                        xWalkCls.getMethod("onShow");
-
-                                onShowMethod.invoke(view);
+                                Class.forName("org.crosswalk.engine.XWalkCordovaView")
+                                     .getMethod("onShow")
+                                     .invoke(view);
                             } catch (Exception e){
                                 view.dispatchWindowVisibilityChanged(View.VISIBLE);
                             }
