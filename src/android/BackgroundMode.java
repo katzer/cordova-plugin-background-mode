@@ -144,8 +144,8 @@ public class BackgroundMode extends CordovaPlugin {
      */
     @Override
     public void onDestroy() {
-        super.onDestroy();
         stopService();
+        super.onDestroy();
     }
 
     /**
