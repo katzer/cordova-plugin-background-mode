@@ -47,7 +47,7 @@ Or install from local source:
 ## Usage
 The plugin creates the object `cordova.plugins.backgroundMode` and is accessible after the *deviceready* event has been fired.
 
-```javascript
+```js
 document.addEventListener('deviceready', function () {
     // cordova.plugins.backgroundMode is now available
 }, false);
@@ -56,14 +56,14 @@ document.addEventListener('deviceready', function () {
 ### Enable the background mode
 The plugin is not enabled by default. Once it has been enabled the mode becomes active if the app moves to background.
 
-```javascript
+```js
 cordova.plugins.backgroundMode.enable();
 // or
 cordova.plugins.backgroundMode.setEnabled(true);
 ```
 
 To disable the background mode:
-```javascript
+```js
 cordova.plugins.backgroundMode.disable();
 // or
 cordova.plugins.backgroundMode.setEnabled(false);
@@ -72,7 +72,7 @@ cordova.plugins.backgroundMode.setEnabled(false);
 ### Check if running in background
 Once the plugin has been enabled and the app has entered the background, the background mode becomes active.
 
-```javascript
+```js
 cordova.plugins.backgroundMode.isActive(); // => boolean
 ```
 
@@ -81,12 +81,12 @@ A non-active mode means that the app is in foreground.
 ### Listen for events
 The plugin fires an event each time its status has been changed. These events are `enable`, `disable`, `activate`, `deactivate` and `failure`.
 
-```javascript
+```js
 cordova.plugins.backgroundMode.on('EVENT', function);
 ```
 
 To remove an event listeners:
-```javascript
+```js
 cordova.plugins.backgroundMode.un('EVENT', function);
 ```
 
@@ -96,7 +96,7 @@ cordova.plugins.backgroundMode.un('EVENT', function);
 ### Transit between application states
 Android allows to programmatically move from foreground to background or vice versa.
 
-```javascript
+```js
 cordova.plugins.backgroundMode.moveToBackground();
 // or
 cordova.plugins.backgroundMode.moveToForeground();
@@ -105,15 +105,24 @@ cordova.plugins.backgroundMode.moveToForeground();
 ### Back button
 Override the back button on Android to go to background instead of closing the app.
 
-```javascript
+```js
 cordova.plugins.backgroundMode.overrideBackButton();
 ```
 
 ### Recent task list
 Exclude the app from the recent task list works on Android 5.0+.
 
-```javascript
+```js
 cordova.plugins.backgroundMode.excludeFromTaskList();
+```
+
+### Detect screen status
+The method works async instead of _isAcive()_ or _isEnabled()_.
+
+```js
+cordova.plugins.backgroundMode.isScreenOff(function(bool) {
+    ...
+});
 ```
 
 ### Notification
@@ -122,7 +131,7 @@ To indicate that the app is executing tasks in background and being paused would
 #### Override defaults
 The title, text and icon for that notification can be customized as below. Also, by default the app will come to foreground when tapping on the notification. That can be changed by setting resume to false. On Android 5.0+, the color option will set the background color of the notification circle. Also on Android 5.0+, setting hidden to false will make the notification visible on lockscreen.
 
-```javascript
+```js
 cordova.plugins.backgroundMode.setDefaults({
     title: String,
     text: String,
@@ -135,7 +144,7 @@ cordova.plugins.backgroundMode.setDefaults({
 ```
 
 To modify the currently displayed notification
-```javascript
+```js
 cordova.plugins.backgroundMode.configure({ ... });
 ```
 
@@ -144,7 +153,7 @@ __Note:__ All properties are optional - only override the things you need to.
 #### Run in background without notification
 In silent mode the plugin will not display a notification - which is not the default. Be aware that Android recommends adding a notification otherwise the OS may pause the app.
 
-```javascript
+```js
 cordova.plugins.backgroundMode.configure({ silent: true });
 ```
 
@@ -153,7 +162,7 @@ cordova.plugins.backgroundMode.configure({ silent: true });
 
 Various APIs like playing media or tracking GPS position in background might not work while in background even the background mode is active. To fix such issues the plugin provides a method to disable most optimizations done by Android/CrossWalk.
 
-```javascript
+```js
 cordova.plugins.backgroundMode.on('activate', function() {
    cordova.plugins.backgroundMode.disableWebViewOptimizations(); 
 });

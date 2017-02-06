@@ -1,4 +1,7 @@
 ## ChangeLog
+#### Version 0.7.3 (not yet released)
+- Check if screen is off on Android
+
 #### Version 0.7.2 (02.02.2017)
 - Fixed app freeze on iOS using wkwebview-engine
 - Websocket sample in SampleApp

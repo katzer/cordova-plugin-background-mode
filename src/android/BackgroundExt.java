@@ -25,17 +25,23 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.PowerManager;
 import android.view.View;
 
+import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.PluginResult;
+import org.apache.cordova.PluginResult.Status;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.util.List;
+
+import static android.content.Context.ACTIVITY_SERVICE;
+import static android.content.Context.POWER_SERVICE;
 
 class BackgroundExt {
 
@@ -48,40 +54,62 @@ class BackgroundExt {
     /**
      * Initialize the extension to perform non-background related tasks.
      *
-     * @param cordova The cordova interface.
-     * @param webView The cordova web view.
+     * @param plugin The cordova plugin.
      */
-    private BackgroundExt(CordovaInterface cordova, CordovaWebView webView) {
-        this.cordova = new WeakReference<CordovaInterface>(cordova);
-        this.webView = new WeakReference<CordovaWebView>(webView);
+    private BackgroundExt(CordovaPlugin plugin) {
+        this.cordova = new WeakReference<CordovaInterface>(plugin.cordova);
+        this.webView = new WeakReference<CordovaWebView>(plugin.webView);
+    }
+
+    /**
+     * Executes the request asynchronous.
+     *
+     * @param plugin   The cordova plugin.
+     * @param action   The action to execute.
+     * @param callback The callback context used when
+     *                 calling back into JavaScript.
+     */
+    @SuppressWarnings("UnusedParameters")
+    static void execute (CordovaPlugin plugin, final String action,
+                         final CallbackContext callback) {
+
+        final BackgroundExt ext = new BackgroundExt(plugin);
+
+        plugin.cordova.getThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                ext.execute(action, callback);
+            }
+        });
     }
 
     /**
      * Executes the request.
      *
-     * @param action  The action to execute.
-     * @param cordova The cordova interface.
-     * @param webView The cordova web view.
+     * @param action   The action to execute.
+     * @param callback The callback context used when
+     *                 calling back into JavaScript.
      */
-    static void execute(String action, CordovaInterface cordova,
-                        CordovaWebView webView) {
-
-        BackgroundExt ext = new BackgroundExt(cordova, webView);
+    private void execute (String action, CallbackContext callback) {
 
         if (action.equalsIgnoreCase("optimizations")) {
-            ext.disableWebViewOptimizations();
+            disableWebViewOptimizations();
         }
 
         if (action.equalsIgnoreCase("background")) {
-            ext.moveToBackground();
+            moveToBackground();
         }
 
         if (action.equalsIgnoreCase("foreground")) {
-            ext.moveToForeground();
+            moveToForeground();
         }
 
         if (action.equalsIgnoreCase("tasklist")) {
-            ext.excludeFromTaskList();
+            excludeFromTaskList();
+        }
+
+        if (action.equalsIgnoreCase("dimmed")) {
+            isDimmed(callback);
         }
     }
 
@@ -148,8 +176,7 @@ class BackgroundExt {
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void excludeFromTaskList() {
-        ActivityManager am = (ActivityManager) getActivity()
-                .getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager am = (ActivityManager) getService(ACTIVITY_SERVICE);
 
         if (am == null || Build.VERSION.SDK_INT < 21)
             return;
@@ -163,12 +190,43 @@ class BackgroundExt {
     }
 
     /**
+     * Invoke the callback with information if the screen is on.
+     *
+     * @param callback The callback to invoke.
+     */
+    @SuppressWarnings("deprecation")
+    private void isDimmed (CallbackContext callback) {
+        PowerManager pm = (PowerManager) getService(POWER_SERVICE);
+        boolean isDimmed;
+
+        if (Build.VERSION.SDK_INT < 20) {
+            isDimmed = !pm.isScreenOn();
+        } else {
+            isDimmed = !pm.isInteractive();
+        }
+
+        PluginResult result = new PluginResult(Status.OK, isDimmed);
+        callback.sendPluginResult(result);
+    }
+
+    /**
      * The activity referenced by cordova.
      *
      * @return The main activity of the app.
      */
     Activity getActivity() {
         return cordova.get().getActivity();
+    }
+
+    /**
+     * Get the requested system service by name.
+     *
+     * @param name The name of the service.
+     *
+     * @return The service instance.
+     */
+    private Object getService (String name) {
+        return getActivity().getSystemService(name);
     }
 
 }

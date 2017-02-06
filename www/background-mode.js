@@ -182,6 +182,21 @@ exports.overrideBackButton = function () {
 };
 
 /**
+ * If the screen is off.
+ *
+ * @param [ Function ] fn Callback function to invoke with boolean arg.
+ *
+ * @return [ Void ]
+ */
+exports.isScreenOff = function (fn) {
+    if (this._isAndroid) {
+        cordova.exec(fn, null, 'BackgroundMode', 'dimmed', []);
+    } else {
+        fn(undefined);
+    }
+};
+
+/**
  * If the mode is enabled or disabled.
  *
  * @return [ Boolean ]
