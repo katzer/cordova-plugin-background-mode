@@ -56,7 +56,6 @@ var app = {
 
         plugin.setDefaults({ color: 'F14F4D' });
         plugin.overrideBackButton();
-        plugin.disableWebViewOptimizations();
 
         plugin.on('activate', app.onModeActivated);
         plugin.on('deactivate', app.onModeDeactivated);
@@ -110,6 +109,8 @@ var app = {
     onModeActivated: function() {
         var counter = 0;
 
+        plugin.disableWebViewOptimizations();
+
         app.timer = setInterval(function () {
             counter++;
 
@@ -127,7 +128,7 @@ var app = {
                     navigator.vibrate(1000);
                 }
             }
-        }, 1000 * 1);
+        }, 1000);
     },
     // Reset badge once deactivated
     onModeDeactivated: function() {
