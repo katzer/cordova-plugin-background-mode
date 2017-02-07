@@ -214,16 +214,13 @@ public class ForegroundService extends Service {
      * @param settings A JSON dict containing the icon name.
      */
     private int getIconResId(JSONObject settings) {
-        Context context = getApplicationContext();
-        Resources res   = context.getResources();
-        String pkgName  = context.getPackageName();
-        String icon     = settings.optString("icon", NOTIFICATION_ICON);
+        String icon = settings.optString("icon", NOTIFICATION_ICON);
 
         // cordova-android 6 uses mipmaps
-        int resId = getIconResId(res, icon, "mipmap", pkgName);
+        int resId = getIconResId(icon, "mipmap");
 
         if (resId == 0) {
-            resId = getIconResId(res, icon, "drawable", pkgName);
+            resId = getIconResId(icon, "drawable");
         }
 
         return resId;
@@ -232,15 +229,14 @@ public class ForegroundService extends Service {
     /**
      * Retrieve resource id of the specified icon.
      *
-     * @param res The app resource bundle.
      * @param icon The name of the icon.
      * @param type The resource type where to look for.
-     * @param pkgName The name of the package.
      *
      * @return The resource id or 0 if not found.
      */
-    private int getIconResId(Resources res, String icon,
-                             String type, String pkgName) {
+    private int getIconResId(String icon, String type) {
+        Resources res  = getResources();
+        String pkgName = getPackageName();
 
         int resId = res.getIdentifier(icon, type, pkgName);
 
