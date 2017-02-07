@@ -77,6 +77,8 @@ public class BackgroundMode extends CordovaPlugin {
         }
     };
 
+    // codebeat:disable[ABC]
+
     /**
      * Executes the request.
      *
@@ -114,6 +116,8 @@ public class BackgroundMode extends CordovaPlugin {
         BackgroundExt.execute(this, action, callback);
         return true;
     }
+
+    // codebeat:enable[ABC]
 
     /**
      * Called when the system is about to start resuming a previous activity.

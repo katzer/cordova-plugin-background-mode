@@ -83,6 +83,8 @@ class BackgroundExt {
         });
     }
 
+    // codebeat:disable[ABC]
+
     /**
      * Executes the request.
      *
@@ -112,6 +114,8 @@ class BackgroundExt {
             isDimmed(callback);
         }
     }
+
+    // codebeat:enable[ABC]
 
     /**
      * Move app to background.
