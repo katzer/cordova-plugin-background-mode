@@ -89,6 +89,15 @@ exports.getDefaults = function () {
 };
 
 /**
+ * The actual applied settings.
+ *
+ * @return [ Object ]
+ */
+exports.getSettings = function () {
+    return this._settings || {};
+};
+
+/**
  * Overwrite the default settings.
  *
  * @param [ Object ] overrides Dict of options to be overridden.
@@ -118,10 +127,15 @@ exports.setDefaults = function (overrides) {
  * @return [ Void ]
  */
 exports.configure = function (options) {
-    var settings = this.mergeWithDefaults(options);
+    var settings = this.getSettings(),
+        defaults = this.getDefaults();
+
+    this.mergeObjects(options, settings);
+    this.mergeObjects(options, defaults);
+    this._settings = options;
 
     if (this._isAndroid) {
-        cordova.exec(null, null, 'BackgroundMode', 'configure', [settings, true]);
+        cordova.exec(null, null, 'BackgroundMode', 'configure', [options, true]);
     }
 };
 
@@ -348,15 +362,14 @@ exports.onfailure = function () {};
  * Merge settings with default values.
  *
  * @param [ Object ] options The custom options.
+ * @param [ Object ] toMergeIn The options to merge in.
  *
  * @return [ Object ] Default values merged with custom values.
  */
-exports.mergeWithDefaults = function (options) {
-    var defaults = this.getDefaults();
-
-    for (var key in defaults) {
+exports.mergeObjects = function (options, toMergeIn) {
+    for (var key in toMergeIn) {
         if (!options.hasOwnProperty(key)) {
-            options[key] = defaults[key];
+            options[key] = toMergeIn[key];
             continue;
         }
     }
