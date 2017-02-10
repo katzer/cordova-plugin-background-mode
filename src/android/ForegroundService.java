@@ -116,10 +116,10 @@ public class ForegroundService extends Service {
             startForeground(NOTIFICATION_ID, makeNotification());
         }
 
-        PowerManager powerMgr = (PowerManager)
+        PowerManager pm = (PowerManager)
                 getSystemService(POWER_SERVICE);
 
-        wakeLock = powerMgr.newWakeLock(
+        wakeLock = pm.newWakeLock(
                 PARTIAL_WAKE_LOCK, "BackgroundMode");
 
         wakeLock.acquire();

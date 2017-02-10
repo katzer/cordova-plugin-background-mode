@@ -33,6 +33,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.appplant.cordova.plugin.background.ForegroundService.ForegroundBinder;
+
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class BackgroundMode extends CordovaPlugin {
@@ -65,9 +67,7 @@ public class BackgroundMode extends CordovaPlugin {
     private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            ForegroundService.ForegroundBinder binder =
-                    (ForegroundService.ForegroundBinder) service;
-
+            ForegroundBinder binder = (ForegroundBinder) service;
             BackgroundMode.this.service = binder.getService();
         }
 
@@ -76,6 +76,11 @@ public class BackgroundMode extends CordovaPlugin {
             fireEvent(Event.FAILURE, "'service disconnected'");
         }
     };
+
+    @Override
+    protected void pluginInitialize() {
+        BackgroundExt.addWindowFlags(cordova.getActivity());
+    }
 
     // codebeat:disable[ABC]
 

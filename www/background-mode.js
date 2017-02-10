@@ -197,6 +197,28 @@ exports.isScreenOff = function (fn) {
 };
 
 /**
+ * Wake up the device.
+ *
+ * @return [ Void ]
+ */
+exports.wakeUp = function () {
+    if (this._isAndroid) {
+        cordova.exec(null, null, 'BackgroundMode', 'wakeup', []);
+    }
+};
+
+/**
+ * Wake up and unlock the device.
+ *
+ * @return [ Void ]
+ */
+exports.unlock = function () {
+    if (this._isAndroid) {
+        cordova.exec(null, null, 'BackgroundMode', 'unlock', []);
+    }
+};
+
+/**
  * If the mode is enabled or disabled.
  *
  * @return [ Boolean ]

@@ -125,6 +125,16 @@ cordova.plugins.backgroundMode.isScreenOff(function(bool) {
 });
 ```
 
+### Unlock and wake-up
+A wake-up turns on the screen while unlocking moves the app to foreground even the device is locked.
+
+```js
+// Turn screen on
+cordova.plugins.backgroundMode.wakeUp();
+// Turn screen on and show app even locked
+cordova.plugins.backgroundMode.unlock();
+```
+
 ### Notification
 To indicate that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
 

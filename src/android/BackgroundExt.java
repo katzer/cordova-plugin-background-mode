@@ -25,10 +25,12 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
 import android.view.View;
+import android.view.Window;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -42,6 +44,10 @@ import java.util.List;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.POWER_SERVICE;
+import static android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
+import static android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
+import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
 class BackgroundExt {
 
@@ -50,6 +56,8 @@ class BackgroundExt {
 
     // Weak reference to the cordova web view passed by the plugin
     private final WeakReference<CordovaWebView> webView;
+
+    private PowerManager.WakeLock wakeLock;
 
     /**
      * Initialize the extension to perform non-background related tasks.
@@ -113,6 +121,15 @@ class BackgroundExt {
         if (action.equalsIgnoreCase("dimmed")) {
             isDimmed(callback);
         }
+
+        if (action.equalsIgnoreCase("wakeup")) {
+            wakeup();
+        }
+
+        if (action.equalsIgnoreCase("unlock")) {
+            wakeup();
+            unlock();
+        }
     }
 
     // codebeat:enable[ABC]
@@ -124,22 +141,19 @@ class BackgroundExt {
         Intent intent = new Intent(Intent.ACTION_MAIN);
 
         intent.addCategory(Intent.CATEGORY_HOME);
-        getActivity().startActivity(intent);
+        getApp().startActivity(intent);
     }
 
     /**
      * Move app to foreground.
      */
     private void moveToForeground() {
-        Activity    app = getActivity();
-        String pkgName  = app.getPackageName();
+        Activity  app = getApp();
+        Intent intent = getLaunchIntent();
 
-        Intent intent = app
-                .getPackageManager()
-                .getLaunchIntentForPackage(pkgName);
-
-        intent.addFlags(  Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                        | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT |
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         app.startActivity(intent);
     }
@@ -152,15 +166,15 @@ class BackgroundExt {
             public void run() {
                 try {
                     Thread.sleep(1000);
-                    getActivity().runOnUiThread(new Runnable() {
+                    getApp().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             View view = webView.get().getEngine().getView();
 
                             try {
                                 Class.forName("org.crosswalk.engine.XWalkCordovaView")
-                                     .getMethod("onShow")
-                                     .invoke(view);
+                                        .getMethod("onShow")
+                                        .invoke(view);
                             } catch (Exception e){
                                 view.dispatchWindowVisibilityChanged(View.VISIBLE);
                             }
@@ -199,18 +213,90 @@ class BackgroundExt {
      * @param callback The callback to invoke.
      */
     @SuppressWarnings("deprecation")
-    private void isDimmed (CallbackContext callback) {
+    private void isDimmed(CallbackContext callback) {
+        PluginResult result = new PluginResult(Status.OK, isDimmed());
+        callback.sendPluginResult(result);
+    }
+
+    /**
+     * If the screen is active.
+     */
+    @SuppressWarnings("deprecation")
+    private boolean isDimmed() {
         PowerManager pm = (PowerManager) getService(POWER_SERVICE);
-        boolean isDimmed;
 
         if (Build.VERSION.SDK_INT < 20) {
-            isDimmed = !pm.isScreenOn();
-        } else {
-            isDimmed = !pm.isInteractive();
+            return !pm.isScreenOn();
         }
 
-        PluginResult result = new PluginResult(Status.OK, isDimmed);
-        callback.sendPluginResult(result);
+        return !pm.isInteractive();
+    }
+
+    /**
+     * Wakes up the device if the screen isn't still on.
+     */
+    private void wakeup() {
+        try {
+            acquireWakeLock();
+        } catch (Exception e) {
+            releaseWakeLock();
+        }
+    }
+
+    /**
+     * Unlocks the device even with password protection.
+     */
+    private void unlock() {
+        Intent intent  = getLaunchIntent();
+        getApp().startActivity(intent);
+    }
+
+    /**
+     * Acquire a wake lock to wake up the device.
+     */
+    private void acquireWakeLock() {
+        PowerManager pm = (PowerManager) getService(POWER_SERVICE);
+
+        releaseWakeLock();
+
+        if (!isDimmed()) {
+            return;
+        }
+
+        int level = PowerManager.SCREEN_DIM_WAKE_LOCK |
+                    PowerManager.ACQUIRE_CAUSES_WAKEUP;
+
+        wakeLock = pm.newWakeLock(level, "BackgroundModeExt");
+        wakeLock.setReferenceCounted(false);
+        wakeLock.acquire(1000);
+    }
+
+    /**
+     * Releases the previously acquire wake lock.
+     */
+    private void releaseWakeLock() {
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+            wakeLock = null;
+        }
+    }
+
+    /**
+     * Add required flags to the window to unlock/wakeup the device.
+     */
+    static void addWindowFlags(Activity app) {
+        final Window window = app.getWindow();
+
+        app.runOnUiThread(new Runnable() {
+            public void run() {
+                window.addFlags(
+                        FLAG_ALLOW_LOCK_WHILE_SCREEN_ON |
+                        FLAG_SHOW_WHEN_LOCKED |
+                        FLAG_TURN_SCREEN_ON |
+                        FLAG_DISMISS_KEYGUARD
+                );
+            }
+        });
     }
 
     /**
@@ -218,8 +304,18 @@ class BackgroundExt {
      *
      * @return The main activity of the app.
      */
-    Activity getActivity() {
+    Activity getApp() {
         return cordova.get().getActivity();
+    }
+
+    /**
+     * The launch intent for the main activity.
+     */
+    private Intent getLaunchIntent() {
+        Context app    = getApp().getApplicationContext();
+        String pkgName = app.getPackageName();
+
+        return app.getPackageManager().getLaunchIntentForPackage(pkgName);
     }
 
     /**
@@ -229,8 +325,8 @@ class BackgroundExt {
      *
      * @return The service instance.
      */
-    private Object getService (String name) {
-        return getActivity().getSystemService(name);
+    private Object getService(String name) {
+        return getApp().getSystemService(name);
     }
 
 }
