@@ -34,11 +34,11 @@ var exec    = require('cordova/exec'),
  *
  * @return [ Void ]
  */
-exports.enable = function () {
+exports.enable = function() {
     if (this.isEnabled())
         return;
 
-    var fn = function () {
+    var fn = function() {
             exports._isEnabled = true;
             exports.fireEvent('enable');
         };
@@ -52,11 +52,11 @@ exports.enable = function () {
  *
  * @return [ Void ]
  */
-exports.disable = function () {
+exports.disable = function() {
     if (!this.isEnabled())
         return;
 
-    var fn = function () {
+    var fn = function() {
             exports._isEnabled = false;
             exports.fireEvent('disable');
         };
@@ -84,7 +84,7 @@ exports.setEnabled = function (enable) {
  *
  * @return [ Object ]
  */
-exports.getDefaults = function () {
+exports.getDefaults = function() {
     return this._defaults;
 };
 
@@ -93,7 +93,7 @@ exports.getDefaults = function () {
  *
  * @return [ Object ]
  */
-exports.getSettings = function () {
+exports.getSettings = function() {
     return this._settings || {};
 };
 
@@ -122,7 +122,7 @@ exports.setDefaults = function (overrides) {
  * Configures the notification settings for Android.
  * Will be merged with the defaults.
  *
- * @param [ Object ] overrides Dict of options to be overridden.
+ * @param [ Object ] options Dict of options to be overridden.
  *
  * @return [ Void ]
  */
@@ -130,13 +130,19 @@ exports.configure = function (options) {
     var settings = this.getSettings(),
         defaults = this.getDefaults();
 
-    this.mergeObjects(options, settings);
-    this.mergeObjects(options, defaults);
+    if (!this._isAndroid)
+        return;
+
+    if (!this._isActive) {
+        console.log('BackgroundMode is not active, skipped...');
+        return;
+    }
+
+    this._mergeObjects(options, settings);
+    this._mergeObjects(options, defaults);
     this._settings = options;
 
-    if (this._isAndroid) {
-        cordova.exec(null, null, 'BackgroundMode', 'configure', [options, true]);
-    }
+    cordova.exec(null, null, 'BackgroundMode', 'configure', [options, true]);
 };
 
 /**
@@ -144,7 +150,7 @@ exports.configure = function (options) {
  *
  * @return [ Void ]
  */
-exports.disableWebViewOptimizations = function () {
+exports.disableWebViewOptimizations = function() {
     if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'optimizations', []);
     }
@@ -155,7 +161,7 @@ exports.disableWebViewOptimizations = function () {
  *
  * @return [ Void ]
  */
-exports.moveToBackground = function () {
+exports.moveToBackground = function() {
     if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'background', []);
     }
@@ -166,7 +172,7 @@ exports.moveToBackground = function () {
  *
  * @return [ Void ]
  */
-exports.moveToForeground = function () {
+exports.moveToForeground = function() {
     if (this.isActive() && this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'foreground', []);
     }
@@ -177,7 +183,7 @@ exports.moveToForeground = function () {
  *
  * @return [ Void ]
  */
-exports.excludeFromTaskList = function () {
+exports.excludeFromTaskList = function() {
     if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'tasklist', []);
     }
@@ -189,7 +195,7 @@ exports.excludeFromTaskList = function () {
  *
  * @return [ Void ]
  */
-exports.overrideBackButton = function () {
+exports.overrideBackButton = function() {
     document.addEventListener('backbutton', function() {
         exports.moveToBackground();
     }, false);
@@ -215,7 +221,7 @@ exports.isScreenOff = function (fn) {
  *
  * @return [ Void ]
  */
-exports.wakeUp = function () {
+exports.wakeUp = function() {
     if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'wakeup', []);
     }
@@ -226,7 +232,7 @@ exports.wakeUp = function () {
  *
  * @return [ Void ]
  */
-exports.unlock = function () {
+exports.unlock = function() {
     if (this._isAndroid) {
         cordova.exec(null, null, 'BackgroundMode', 'unlock', []);
     }
@@ -237,7 +243,7 @@ exports.unlock = function () {
  *
  * @return [ Boolean ]
  */
-exports.isEnabled = function () {
+exports.isEnabled = function() {
     return this._isEnabled !== false;
 };
 
@@ -246,7 +252,7 @@ exports.isEnabled = function () {
  *
  * @return [ Boolean ]
  */
-exports.isActive = function () {
+exports.isActive = function() {
     return this._isActive !== false;
 };
 
@@ -332,14 +338,14 @@ exports.un = function (event, callback) {
  *
  * Called when the background mode has been activated.
  */
-exports.onactivate = function () {};
+exports.onactivate = function() {};
 
 /**
  * @deprecated
  *
  * Called when the background mode has been deaktivated.
  */
-exports.ondeactivate = function () {};
+exports.ondeactivate = function() {};
 
 /**
  * @deprecated
@@ -349,55 +355,7 @@ exports.ondeactivate = function () {};
  * @param {Integer} errorCode
  *      Error code which describes the error
  */
-exports.onfailure = function () {};
-
-
-/*********
- * UTILS *
- *********/
-
-/**
- * @private
- *
- * Merge settings with default values.
- *
- * @param [ Object ] options The custom options.
- * @param [ Object ] toMergeIn The options to merge in.
- *
- * @return [ Object ] Default values merged with custom values.
- */
-exports.mergeObjects = function (options, toMergeIn) {
-    for (var key in toMergeIn) {
-        if (!options.hasOwnProperty(key)) {
-            options[key] = toMergeIn[key];
-            continue;
-        }
-    }
-
-    return options;
-};
-
-/**
- * @private
- *
- * Initialize the plugin.
- *
- * Method should be called after the 'deviceready' event
- * but before the event listeners will be called.
- *
- * @return [ Void ]
- */
-exports.pluginInitialize = function () {
-    this._isAndroid = device.platform.match(/^android|amazon/i) !== null;
-    this.setDefaults({});
-
-    if (device.platform == 'browser') {
-        this.enable();
-        this._isEnabled = true;
-    }
-
-    this._isActive  = this._isActive || device.platform == 'browser';
-};
+exports.onfailure = function() {};
 
 
 /***********
@@ -434,15 +392,76 @@ exports._defaults = {
     icon:    'icon'
 };
 
+/**
+ * @private
+ *
+ * Merge settings with default values.
+ *
+ * @param [ Object ] options The custom options.
+ * @param [ Object ] toMergeIn The options to merge in.
+ *
+ * @return [ Object ] Default values merged with custom values.
+ */
+exports._mergeObjects = function (options, toMergeIn) {
+    for (var key in toMergeIn) {
+        if (!options.hasOwnProperty(key)) {
+            options[key] = toMergeIn[key];
+            continue;
+        }
+    }
+
+    return options;
+};
+
+/**
+ * @private
+ *
+ * Setter for the isActive flag. Resets the
+ * settings if the mode isnt active anymore.
+ *
+ * @param [ Boolean] value The new value for the flag.
+ *
+ * @return [ Void ]
+ */
+exports._setActive = function(value) {
+    if (this._isActive == value)
+        return;
+
+    this._isActive = value;
+    this._settings = value ? this._mergeObjects({}, this._defaults) : {};
+};
+
+/**
+ * @private
+ *
+ * Initialize the plugin.
+ *
+ * Method should be called after the 'deviceready' event
+ * but before the event listeners will be called.
+ *
+ * @return [ Void ]
+ */
+exports._pluginInitialize = function() {
+    this._isAndroid = device.platform.match(/^android|amazon/i) !== null;
+    this.setDefaults({});
+
+    if (device.platform == 'browser') {
+        this.enable();
+        this._isEnabled = true;
+    }
+
+    this._isActive  = this._isActive || device.platform == 'browser';
+};
+
 // Called before 'deviceready' listener will be called
-channel.onCordovaReady.subscribe(function () {
-    channel.onCordovaInfoReady.subscribe(function () {
-        exports.pluginInitialize();
+channel.onCordovaReady.subscribe(function() {
+    channel.onCordovaInfoReady.subscribe(function() {
+        exports._pluginInitialize();
     });
 });
 
 // Called after 'deviceready' event
-channel.deviceready.subscribe(function () {
+channel.deviceready.subscribe(function() {
     if (exports.isEnabled()) {
         exports.fireEvent('enable');
     }
