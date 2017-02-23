@@ -174,7 +174,7 @@ public class ForegroundService extends Service {
         Intent intent   = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
-        if(!isUpdate || this.notificationBuilder == null){
+        if(!isUpdate || notificationBuilder == null){
             notificationBuilder = new Notification.Builder(context)
                     .setOngoing(true)
                     .setSmallIcon(getIconResId(settings));
