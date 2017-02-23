@@ -176,12 +176,12 @@ public class ForegroundService extends Service {
 
         if(!isUpdate || notificationBuilder == null){
             notificationBuilder = new Notification.Builder(context)
-                    .setOngoing(true)
-                    .setSmallIcon(getIconResId(settings));
+                    .setOngoing(true);
         }
 
         notificationBuilder.setContentTitle(title)
-                .setContentText(text);
+                .setContentText(text)
+                .setSmallIcon(getIconResId(settings));
 
         if (settings.optBoolean("hidden", true)) {
             notificationBuilder.setPriority(Notification.PRIORITY_MIN);
