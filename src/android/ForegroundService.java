@@ -168,6 +168,7 @@ public class ForegroundService extends Service {
         String title    = settings.optString("title", NOTIFICATION_TITLE);
         String text     = settings.optString("text", NOTIFICATION_TEXT);
         boolean bigText = settings.optBoolean("bigText", false);
+        boolean onlyAlertOnce = settings.optBoolean("onlyAlertOnce", false);
 
         Context context = getApplicationContext();
         String pkgName  = context.getPackageName();
@@ -176,7 +177,8 @@ public class ForegroundService extends Service {
 
         if(!isUpdate || notificationBuilder == null){
             notificationBuilder = new Notification.Builder(context)
-                    .setOngoing(true);
+                    .setOngoing(true)
+                    .setOnlyAlertOnce(onlyAlertOnce);
         }
 
         notificationBuilder.setContentTitle(title)

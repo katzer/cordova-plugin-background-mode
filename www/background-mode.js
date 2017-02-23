@@ -388,6 +388,7 @@ exports._defaults = {
     resume:  true,
     silent:  false,
     hidden:  true,
+    onlyAlertOnce: false,
     color:   undefined,
     icon:    'icon'
 };
