@@ -117,7 +117,7 @@ cordova.plugins.backgroundMode.excludeFromTaskList();
 ```
 
 ### Detect screen status
-The method works async instead of _isAcive()_ or _isEnabled()_.
+The method works async instead of _isActive()_ or _isEnabled()_.
 
 ```js
 cordova.plugins.backgroundMode.isScreenOff(function(bool) {
