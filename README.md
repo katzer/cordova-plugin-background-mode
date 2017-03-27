@@ -15,7 +15,7 @@ And then execute:
 
     cordova run [android|browser|ios|windows]
 
-These will lunch the simulator or any plugged in device and start the example application as seen below in the screenshots. It is also possible to open the project with [Android Studio][studio] or [Xcode][xcode].
+These will launch the simulator or any plugged in device and start the example application as seen below in the screenshots. It is also possible to open the project with [Android Studio][studio] or [Xcode][xcode].
 
 A click on the _Background_ enables the mode and starts them once the app is going into the background. 
 
