@@ -164,7 +164,7 @@ __Note:__ All properties are optional - only override the things you need to.
 In silent mode the plugin will not display a notification - which is not the default. Be aware that Android recommends adding a notification otherwise the OS may pause the app.
 
 ```js
-cordova.plugins.backgroundMode.configure({ silent: true });
+cordova.plugins.backgroundMode.setDefaults({ silent: true });
 ```
 
 
