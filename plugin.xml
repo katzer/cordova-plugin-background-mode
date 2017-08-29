@@ -97,10 +97,6 @@
             </feature>
         </config-file>
 
-        <config-file target="package.appxmanifest" parent="/Package/Capabilities" device-target="windows">
-            <Capability Name="backgroundMediaPlayback" />
-        </config-file>
-
         <config-file target="config.xml" parent="/*">
             <preference name="windows-target-version" value="UAP" />
             <preference name="uap-target-min-version" value="10.0.14393.0" />
