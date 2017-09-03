@@ -1,7 +1,15 @@
 {
   "name": "cordova-plugin-background-mode",
   "version": "0.7.2",
-  "description": "Prevent app from going to sleep in background.",
+  "description": "Prevent apps from going to sleep in background.",
+  "cordova": {
+    "id": "cordova-plugin-background-mode",
+    "platforms": [
+      "ios",
+      "android",
+      "browser"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/katzer/cordova-plugin-background-mode.git"
@@ -9,17 +17,23 @@
   "keywords": [
     "appplant",
     "background",
-    "cordova",
-    "ecosystem:cordova"
-  ],
-  "platforms": [
-    "ios",
-    "android"
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android",
+    "cordova-browser"
   ],
   "engines": [
     {
       "name": "cordova",
-      "version": ">=6.0.0"
+      "version": ">=3.0.0"
+    },
+    {
+      "name": "android-sdk",
+      "version": ">=16"
+    },
+    {
+      "name": "windows-sdk",
+      "version": ">=10.0.14393.0"
     }
   ],
   "author": "Sebastián Katzer",
