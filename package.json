@@ -1,10 +1,10 @@
 {
-  "name": "cordova-plugin-background-mode",
-  "version": "0.7.2",
+  "name": "cordova-plugin-better-background-mode",
+  "version": "0.7.3",
   "description": "Prevent app from going to sleep in background.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/katzer/cordova-plugin-background-mode.git"
+    "url": "git+https://github.com/nottinhill/cordova-plugin-better-background-mode.git"
   },
   "keywords": [
     "appplant",
@@ -19,13 +19,13 @@
   "engines": [
     {
       "name": "cordova",
-      "version": ">=6.0.0"
+      "version": ">=6.5.0"
     }
   ],
-  "author": "Sebastián Katzer",
+  "author": "Stephan Kristyn",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/katzer/cordova-plugin-background-mode/issues"
+    "url": "https://github.com/nottinhill/cordova-plugin-better-background-mode/issues"
   },
-  "homepage": "https://github.com/katzer/cordova-plugin-background-mode#readme"
+  "homepage": "https://github.com/nottinhill/cordova-plugin-better-background-mode#readme"
 }
