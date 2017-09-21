@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-better-background-mode",
-  "version": "0.7.3",
+  "version": "0.7.5",
   "description": "Prevent app from going to sleep in background.",
   "repository": {
     "type": "git",
