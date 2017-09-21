@@ -1,31 +1,45 @@
 {
-  "name": "cordova-plugin-better-background-mode",
-  "version": "0.7.5",
-  "description": "Prevent app from going to sleep in background.",
+  "name": "cordova-plugin-background-mode",
+  "version": "0.7.2",
+  "description": "Prevent apps from going to sleep in background.",
+  "cordova": {
+    "id": "cordova-plugin-background-mode",
+    "platforms": [
+      "ios",
+      "android",
+      "browser"
+    ]
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nottinhill/cordova-plugin-better-background-mode.git"
+    "url": "git+https://github.com/katzer/cordova-plugin-background-mode.git"
   },
   "keywords": [
     "appplant",
     "background",
-    "cordova",
-    "ecosystem:cordova"
-  ],
-  "platforms": [
-    "ios",
-    "android"
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android",
+    "cordova-browser"
   ],
   "engines": [
     {
       "name": "cordova",
-      "version": ">=6.5.0"
+      "version": ">=3.0.0"
+    },
+    {
+      "name": "android-sdk",
+      "version": ">=16"
+    },
+    {
+      "name": "windows-sdk",
+      "version": ">=10.0.14393.0"
     }
   ],
-  "author": "Stephan Kristyn",
+  "author": "Sebastián Katzer",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/nottinhill/cordova-plugin-better-background-mode/issues"
+    "url": "https://github.com/katzer/cordova-plugin-background-mode/issues"
   },
-  "homepage": "https://github.com/nottinhill/cordova-plugin-better-background-mode#readme"
+  "homepage": "https://github.com/katzer/cordova-plugin-background-mode#readme"
 }

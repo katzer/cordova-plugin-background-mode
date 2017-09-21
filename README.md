@@ -194,13 +194,15 @@ __Note:__ Calling the method led to increased resource and power consumption.
 
 This software is released under the [Apache 2.0 License][apache2_license].
 
-Made from Munich
+Made with :yum: from Leipzig
 
-Apache 2.0 Licence 2017 [meshfields][meshfields.de]
+? 2017 [appPlant GmbH][appplant] & [meshfields][meshfields]
+
 
 [cordova]: https://cordova.apache.org
 [CLI]: http://cordova.apache.org/docs/en/edge/guide_cli_index.md.html#The%20Command-line%20Interface
 [NPM]: ???
 [changelog]: CHANGELOG.md
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
+[appplant]: http://appplant.de
 [meshfields]: http://meshfields.de
