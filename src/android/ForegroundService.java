@@ -64,6 +64,7 @@ public class ForegroundService extends Service {
 
     // Partial wake lock to prevent the app from going to sleep when locked
     private PowerManager.WakeLock wakeLock;
+    private Notification.Builder notificationBuilder;
 
     /**
      * Allow clients to call on to the service.
@@ -153,6 +154,17 @@ public class ForegroundService extends Service {
      * @param settings The config settings
      */
     private Notification makeNotification(JSONObject settings) {
+        return makeNotification(settings, false);
+    }
+
+    /**
+     * Create a notification as the visible part to be able to put the service
+     * in a foreground state.
+     *
+     * @param settings The config settings
+     * @param isUpdate flag indication the settings should only update the notification
+     */
+    private Notification makeNotification(JSONObject settings, boolean isUpdate) {
         String title    = settings.optString("title", NOTIFICATION_TITLE);
         String text     = settings.optString("text", NOTIFICATION_TEXT);
         boolean bigText = settings.optBoolean("bigText", false);
@@ -162,22 +174,25 @@ public class ForegroundService extends Service {
         Intent intent   = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
-        Notification.Builder notification = new Notification.Builder(context)
-                .setContentTitle(title)
+        if(!isUpdate || notificationBuilder == null){
+            notificationBuilder = new Notification.Builder(context)
+                    .setOngoing(true);
+        }
+
+        notificationBuilder.setContentTitle(title)
                 .setContentText(text)
-                .setOngoing(true)
                 .setSmallIcon(getIconResId(settings));
 
         if (settings.optBoolean("hidden", true)) {
-            notification.setPriority(Notification.PRIORITY_MIN);
+            notificationBuilder.setPriority(Notification.PRIORITY_MIN);
         }
 
         if (bigText || text.contains("\n")) {
-            notification.setStyle(
+            notificationBuilder.setStyle(
                     new Notification.BigTextStyle().bigText(text));
         }
 
-        setColor(notification, settings);
+        setColor(notificationBuilder, settings);
 
         if (intent != null && settings.optBoolean("resume")) {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -186,10 +201,10 @@ public class ForegroundService extends Service {
                     PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-            notification.setContentIntent(contentIntent);
+            notificationBuilder.setContentIntent(contentIntent);
         }
 
-        return notification.build();
+        return notificationBuilder.build();
     }
 
     /**
@@ -205,7 +220,7 @@ public class ForegroundService extends Service {
             return;
         }
 
-        Notification notification = makeNotification(settings);
+        Notification notification = makeNotification(settings, true);
         getNotificationManager().notify(NOTIFICATION_ID, notification);
     }
 
