@@ -22,6 +22,7 @@
 package de.appplant.cordova.plugin.background;
 
 import android.annotation.TargetApi;
+import android.app.NotificationChannel;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -33,8 +34,11 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.graphics.Color;
 
 import org.json.JSONObject;
+
+import java.lang.reflect.Method;
 
 import static android.os.PowerManager.PARTIAL_WAKE_LOCK;
 
@@ -168,6 +172,12 @@ public class ForegroundService extends Service {
                 .setOngoing(true)
                 .setSmallIcon(getIconResId(settings));
 
+        String channelId = "";
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            channelId = createNotificationChannel();
+            notification.setChannelId(channelId);
+        }
+        
         if (settings.optBoolean("hidden", true)) {
             notification.setPriority(Notification.PRIORITY_MIN);
         }
@@ -192,6 +202,19 @@ public class ForegroundService extends Service {
         return notification.build();
     }
 
+    @TargetApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel(){
+        String channelId = "background_mode_service";
+        String channelName = "Background mode service";
+        NotificationChannel chan = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+        chan.setLightColor(Color.BLUE);
+        chan.setImportance(NotificationManager.IMPORTANCE_NONE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        service.createNotificationChannel(chan);
+        return channelId;
+    }
+    
     /**
      * Update the notification.
      *
