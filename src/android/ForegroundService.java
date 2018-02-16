@@ -105,6 +105,14 @@ public class ForegroundService extends Service {
     }
 
     /**
+     * Prevent Android from stopping the background service automatically
+     */
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
+    /**
      * Put the service in a foreground state to prevent app from being killed
      * by the OS.
      */
