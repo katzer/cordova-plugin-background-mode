@@ -148,14 +148,19 @@ class BackgroundExt {
      * Move app to foreground.
      */
     private void moveToForeground() {
-        Activity  app = getApp();
-        Intent intent = getLaunchIntent();
+        Activity    app = getApp();
+        Intent intent = getLaunchIntent() ;
 
-        intent.addFlags(
-                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT |
-                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        app.startActivity(intent);
+        PendingIntent pendingIntent = PendingIntent.getActivity(app, 0, intent, 0);
+        try {
+          pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+          e.printStackTrace();
+        }
+
+        // app.startActivity(intent);        
     }
 
     /**
