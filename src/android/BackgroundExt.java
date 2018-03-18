@@ -149,7 +149,6 @@ class BackgroundExt {
      */
     private void moveToForeground() {
         Activity    app = getApp();
-
         Intent intent = getLaunchIntent() ;
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -161,7 +160,7 @@ class BackgroundExt {
           e.printStackTrace();
         }
 
-        app.startActivity(intent);        
+        // app.startActivity(intent);        
     }
 
     /**
