@@ -65,6 +65,10 @@ public class ForegroundService extends Service {
     // Partial wake lock to prevent the app from going to sleep when locked
     private PowerManager.WakeLock wakeLock;
 
+    // Notification channel
+    public static final String CHANNEL_ID = "cordova.plugins.backgroundMode.channel";
+    public static final String CHANNEL_NAME = "Background notification";
+
     /**
      * Allow clients to call on to the service.
      */
@@ -153,6 +157,18 @@ public class ForegroundService extends Service {
      * @param settings The config settings
      */
     private Notification makeNotification(JSONObject settings) {
+        /* Check if android version is >= 26 in order to use notification channel */
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create the channel object, using the channel ID//
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID,
+            CHANNEL_NAME, getNotificationManager().IMPORTANCE_HIGH);
+
+            //Configure the channel’s initial settings//
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            getNotificationManager().createNotificationChannel(notificationChannel);
+        }
+
+
         String title    = settings.optString("title", NOTIFICATION_TITLE);
         String text     = settings.optString("text", NOTIFICATION_TEXT);
         boolean bigText = settings.optBoolean("bigText", false);
@@ -162,11 +178,18 @@ public class ForegroundService extends Service {
         Intent intent   = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
-        Notification.Builder notification = new Notification.Builder(context)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setOngoing(true)
-                .setSmallIcon(getIconResId(settings));
+        Notification.Builder notification;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          notification = new Notification.Builder(context, CHANNEL_ID)
+            .setAutoCancel(true);
+        }else{
+          notification = new Notification.Builder(context);
+        }
+
+        notification.setContentTitle(title)
+        .setContentText(text)
+        .setOngoing(true)
+        .setSmallIcon(getIconResId(settings));
 
         if (settings.optBoolean("hidden", true)) {
             notification.setPriority(Notification.PRIORITY_MIN);
