@@ -109,6 +109,9 @@
         <js-module src="src/windows/BackgroundModeProxy.js" name="BackgroundMode.Proxy">
             <runs />
         </js-module>
+
+        <hook src="scripts/hook-windows-background-capability.js" type="after_platform_add" />
+        <hook src="scripts/hook-windows-background-capability.js" type="after_plugin_add" />
     </platform>
 
     <!-- browser -->
