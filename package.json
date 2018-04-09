@@ -14,7 +14,8 @@
   ],
   "platforms": [
     "ios",
-    "android"
+    "android",
+    "windows"
   ],
   "engines": [
     {
