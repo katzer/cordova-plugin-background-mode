@@ -1,45 +1,61 @@
 {
-  "name": "cordova-plugin-background-mode",
-  "version": "0.7.2",
-  "description": "Prevent apps from going to sleep in background.",
-  "cordova": {
-    "id": "cordova-plugin-background-mode",
-    "platforms": [
-      "ios",
-      "android",
-      "browser"
+  "_args": [
+    [
+      "cordova-plugin-background-mode@0.7.2",
+      "/Users/atos/Documents/Github/android-intent"
     ]
+  ],
+  "_from": "cordova-plugin-background-mode@0.7.2",
+  "_id": "cordova-plugin-background-mode@0.7.2",
+  "_inBundle": false,
+  "_integrity": "sha1-6vVjnAZahyMbPs91em4osQHQMy8=",
+  "_location": "/cordova-plugin-background-mode",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "cordova-plugin-background-mode@0.7.2",
+    "name": "cordova-plugin-background-mode",
+    "escapedName": "cordova-plugin-background-mode",
+    "rawSpec": "0.7.2",
+    "saveSpec": null,
+    "fetchSpec": "0.7.2"
   },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-background-mode/-/cordova-plugin-background-mode-0.7.2.tgz",
+  "_spec": "0.7.2",
+  "_where": "/Users/atos/Documents/Github/android-intent",
+  "author": {
+    "name": "Sebastián Katzer"
+  },
+  "bugs": {
+    "url": "https://github.com/katzer/cordova-plugin-background-mode/issues"
+  },
+  "description": "Prevent app from going to sleep in background.",
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=6.0.0"
+    }
+  ],
+  "homepage": "https://github.com/katzer/cordova-plugin-background-mode#readme",
+  "keywords": [
+    "appplant",
+    "background",
+    "cordova",
+    "ecosystem:cordova"
+  ],
+  "license": "Apache 2.0",
+  "name": "cordova-plugin-background-mode",
+  "platforms": [
+    "ios",
+    "android"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/katzer/cordova-plugin-background-mode.git"
   },
-  "keywords": [
-    "appplant",
-    "background",
-    "ecosystem:cordova",
-    "cordova-ios",
-    "cordova-android",
-    "cordova-browser"
-  ],
-  "engines": [
-    {
-      "name": "cordova",
-      "version": ">=3.0.0"
-    },
-    {
-      "name": "android-sdk",
-      "version": ">=16"
-    },
-    {
-      "name": "windows-sdk",
-      "version": ">=10.0.14393.0"
-    }
-  ],
-  "author": "Sebastián Katzer",
-  "license": "Apache 2.0",
-  "bugs": {
-    "url": "https://github.com/katzer/cordova-plugin-background-mode/issues"
-  },
-  "homepage": "https://github.com/katzer/cordova-plugin-background-mode#readme"
+  "version": "0.7.2"
 }

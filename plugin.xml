@@ -22,9 +22,9 @@
 
     <!-- cordova -->
     <engines>
-        <engine name="cordova" version=">=3.0.0" />
-        <engine name="android-sdk" version=">=16" />
-        <engine name="windows-sdk" version=">=10.0.14393.0" />
+        <engine name="cordova" version="&gt;=3.0.0" />
+        <engine name="android-sdk" version="&gt;=16" />
+        <engine name="windows-sdk" version="&gt;=10.0.14393.0" />
     </engines>
 
     <!-- js -->
@@ -32,29 +32,6 @@
         <clobbers target="cordova.plugins.backgroundMode" />
         <clobbers target="plugin.backgroundMode" />
     </js-module>
-
-    <!-- ios -->
-    <platform name="ios">
-        <config-file target="config.xml" parent="/*">
-            <feature name="BackgroundMode">
-                <param name="ios-package" value="APPBackgroundMode" onload="true" />
-                <param name="onload" value="true" />
-            </feature>
-        </config-file>
-
-        <config-file target="*-Info.plist" parent="UIBackgroundModes">
-            <array>
-                <string>audio</string>
-            </array>
-        </config-file>
-
-        <resource-file src="appbeep.wav" />
-
-        <header-file src="src/ios/APPBackgroundMode.h" />
-        <source-file src="src/ios/APPBackgroundMode.m" />
-        <header-file src="src/ios/APPMethodMagic.h" />
-        <source-file src="src/ios/APPMethodMagic.m" />
-    </platform>
 
     <!-- android -->
     <platform name="android">
@@ -67,14 +44,11 @@
 
         <config-file target="res/xml/config.xml" parent="/*">
             <preference name="KeepRunning" value="true" />
+            <preference name="AndroidLaunchMode" value="singleInstance"/>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <service android:name="de.appplant.cordova.plugin.background.ForegroundService" />
-        </config-file>
-
-        <config-file target="AndroidManifest.xml" parent="/manifest">
-            <uses-permission android:name="android.permission.WAKE_LOCK" />
         </config-file>
 
         <source-file
@@ -88,45 +62,6 @@
         <source-file
             src="src/android/ForegroundService.java"
             target-dir="src/de/appplant/cordova/plugin/background" />
-    </platform>
-
-    <!-- windows
-    <platform name="windows">
-        <config-file target="config.xml" parent="/*">
-            <feature name="BackgroundMode" >
-                <param name="windows-package" value="BackgroundMode"/>
-            </feature>
-        </config-file>
-
-        <config-file target="package.appxmanifest" parent="/Package/Capabilities" device-target="windows">
-            <Capability Name="backgroundMediaPlayback" />
-        </config-file>
-
-        <config-file target="config.xml" parent="/*">
-            <preference name="windows-target-version" value="UAP" />
-            <preference name="uap-target-min-version" value="10.0.14393.0" />
-            <preference name="Windows.Universal-MinVersion" value="10.0.14393.0" />
-            <preference name="Windows.Universal" value="10.0.14393.0" />
-        </config-file>
-
-        <resource-file src="appbeep.wma" target="appbeep.wma" />
-
-        <js-module src="src/windows/BackgroundModeProxy.js" name="BackgroundMode.Proxy">
-            <runs />
-        </js-module>
-    </platform> -->
-
-    <!-- browser -->
-    <platform name="browser">
-        <config-file target="config.xml" parent="/*">
-            <feature name="BackgroundMode">
-                <param name="browser-package" value="BackgroundMode"/>
-            </feature>
-        </config-file>
-
-        <js-module src="src/browser/BackgroundModeProxy.js" name="BackgroundMode.Proxy">
-            <runs />
-        </js-module>
     </platform>
 
 </plugin>
