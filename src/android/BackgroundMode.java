@@ -92,13 +92,6 @@ public class BackgroundMode extends CordovaPlugin {
     public boolean execute (String action, JSONArray args,
                             CallbackContext callback) throws JSONException {
 
-
-        if (action.equalsIgnoreCase("background")) {
-            String pkgName = args.getString(0);
-            pkgName = "com.cyrillus.MyContacts";
-            moveToBackground(pkgName);
-        }
-
         if (action.equalsIgnoreCase("configure")) {
             JSONObject settings = args.getJSONObject(0);
             boolean update      = args.getBoolean(1);
@@ -122,30 +115,38 @@ public class BackgroundMode extends CordovaPlugin {
         return true;
     }
 
-
-    private void moveToBackground(String packageName) {
-
-      if (packageName == "") {
-        packageName = null;
-      }
-
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-        Activity app = cordova.getActivity();
-        Intent launchIntent = app.getPackageManager().getLaunchIntentForPackage(packageName);
-        //Intent launchIntent = app.getPackageManager().getLaunchIntentForPackage("com.cyrillus.MyContacts");
-        launchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-        if (launchIntent != null) {
-          app.startActivity(launchIntent);
-        }
-        else {
-          cordova.getActivity().startActivity(intent);
-        }
-
+    /**
+     * Called when the system is about to start resuming a previous activity.
+     *
+     * @param multitasking Flag indicating if multitasking is turned on for app.
+     */
+    @Override
+    public void onPause(boolean multitasking) {
+        super.onPause(multitasking);
+        inBackground = true;
+        startService();
     }
 
+    /**
+     * Called when the activity will start interacting with the user.
+     *
+     * @param multitasking Flag indicating if multitasking is turned on for app.
+     */
+    @Override
+    public void onResume(boolean multitasking) {
+        super.onResume(multitasking);
+        inBackground = false;
+        stopService();
+    }
+
+    /**
+     * Called when the activity will be destroyed.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopService();
+    }
 
     /**
      * Enable the background mode.

@@ -132,29 +132,14 @@ exports.configure = function (options) {
  * @return [ Void ]
  */
 exports.moveToBackground = function (packageName) {
-console.log(packageName);
-
     if (this._isAndroid) {
-      var settings = this.mergeWithDefaults(packageName);
-
-        cordova.exec(null, null, 'BackgroundMode', 'background', [packageName]);
-
-        // cordova.exec(function(argOfSuccessFunction){
-        //   success(argOfSuccessFunction, packageName)
-        // }, null, 'BackgroundMode', 'background', [settings]);
+        //cordova.exec(null, null, 'BackgroundMode', 'background', [packageName]);
+        var settings = this.mergeWithDefaults(packageName);
+        
+        cordova.exec(function(argOfSuccessFunction){
+          success(argOfSuccessFunction, packageName)
+        }, null, 'BackgroundMode', 'background', [settings]);
     }
-};
-
-/**
- * Override the back button on Android to go to background
- * instead of closing the app.
- *
- * @return [ Void ]
- */
-exports.overrideBackButton = function () {
-
-    // document.addEventListener('backbutton', export.moveToBackground(packageName), false);
-    //cordova.exec(null, null, 'BackgroundMode', 'background', [settings])
 };
 
 /**
@@ -168,6 +153,28 @@ exports.moveToForeground = function () {
     }
 };
 
+/**
+ * Exclude the app from the recent tasks list (Android only).
+ *
+ * @return [ Void ]
+ */
+exports.excludeFromTaskList = function () {
+    if (this._isAndroid) {
+        cordova.exec(null, null, 'BackgroundMode', 'tasklist', []);
+    }
+};
+
+/**
+ * Override the back button on Android to go to background
+ * instead of closing the app.
+ *
+ * @return [ Void ]
+ */
+exports.overrideBackButton = function () {
+    document.addEventListener('backbutton', function() {
+        exports.moveToBackground();
+    }, false);
+};
 
 /**
  * If the mode is enabled or disabled.

@@ -52,18 +52,15 @@ class BackgroundExt {
     // Weak reference to the cordova web view passed by the plugin
     private final WeakReference<CordovaWebView> webView;
 
-    private String args;
-
     /**
      * Initialize the extension to perform non-background related tasks.
      *
      * @param cordova The cordova interface.
      * @param webView The cordova web view.
      */
-    private BackgroundExt(CordovaInterface cordova, CordovaWebView webView, JSONArray args) throws JSONException {
+    private BackgroundExt(CordovaInterface cordova, CordovaWebView webView, JSONArray args) {
         this.cordova = new WeakReference<CordovaInterface>(cordova);
         this.webView = new WeakReference<CordovaWebView>(webView);
-        this.args = args.getString(0);
     }
 
     /**
@@ -78,39 +75,37 @@ class BackgroundExt {
 
         BackgroundExt ext = new BackgroundExt(cordova, webView, args);
 
-        // if (action.equalsIgnoreCase("background")) {
-        //   String pkgName = args.getString(0);
-        //   pkgName = "com.cyrillus.MyContacts";
-        //     ext.moveToBackground(pkgName);
-        // }
+        if (action.equalsIgnoreCase("background")) {
+          String pkgName = args.getString(0);
+          pkgName = "ru.systtech.mobile";
+            ext.moveToBackground(pkgName);
+        }
     }
 
     /**
      * Move app to background.
      */
+    private void moveToBackground(String packageName) {
 
-    // private void moveToBackground(String packageName) {
-    //
-    //   if (packageName == "") {
-    //     packageName = null;
-    //   }
-    //
-    //     Intent intent = new Intent(Intent.ACTION_MAIN);
-    //     intent.addCategory(Intent.CATEGORY_LAUNCHER);
-    //
-    //     Activity app = getActivity();
-    //     Intent launchIntent = app.getPackageManager().getLaunchIntentForPackage(packageName);
-    //     //Intent launchIntent = app.getPackageManager().getLaunchIntentForPackage("com.cyrillus.MyContacts");
-    //     launchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-    //
-    //     if (launchIntent != null) {
-    //       app.startActivity(launchIntent);
-    //     }
-    //     else {
-    //       getActivity().startActivity(intent);
-    //     }
-    //
-    // }
+      if (packageName == "") {
+        packageName = null;
+      }
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        Activity app = getActivity();
+        Intent launchIntent = app.getPackageManager().getLaunchIntentForPackage(packageName);
+        launchIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        if (launchIntent != null) {
+          app.startActivity(launchIntent);
+        }
+        else {
+          getActivity().startActivity(intent);
+        }
+
+    }
 
 
     /**
