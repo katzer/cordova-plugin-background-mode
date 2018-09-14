@@ -1,4 +1,11 @@
 
+<p align="left">
+    <b><a href="https://github.com/katzer/cordova-plugin-background-mode/tree/example">SAMPLE APP</a> :point_right:</b>
+</p>
+
+Cordova Background Plugin [![npm version](https://badge.fury.io/js/cordova-plugin-background-mode.svg)](http://badge.fury.io/js/cordova-plugin-background-mode) [![Build Status](https://travis-ci.org/katzer/cordova-plugin-background-mode.svg?branch=master)](https://travis-ci.org/katzer/cordova-plugin-background-mode) [![codebeat badge](https://codebeat.co/badges/49709283-b313-4ced-8630-f520baaec7b5)](https://codebeat.co/projects/github-com-katzer-cordova-plugin-background-mode)
+=========================
+
 Plugin for the [Cordova][cordova] framework to perform infinite background execution.
 
 Most mobile operating systems are multitasking capable, but most apps dont need to run while in background and not present for the user. Therefore they pause the app in background mode and resume the app before switching to foreground mode.
@@ -20,9 +27,17 @@ Use the plugin by your own risk!
 ## Installation
 The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on [NPM][npm].
 
-Install the latest head version:
+Execute from the projects root folder:
 
-    $ cordova plugin add https://github.com/tushe/cordova-plugin-background-mode.git
+    $ cordova plugin add cordova-plugin-background-mode
+
+Or install a specific version:
+
+    $ cordova plugin add de.appplant.cordova.plugin.background-mode@VERSION
+
+Or install the latest head version:
+
+    $ cordova plugin add https://github.com/katzer/cordova-plugin-background-mode.git
 
 Or install from local source:
 
