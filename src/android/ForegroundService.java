@@ -188,7 +188,12 @@ public class ForegroundService extends Service {
         }
 
         if (settings.optBoolean("hidden", true)) {
-            notification.setPriority(Notification.PRIORITY_MIN);
+            if(Build.VERSION.SDK_INT >= 26){
+                notification.setImportance(Notification.PRIORITY_MIN);
+            }
+            else{                
+                notification.setPriority(Notification.PRIORITY_MIN);
+            }
         }
 
         if (bigText || text.contains("\n")) {
