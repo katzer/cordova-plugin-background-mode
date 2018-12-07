@@ -1,8 +1,6 @@
 ## ChangeLog
 #### Version 0.7.3 (not yet released)
-- Check if screen is off on Android
-- Wake-up device on Android
-- Unlock device on Android
+- fixed iOS crashes
 
 #### Version 0.7.2 (02.02.2017)
 - Fixed app freeze on iOS using wkwebview-engine
