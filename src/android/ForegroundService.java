@@ -24,6 +24,7 @@ package de.appplant.cordova.plugin.background;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -38,6 +39,7 @@ import org.json.JSONObject;
 
 import static android.os.PowerManager.PARTIAL_WAKE_LOCK;
 
+import android.graphics.Color;
 /**
  * Puts the service in a foreground state, where the system considers it to be
  * something the user is actively aware of and thus not a candidate for killing
@@ -167,6 +169,23 @@ public class ForegroundService extends Service {
                 .setContentText(text)
                 .setOngoing(true)
                 .setSmallIcon(getIconResId(settings));
+        //upgrade to sdk 26, fix problems with android 8.1
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+          //Set the channel’s ID//
+           String CHANNEL_ONE_ID = "com.yourapp.ONE";
+           //Set the channel’s user-visible name//
+           String CHANNEL_ONE_NAME = "Channel One";
+             //This only needs to be run on Devices on Android O and above
+             NotificationManager notificationManager =
+                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+             NotificationChannel mChannel = new NotificationChannel(CHANNEL_ONE_ID, CHANNEL_ONE_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+             mChannel.enableLights(true);
+             mChannel.setLightColor(Color.MAGENTA);
+             if (notificationManager != null) {
+                 notificationManager.createNotificationChannel(mChannel);
+             }
+             notification.setChannelId(CHANNEL_ONE_ID);
+        }        
 
         if (settings.optBoolean("hidden", true)) {
             notification.setPriority(Notification.PRIORITY_MIN);
