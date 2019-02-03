@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
 import android.view.View;
-import android.view.Window;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -39,24 +38,29 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.PluginResult.Status;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.POWER_SERVICE;
+import static android.os.Build.VERSION.SDK_INT;
 import static android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
 import static android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
 import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
 import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 
+/**
+ * Implements extended functions around the main purpose
+ * of infinite execution in the background.
+ */
 class BackgroundExt {
 
-    // Weak reference to the cordova interface passed by the plugin
-    private final WeakReference<CordovaInterface> cordova;
+    // Reference to the cordova interface passed by the plugin
+    private final CordovaInterface cordova;
 
-    // Weak reference to the cordova web view passed by the plugin
-    private final WeakReference<CordovaWebView> webView;
+    // Reference to the cordova web view passed by the plugin
+    private final CordovaWebView webView;
 
+    // To keep the device awake
     private PowerManager.WakeLock wakeLock;
 
     /**
@@ -64,34 +68,23 @@ class BackgroundExt {
      *
      * @param plugin The cordova plugin.
      */
-    private BackgroundExt(CordovaPlugin plugin) {
-        this.cordova = new WeakReference<CordovaInterface>(plugin.cordova);
-        this.webView = new WeakReference<CordovaWebView>(plugin.webView);
+    BackgroundExt(CordovaPlugin plugin)
+    {
+        this.cordova = plugin.cordova;
+        this.webView = plugin.webView;
     }
 
     /**
-     * Executes the request asynchronous.
+     * Executes the request within a thread.
      *
-     * @param plugin   The cordova plugin.
      * @param action   The action to execute.
      * @param callback The callback context used when
      *                 calling back into JavaScript.
      */
-    @SuppressWarnings("UnusedParameters")
-    static void execute (CordovaPlugin plugin, final String action,
-                         final CallbackContext callback) {
-
-        final BackgroundExt ext = new BackgroundExt(plugin);
-
-        plugin.cordova.getThreadPool().execute(new Runnable() {
-            @Override
-            public void run() {
-                ext.execute(action, callback);
-            }
-        });
+    void executeAsync (String action, CallbackContext callback)
+    {
+        cordova.getThreadPool().execute(() -> execute(action, callback));
     }
-
-    // codebeat:disable[ABC]
 
     /**
      * Executes the request.
@@ -100,60 +93,59 @@ class BackgroundExt {
      * @param callback The callback context used when
      *                 calling back into JavaScript.
      */
-    private void execute (String action, CallbackContext callback) {
-
-        if (action.equalsIgnoreCase("optimizations")) {
-            disableWebViewOptimizations();
-        }
-
-        if (action.equalsIgnoreCase("background")) {
-            moveToBackground();
-        }
-
-        if (action.equalsIgnoreCase("foreground")) {
-            moveToForeground();
-        }
-
-        if (action.equalsIgnoreCase("tasklist")) {
-            excludeFromTaskList();
-        }
-
-        if (action.equalsIgnoreCase("dimmed")) {
-            isDimmed(callback);
-        }
-
-        if (action.equalsIgnoreCase("wakeup")) {
-            wakeup();
-        }
-
-        if (action.equalsIgnoreCase("unlock")) {
-            wakeup();
-            unlock();
+    private void execute (String action, CallbackContext callback)
+    {
+        switch (action)
+        {
+            case "optimizations":
+                disableWebViewOptimizations();
+                break;
+            case "background":
+                moveToBackground();
+                break;
+            case "foreground":
+                moveToForeground();
+                break;
+            case "tasklist":
+                excludeFromTaskList();
+                break;
+            case "dimmed":
+                isDimmed(callback);
+                break;
+            case "wakeup":
+                wakeup();
+                break;
+            case "unlock":
+                wakeup();
+                unlock();
+                break;
         }
     }
 
-    // codebeat:enable[ABC]
-
     /**
-     * Move app to background.
+     * Moves the app to the background.
      */
-    private void moveToBackground() {
+    private void moveToBackground()
+    {
         Intent intent = new Intent(Intent.ACTION_MAIN);
 
         intent.addCategory(Intent.CATEGORY_HOME);
+
         getApp().startActivity(intent);
     }
 
     /**
-     * Move app to foreground.
+     * Moves the app to the foreground.
      */
-    private void moveToForeground() {
+    private void moveToForeground()
+    {
         Activity  app = getApp();
         Intent intent = getLaunchIntent();
 
         intent.addFlags(
                 Intent.FLAG_ACTIVITY_REORDER_TO_FRONT |
-                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         app.startActivity(intent);
     }
@@ -166,18 +158,15 @@ class BackgroundExt {
             public void run() {
                 try {
                     Thread.sleep(1000);
-                    getApp().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            View view = webView.get().getEngine().getView();
+                    getApp().runOnUiThread(() -> {
+                        View view = webView.getEngine().getView();
 
-                            try {
-                                Class.forName("org.crosswalk.engine.XWalkCordovaView")
-                                        .getMethod("onShow")
-                                        .invoke(view);
-                            } catch (Exception e){
-                                view.dispatchWindowVisibilityChanged(View.VISIBLE);
-                            }
+                        try {
+                            Class.forName("org.crosswalk.engine.XWalkCordovaView")
+                                 .getMethod("onShow")
+                                 .invoke(view);
+                        } catch (Exception e){
+                            view.dispatchWindowVisibilityChanged(View.VISIBLE);
                         }
                     });
                 } catch (InterruptedException e) {
@@ -190,13 +179,14 @@ class BackgroundExt {
     }
 
     /**
-     * Exclude the app from the recent tasks list.
+     * Excludes the app from the recent tasks list.
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void excludeFromTaskList() {
+    private void excludeFromTaskList()
+    {
         ActivityManager am = (ActivityManager) getService(ACTIVITY_SERVICE);
 
-        if (am == null || Build.VERSION.SDK_INT < 21)
+        if (am == null || SDK_INT < 21)
             return;
 
         List<AppTask> tasks = am.getAppTasks();
@@ -208,24 +198,29 @@ class BackgroundExt {
     }
 
     /**
-     * Invoke the callback with information if the screen is on.
+     * Invokes the callback with information if the screen is on.
      *
      * @param callback The callback to invoke.
      */
     @SuppressWarnings("deprecation")
-    private void isDimmed(CallbackContext callback) {
-        PluginResult result = new PluginResult(Status.OK, isDimmed());
-        callback.sendPluginResult(result);
+    private void isDimmed (CallbackContext callback)
+    {
+        boolean status   = isDimmed();
+        PluginResult res = new PluginResult(Status.OK, status);
+
+        callback.sendPluginResult(res);
     }
 
     /**
-     * If the screen is active.
+     * Returns if the screen is active.
      */
     @SuppressWarnings("deprecation")
-    private boolean isDimmed() {
+    private boolean isDimmed()
+    {
         PowerManager pm = (PowerManager) getService(POWER_SERVICE);
 
-        if (Build.VERSION.SDK_INT < 20) {
+        if (SDK_INT < 20)
+        {
             return !pm.isScreenOn();
         }
 
@@ -235,7 +230,8 @@ class BackgroundExt {
     /**
      * Wakes up the device if the screen isn't still on.
      */
-    private void wakeup() {
+    private void wakeup()
+    {
         try {
             acquireWakeLock();
         } catch (Exception e) {
@@ -246,27 +242,31 @@ class BackgroundExt {
     /**
      * Unlocks the device even with password protection.
      */
-    private void unlock() {
-        Intent intent  = getLaunchIntent();
-        getApp().startActivity(intent);
+    private void unlock()
+    {
+        getApp().runOnUiThread(() -> {
+            addSreenAndKeyguardFlags();
+            getApp().startActivity(getLaunchIntent());
+        });
     }
 
     /**
-     * Acquire a wake lock to wake up the device.
+     * Acquires a wake lock to wake up the device.
      */
-    private void acquireWakeLock() {
+    @SuppressWarnings("deprecation")
+    private void acquireWakeLock()
+    {
         PowerManager pm = (PowerManager) getService(POWER_SERVICE);
 
         releaseWakeLock();
 
-        if (!isDimmed()) {
+        if (!isDimmed())
             return;
-        }
 
         int level = PowerManager.SCREEN_DIM_WAKE_LOCK |
                     PowerManager.ACQUIRE_CAUSES_WAKEUP;
 
-        wakeLock = pm.newWakeLock(level, "BackgroundModeExt");
+        wakeLock = pm.newWakeLock(level, "backgroundmode:wakelock");
         wakeLock.setReferenceCounted(false);
         wakeLock.acquire(1000);
     }
@@ -274,7 +274,8 @@ class BackgroundExt {
     /**
      * Releases the previously acquire wake lock.
      */
-    private void releaseWakeLock() {
+    private void releaseWakeLock()
+    {
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
             wakeLock = null;
@@ -282,36 +283,33 @@ class BackgroundExt {
     }
 
     /**
-     * Add required flags to the window to unlock/wakeup the device.
+     * Adds required flags to the window to unlock/wakeup the device.
      */
-    static void addWindowFlags(Activity app) {
-        final Window window = app.getWindow();
-
-        app.runOnUiThread(new Runnable() {
-            public void run() {
-                window.addFlags(
-                        FLAG_ALLOW_LOCK_WHILE_SCREEN_ON |
-                        FLAG_SHOW_WHEN_LOCKED |
-                        FLAG_TURN_SCREEN_ON |
-                        FLAG_DISMISS_KEYGUARD
-                );
-            }
-        });
+    private void addSreenAndKeyguardFlags()
+    {
+        getApp().getWindow().addFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD);
     }
 
     /**
-     * The activity referenced by cordova.
-     *
-     * @return The main activity of the app.
+     * Removes required flags to the window to unlock/wakeup the device.
+     */
+    static void clearKeyguardFlags (Activity app)
+    {
+        app.runOnUiThread(() -> app.getWindow().clearFlags(FLAG_DISMISS_KEYGUARD));
+    }
+
+    /**
+     * Returns the activity referenced by cordova.
      */
     Activity getApp() {
-        return cordova.get().getActivity();
+        return cordova.getActivity();
     }
 
     /**
-     * The launch intent for the main activity.
+     * Gets the launch intent for the main activity.
      */
-    private Intent getLaunchIntent() {
+    private Intent getLaunchIntent()
+    {
         Context app    = getApp().getApplicationContext();
         String pkgName = app.getPackageName();
 
@@ -322,11 +320,9 @@ class BackgroundExt {
      * Get the requested system service by name.
      *
      * @param name The name of the service.
-     *
-     * @return The service instance.
      */
-    private Object getService(String name) {
+    private Object getService(String name)
+    {
         return getApp().getSystemService(name);
     }
-
 }
