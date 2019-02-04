@@ -145,11 +145,17 @@ The title, text and icon for that notification can be customized as below. Also,
 cordova.plugins.backgroundMode.setDefaults({
     title: String,
     text: String,
-    icon: 'icon' // this will look for icon.png in platforms/android/res/drawable|mipmap
-    color: String // hex format like 'F14F4D'
+    subText: String, // see https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#setSubText(java.lang.CharSequence)
+    icon: 'icon', // this will look for icon.png in platforms/android/res/drawable|mipmap
+    color: String, // hex format like 'F14F4D'
     resume: Boolean,
     hidden: Boolean,
-    bigText: Boolean
+    bigText: Boolean,
+    channelName: String, // Shown when the user views the app's notification settings
+    channelDescription: String, // Shown when the user views the channel's settings
+    allowClose: Boolean, // add a "Close" action to the notification
+    closeIcon: 'power', // An icon shown for the close action
+    closeTitle: 'Close' // The text for the close action
 })
 ```
 

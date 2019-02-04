@@ -382,14 +382,20 @@ exports._isActive = false;
  * Default values of all available options.
  */
 exports._defaults = {
-    title:   'App is running in background',
-    text:    'Doing heavy tasks.',
-    bigText: false,
-    resume:  true,
-    silent:  false,
-    hidden:  true,
-    color:   undefined,
-    icon:    'icon'
+    title:              'App is running in background',
+    text:               'Doing heavy tasks.',
+    subText:            '',
+    bigText:            false,
+    resume:             true,
+    silent:             false,
+    hidden:             true,
+    color:              undefined,
+    icon:               'icon',
+    channelName:        'cordova-plugin-background-mode',
+    channelDescription: 'cordova-plugin-background-moden notification',
+    allowClose:         false,
+    closeIcon:          'power',
+    closeTitle:         'Close'
 };
 
 /**

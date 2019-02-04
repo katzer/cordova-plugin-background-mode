@@ -19,20 +19,17 @@
 package de.appplant.cordova.plugin.background;
 
 import android.annotation.TargetApi;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.drawable.Icon;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.app.NotificationChannel;
-
 import org.json.JSONObject;
+import android.support.v4.app.NotificationCompat;
 
 import static android.os.PowerManager.PARTIAL_WAKE_LOCK;
 
@@ -63,7 +60,6 @@ public class ForegroundService extends Service {
     // Partial wake lock to prevent the app from going to sleep when locked
     private PowerManager.WakeLock wakeLock;
 
-    private final String CHANNEL_ID = "cordova-plugin-background-mode-id";
     /**
      * Allow clients to call on to the service.
      */
@@ -153,38 +149,49 @@ public class ForegroundService extends Service {
      */
     private Notification makeNotification(JSONObject settings) {
         // use channelid for Oreo and higher
-	if(Build.VERSION.SDK_INT >= 26){
-	    // The user-visible name of the channel.
-	    CharSequence name = "cordova-plugin-background-mode";
-	    // The user-visible description of the channel.
-	    String description = "cordova-plugin-background-moden notification";
+        String CHANNEL_ID = "cordova-plugin-background-mode-id";
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // The user-visible name of the channel.
+            CharSequence name = settings.optString("channelName", "cordova-plugin-background-mode");
+            // The user-visible description of the channel.
+            String description = settings.optString("channelDescription", "cordova-plugin-background-moden notification");
 
-	    int importance = NotificationManager.IMPORTANCE_LOW;
+            int importance = NotificationManager.IMPORTANCE_LOW;
 
-	    NotificationChannel mChannel = new NotificationChannel(this.CHANNEL_ID, name,importance);
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
 
-	    // Configure the notification channel.
-	    mChannel.setDescription(description);
+            // Configure the notification channel.
+            mChannel.setDescription(description);
 
-	    getNotificationManager().createNotificationChannel(mChannel);
+            getNotificationManager().createNotificationChannel(mChannel);
         }
         String title    = settings.optString("title", NOTIFICATION_TITLE);
         String text     = settings.optString("text", NOTIFICATION_TEXT);
         boolean bigText = settings.optBoolean("bigText", false);
+        String subText = settings.optString("subText", "");
 
         Context context = getApplicationContext();
         String pkgName  = context.getPackageName();
         Intent intent   = context.getPackageManager()
                 .getLaunchIntentForPackage(pkgName);
 
-        Notification.Builder notification = new Notification.Builder(context)
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setOngoing(true)
                 .setSmallIcon(getIconResId(settings));
 
-        if(Build.VERSION.SDK_INT >= 26){
-			       notification.setChannelId(this.CHANNEL_ID);
+        if (!subText.equals("")) {
+            notification.setSubText(subText);
+        }
+
+        if (settings.optBoolean("allowClose", false)) {
+
+            final Intent clostAppIntent = new Intent("com.backgroundmode.close");
+            final PendingIntent closeIntent = PendingIntent.getBroadcast(context, 1337, clostAppIntent, 0);
+            final String closeIconName = settings.optString("closeIcon", "power");
+            NotificationCompat.Action.Builder closeAction = new NotificationCompat.Action.Builder(getIconResId(closeIconName), settings.optString("closeTitle", "Close"), closeIntent);
+            notification.addAction(closeAction.build());
         }
 
         if (settings.optBoolean("hidden", true)) {
@@ -193,7 +200,7 @@ public class ForegroundService extends Service {
 
         if (bigText || text.contains("\n")) {
             notification.setStyle(
-                    new Notification.BigTextStyle().bigText(text));
+                    new NotificationCompat.BigTextStyle().bigText(text));
         }
 
         setColor(notification, settings);
@@ -230,6 +237,31 @@ public class ForegroundService extends Service {
     }
 
     /**
+     * Retrieves the resource ID of the sent icon name
+     *
+     * @param name Name of the resource to return
+     */
+    private int getIconResId(String name) {
+        // cordova-android 6 uses mipmaps
+        int resId = getIconResId(name, "mipmap");
+
+        if (resId == 0) {
+            resId = getIconResId(name, "drawable");
+        }
+
+        if (resId == 0) {
+            resId = getIconResId("icon", "mipmap");
+        }
+
+        if (resId == 0) {
+            resId = getIconResId("icon", "drawable");
+        }
+
+
+        return resId;
+    }
+
+    /**
      * Retrieves the resource ID of the app icon.
      *
      * @param settings A JSON dict containing the icon name.
@@ -237,14 +269,7 @@ public class ForegroundService extends Service {
     private int getIconResId(JSONObject settings) {
         String icon = settings.optString("icon", NOTIFICATION_ICON);
 
-        // cordova-android 6 uses mipmaps
-        int resId = getIconResId(icon, "mipmap");
-
-        if (resId == 0) {
-            resId = getIconResId(icon, "drawable");
-        }
-
-        return resId;
+        return getIconResId(icon);
     }
 
     /**
@@ -259,13 +284,7 @@ public class ForegroundService extends Service {
         Resources res  = getResources();
         String pkgName = getPackageName();
 
-        int resId = res.getIdentifier(icon, type, pkgName);
-
-        if (resId == 0) {
-            resId = res.getIdentifier("icon", type, pkgName);
-        }
-
-        return resId;
+        return res.getIdentifier(icon, type, pkgName);
     }
 
     /**
@@ -275,7 +294,7 @@ public class ForegroundService extends Service {
      * @param settings A JSON dict containing the color definition (red: FF0000)
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void setColor(Notification.Builder notification,
+    private void setColor(NotificationCompat.Builder notification,
                           JSONObject settings) {
 
         String hex = settings.optString("color", null);
