@@ -40,8 +40,6 @@ import static de.appplant.cordova.plugin.background.BackgroundExt.clearKeyguardF
 
 public class BackgroundMode extends CordovaPlugin {
 
-
-
     // Event types for callbacks
     private enum Event { ACTIVATE, DEACTIVATE, FAILURE }
 
