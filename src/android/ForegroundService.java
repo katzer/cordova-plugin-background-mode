@@ -1,5 +1,6 @@
 /*
     Copyright 2013-2017 appPlant GmbH
+
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
     distributed with this work for additional information
@@ -7,7 +8,9 @@
     to you under the Apache License, Version 2.0 (the
     "License"); you may not use this file except in compliance
     with the License.  You may obtain a copy of the License at
+
      http://www.apache.org/licenses/LICENSE-2.0
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on an
     "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,6 +21,7 @@
 
 package de.appplant.cordova.plugin.background;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.*;
 import android.content.Context;
@@ -55,7 +59,7 @@ public class ForegroundService extends Service {
     private static final String NOTIFICATION_ICON = "icon";
 
     // Binder given to clients
-    private final IBinder mBinder = new ForegroundBinder();
+    private final IBinder binder = new ForegroundBinder();
 
     // Partial wake lock to prevent the app from going to sleep when locked
     private PowerManager.WakeLock wakeLock;
@@ -65,15 +69,17 @@ public class ForegroundService extends Service {
      */
     @Override
     public IBinder onBind (Intent intent) {
-        return mBinder;
+        return binder;
     }
 
     /**
      * Class used for the client Binder.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with IPC.
      */
-    public class ForegroundBinder extends Binder {
-        ForegroundService getService() {
+    class ForegroundBinder extends Binder
+    {
+        ForegroundService getService()
+        {
             // Return this instance of ForegroundService
             // so clients can call public methods
             return ForegroundService.this;
@@ -85,7 +91,8 @@ public class ForegroundService extends Service {
      * by the OS.
      */
     @Override
-    public void onCreate () {
+    public void onCreate()
+    {
         super.onCreate();
         keepAwake();
     }
@@ -94,16 +101,27 @@ public class ForegroundService extends Service {
      * No need to run headless on destroy.
      */
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
         sleepWell();
+    }
+
+    /**
+     * Prevent Android from stopping the background service automatically.
+     */
+    @Override
+    public int onStartCommand (Intent intent, int flags, int startId) {
+        return START_STICKY;
     }
 
     /**
      * Put the service in a foreground state to prevent app from being killed
      * by the OS.
      */
-    private void keepAwake() {
+    @SuppressLint("WakelockTimeout")
+    private void keepAwake()
+    {
         JSONObject settings = BackgroundMode.getSettings();
         boolean isSilent    = settings.optBoolean("silent", false);
 
@@ -111,11 +129,10 @@ public class ForegroundService extends Service {
             startForeground(NOTIFICATION_ID, makeNotification());
         }
 
-        PowerManager pm = (PowerManager)
-                getSystemService(POWER_SERVICE);
+        PowerManager pm = (PowerManager)getSystemService(POWER_SERVICE);
 
         wakeLock = pm.newWakeLock(
-                PARTIAL_WAKE_LOCK, "BackgroundMode");
+                PARTIAL_WAKE_LOCK, "backgroundmode:wakelock");
 
         wakeLock.acquire();
     }
@@ -123,7 +140,8 @@ public class ForegroundService extends Service {
     /**
      * Stop background mode.
      */
-    private void sleepWell() {
+    private void sleepWell()
+    {
         stopForeground(true);
         getNotificationManager().cancel(NOTIFICATION_ID);
 
@@ -137,7 +155,8 @@ public class ForegroundService extends Service {
      * Create a notification as the visible part to be able to put the service
      * in a foreground state by using the default settings.
      */
-    private Notification makeNotification() {
+    private Notification makeNotification()
+    {
         return makeNotification(BackgroundMode.getSettings());
     }
 
@@ -147,7 +166,8 @@ public class ForegroundService extends Service {
      *
      * @param settings The config settings
      */
-    private Notification makeNotification(JSONObject settings) {
+    private Notification makeNotification (JSONObject settings)
+    {
         // use channelid for Oreo and higher
         String CHANNEL_ID = "cordova-plugin-background-mode-id";
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -223,7 +243,8 @@ public class ForegroundService extends Service {
      *
      * @param settings The config settings
      */
-    protected void updateNotification (JSONObject settings) {
+    protected void updateNotification (JSONObject settings)
+    {
         boolean isSilent = settings.optBoolean("silent", false);
 
         if (isSilent) {
@@ -242,7 +263,6 @@ public class ForegroundService extends Service {
      * @param name Name of the resource to return
      */
     private int getIconResId(String name) {
-        // cordova-android 6 uses mipmaps
         int resId = getIconResId(name, "mipmap");
 
         if (resId == 0) {
@@ -280,7 +300,8 @@ public class ForegroundService extends Service {
      *
      * @return The resource id or 0 if not found.
      */
-    private int getIconResId(String icon, String type) {
+    private int getIconResId (String icon, String type)
+    {
         Resources res  = getResources();
         String pkgName = getPackageName();
 
@@ -311,9 +332,10 @@ public class ForegroundService extends Service {
     }
 
     /**
-     * Shared manager for the notification service.
+     * Returns the shared notification service manager.
      */
-    private NotificationManager getNotificationManager() {
+    private NotificationManager getNotificationManager()
+    {
         return (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
