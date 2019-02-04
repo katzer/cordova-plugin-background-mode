@@ -199,7 +199,8 @@ public class ForegroundService extends Service {
                 .setContentTitle(title)
                 .setContentText(text)
                 .setOngoing(true)
-                .setSmallIcon(getIconResId(settings));
+                .setSmallIcon(getIconResId(settings))
+                .setShowWhen(settings.optBoolean("showWhen", true));
 
         if (!subText.equals("")) {
             notification.setSubText(subText);

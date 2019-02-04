@@ -155,7 +155,8 @@ cordova.plugins.backgroundMode.setDefaults({
     channelDescription: String, // Shown when the user views the channel's settings
     allowClose: Boolean, // add a "Close" action to the notification
     closeIcon: 'power', // An icon shown for the close action
-    closeTitle: 'Close' // The text for the close action
+    closeTitle: 'Close', // The text for the close action
+    showWhen: Boolean //(Default: true) Show the time since the notification was created
 })
 ```
 

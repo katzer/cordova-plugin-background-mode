@@ -395,7 +395,8 @@ exports._defaults = {
     channelDescription: 'cordova-plugin-background-moden notification',
     allowClose:         false,
     closeIcon:          'power',
-    closeTitle:         'Close'
+    closeTitle:         'Close',
+    showWhen:           true
 };
 
 /**
