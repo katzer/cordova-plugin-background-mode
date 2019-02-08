@@ -320,5 +320,4 @@ public class ForegroundService extends Service {
     {
         return (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
-
 }
