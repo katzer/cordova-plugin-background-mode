@@ -178,6 +178,23 @@ exports.disableBatteryOptimizations = function()
 };
 
 /**
+ * Opens the system settings dialog where the user can tweak or turn off any
+ * custom app start settings added by the manufacturer if available.
+ *
+ * @param [ Object|Bool ] options Set to false if you dont want to display an
+ *                                alert dialog first.
+ *
+ * @return [ Void ]
+ */
+exports.openAppStartSettings = function (options)
+{
+    if (this._isAndroid)
+    {
+        cordova.exec(null, null, 'BackgroundMode', 'appstart', [options]);
+    }
+};
+
+/**
  * Move app to background (Android only).
  *
  * @return [ Void ]

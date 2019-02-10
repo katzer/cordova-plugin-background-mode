@@ -106,13 +106,14 @@ public class BackgroundMode extends CordovaPlugin {
                 break;
             case "webviewoptimizations":
             case "batteryoptimizations":
+            case "appstart":
             case "background":
             case "foreground":
             case "tasklist":
             case "dimmed":
             case "wakeup":
             case "unlock":
-                new BackgroundExt(this).executeAsync(action, callback);
+                BackgroundExt.execute(this, action, args, callback);
                 break;
             default:
                 validAction = false;

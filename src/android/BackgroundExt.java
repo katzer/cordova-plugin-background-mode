@@ -26,8 +26,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
@@ -39,11 +42,18 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.PluginResult.Status;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.List;
 
+import static android.R.string.cancel;
+import static android.R.string.ok;
+import static android.R.style.Theme_DeviceDefault_Light_Dialog;
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.POWER_SERVICE;
+import static android.content.pm.PackageManager.MATCH_DEFAULT_ONLY;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
@@ -57,6 +67,29 @@ import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
  * of infinite execution in the background.
  */
 class BackgroundExt {
+
+    // List of intents for various manufactures to adjust the power saver mode.
+    private static final List<Intent> APPSTART_INTENTS = Arrays.asList(
+            new Intent().setComponent(new ComponentName("com.miui.securitycenter","com.miui.permcenter.autostart.AutoStartManagementActivity")),
+            new Intent().setComponent(new ComponentName("com.letv.android.letvsafe", "com.letv.android.letvsafe.AutobootManageActivity")),
+            new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity")),
+            new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.optimize.process.ProtectActivity")),
+            new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")),
+            new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.startupapp.StartupAppListActivity")),
+            new Intent().setComponent(new ComponentName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity")),
+            new Intent().setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity")),
+            new Intent().setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.BgStartUpManager")),
+            new Intent().setComponent(new ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")),
+            new Intent().setComponent(new ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.autostart.AutoStartActivity")),
+            new Intent().setComponent(new ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.entry.FunctionActivity")).setData(android.net.Uri.parse("mobilemanager://function/entry/AutoStart")),
+            new Intent().setAction("com.letv.android.permissionautoboot"),
+            new Intent().setComponent(new ComponentName("com.samsung.android.sm_cn", "com.samsung.android.sm.ui.ram.AutoRunActivity")),
+            new Intent().setComponent(ComponentName.unflattenFromString("com.iqoo.secure/.MainActivity")),
+            new Intent().setComponent(ComponentName.unflattenFromString("com.meizu.safe/.permission.SmartBGActivity")),
+            new Intent().setComponent(new ComponentName("com.yulong.android.coolsafe", ".ui.activity.autorun.AutoRunListActivity")),
+            new Intent().setComponent(new ComponentName("cn.nubia.security2", "cn.nubia.security.appmanage.selfstart.ui.SelfStartActivity")),
+            new Intent().setComponent(new ComponentName("com.zui.safecenter", "com.lenovo.safecenter.MainTab.LeSafeMainActivity"))
+    );
 
     // Reference to the cordova interface passed by the plugin
     private final CordovaInterface cordova;
@@ -72,7 +105,7 @@ class BackgroundExt {
      *
      * @param plugin The cordova plugin.
      */
-    BackgroundExt(CordovaPlugin plugin)
+    private BackgroundExt (CordovaPlugin plugin)
     {
         this.cordova = plugin.cordova;
         this.webView = plugin.webView;
@@ -82,22 +115,26 @@ class BackgroundExt {
      * Executes the request within a thread.
      *
      * @param action   The action to execute.
+     * @param args     The exec() arguments.
      * @param callback The callback context used when
      *                 calling back into JavaScript.
      */
-    void executeAsync (String action, CallbackContext callback)
+    static void execute (CordovaPlugin plugin, String action, JSONArray args,
+                  CallbackContext callback)
     {
-        cordova.getThreadPool().execute(() -> execute(action, callback));
+        plugin.cordova.getThreadPool().execute(() -> new BackgroundExt(plugin).execute(action, args, callback));
     }
 
     /**
      * Executes the request.
      *
      * @param action   The action to execute.
+     * @param args     The exec() arguments.
      * @param callback The callback context used when
      *                 calling back into JavaScript.
      */
-    private void execute (String action, CallbackContext callback)
+    private void execute (String action, JSONArray args,
+                          CallbackContext callback)
     {
         switch (action)
         {
@@ -106,6 +143,9 @@ class BackgroundExt {
                 break;
             case "webviewoptimizations":
                 disableWebViewOptimizations();
+                break;
+            case "appstart":
+                openAppStart(args.opt(0));
                 break;
             case "background":
                 moveToBackground();
@@ -186,6 +226,10 @@ class BackgroundExt {
         thread.start();
     }
 
+    /**
+     * Disables battery optimizations for the app.
+     * Requires permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to function.
+     */
     @SuppressLint("BatteryLife")
     private void disableBatteryOptimizations()
     {
@@ -204,6 +248,58 @@ class BackgroundExt {
         intent.setData(Uri.parse("package:" + pkgName));
 
         cordova.getActivity().startActivity(intent);
+    }
+
+    /**
+     * Opens the system settings dialog where the user can tweak or turn off any
+     * custom app start settings added by the manufacturer if available.
+     *
+     * @param arg Text and title for the dialog or false to skip the dialog.
+     */
+    private void openAppStart (Object arg)
+    {
+        Activity activity = cordova.getActivity();
+        PackageManager pm = activity.getPackageManager();
+
+        for (Intent intent : APPSTART_INTENTS)
+        {
+            if (pm.resolveActivity(intent, MATCH_DEFAULT_ONLY) != null)
+            {
+                JSONObject spec = (arg instanceof JSONObject) ? (JSONObject) arg : null;
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                if (arg instanceof Boolean && !((Boolean) arg))
+                {
+                    activity.startActivity(intent);
+                    break;
+                }
+
+                AlertDialog.Builder dialog = new AlertDialog.Builder(activity, Theme_DeviceDefault_Light_Dialog);
+
+                dialog.setPositiveButton(ok, (o, d) -> activity.startActivity(intent));
+                dialog.setNegativeButton(cancel, (o, d) -> {});
+                dialog.setCancelable(true);
+
+                if (spec != null && spec.has("title"))
+                {
+                    dialog.setTitle(spec.optString("title"));
+                }
+
+                if (spec != null && spec.has("text"))
+                {
+                    dialog.setMessage(spec.optString("text"));
+                }
+                else
+                {
+                    dialog.setMessage("missing text");
+                }
+
+                activity.runOnUiThread(dialog::show);
+
+                break;
+            }
+        }
     }
 
     /**
