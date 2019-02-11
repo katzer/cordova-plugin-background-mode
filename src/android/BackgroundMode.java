@@ -1,22 +1,22 @@
 /*
-    Copyright 2013-2017 appPlant GmbH
+ Copyright 2013 Sebastián Katzer
 
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
  */
 
 package de.appplant.cordova.plugin.background;
@@ -35,7 +35,7 @@ import org.json.JSONObject;
 import de.appplant.cordova.plugin.background.ForegroundService.ForegroundBinder;
 
 import static android.content.Context.BIND_AUTO_CREATE;
-import static de.appplant.cordova.plugin.background.BackgroundExt.clearKeyguardFlags;
+import static de.appplant.cordova.plugin.background.BackgroundModeExt.clearKeyguardFlags;
 
 public class BackgroundMode extends CordovaPlugin {
 
@@ -103,17 +103,6 @@ public class BackgroundMode extends CordovaPlugin {
                 break;
             case "disable":
                 disableMode();
-                break;
-            case "webviewoptimizations":
-            case "batteryoptimizations":
-            case "appstart":
-            case "background":
-            case "foreground":
-            case "tasklist":
-            case "dimmed":
-            case "wakeup":
-            case "unlock":
-                BackgroundExt.execute(this, action, args, callback);
                 break;
             default:
                 validAction = false;

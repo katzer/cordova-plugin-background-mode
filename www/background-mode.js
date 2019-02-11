@@ -160,7 +160,7 @@ exports.disableWebViewOptimizations = function()
 {
     if (this._isAndroid)
     {
-        cordova.exec(null, null, 'BackgroundMode', 'webviewoptimizations', []);
+        cordova.exec(null, null, 'BackgroundModeExt', 'webview', []);
     }
 };
 
@@ -173,7 +173,7 @@ exports.disableBatteryOptimizations = function()
 {
     if (this._isAndroid)
     {
-        cordova.exec(null, null, 'BackgroundMode', 'batteryoptimizations', []);
+        cordova.exec(null, null, 'BackgroundModeExt', 'battery', []);
     }
 };
 
@@ -190,7 +190,7 @@ exports.openAppStartSettings = function (options)
 {
     if (this._isAndroid)
     {
-        cordova.exec(null, null, 'BackgroundMode', 'appstart', [options]);
+        cordova.exec(null, null, 'BackgroundModeExt', 'appstart', [options]);
     }
 };
 
@@ -203,7 +203,7 @@ exports.moveToBackground = function()
 {
     if (this._isAndroid)
     {
-        cordova.exec(null, null, 'BackgroundMode', 'background', []);
+        cordova.exec(null, null, 'BackgroundModeExt', 'background', []);
     }
 };
 
@@ -216,7 +216,7 @@ exports.moveToForeground = function()
 {
     if (this.isActive() && this._isAndroid)
     {
-        cordova.exec(null, null, 'BackgroundMode', 'foreground', []);
+        cordova.exec(null, null, 'BackgroundModeExt', 'foreground', []);
     }
 };
 
@@ -229,7 +229,7 @@ exports.excludeFromTaskList = function()
 {
     if (this._isAndroid)
     {
-        cordova.exec(null, null, 'BackgroundMode', 'tasklist', []);
+        cordova.exec(null, null, 'BackgroundModeExt', 'tasklist', []);
     }
 };
 
@@ -257,7 +257,7 @@ exports.isScreenOff = function (fn)
 {
     if (this._isAndroid)
     {
-        cordova.exec(fn, null, 'BackgroundMode', 'dimmed', []);
+        cordova.exec(fn, null, 'BackgroundModeExt', 'dimmed', []);
     }
     else
     {
@@ -274,7 +274,7 @@ exports.wakeUp = function()
 {
     if (this._isAndroid)
     {
-        cordova.exec(null, null, 'BackgroundMode', 'wakeup', []);
+        cordova.exec(null, null, 'BackgroundModeExt', 'wakeup', []);
     }
 };
 
@@ -287,7 +287,7 @@ exports.unlock = function()
 {
     if (this._isAndroid)
     {
-        cordova.exec(null, null, 'BackgroundMode', 'unlock', []);
+        cordova.exec(null, null, 'BackgroundModeExt', 'unlock', []);
     }
 };
 

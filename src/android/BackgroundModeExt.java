@@ -1,22 +1,22 @@
 /*
-    Copyright 2013-2017 appPlant GmbH
+ Copyright 2013 Sebastián Katzer
 
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
  */
 
 package de.appplant.cordova.plugin.background;
@@ -37,9 +37,7 @@ import android.os.PowerManager;
 import android.view.View;
 
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.PluginResult.Status;
 import org.json.JSONArray;
@@ -66,7 +64,7 @@ import static android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
  * Implements extended functions around the main purpose
  * of infinite execution in the background.
  */
-class BackgroundExt {
+public class BackgroundModeExt extends CordovaPlugin {
 
     // List of intents for various manufactures to adjust the power saver mode.
     private static final List<Intent> APPSTART_INTENTS = Arrays.asList(
@@ -91,39 +89,8 @@ class BackgroundExt {
             new Intent().setComponent(new ComponentName("com.zui.safecenter", "com.lenovo.safecenter.MainTab.LeSafeMainActivity"))
     );
 
-    // Reference to the cordova interface passed by the plugin
-    private final CordovaInterface cordova;
-
-    // Reference to the cordova web view passed by the plugin
-    private final CordovaWebView webView;
-
     // To keep the device awake
     private PowerManager.WakeLock wakeLock;
-
-    /**
-     * Initialize the extension to perform non-background related tasks.
-     *
-     * @param plugin The cordova plugin.
-     */
-    private BackgroundExt (CordovaPlugin plugin)
-    {
-        this.cordova = plugin.cordova;
-        this.webView = plugin.webView;
-    }
-
-    /**
-     * Executes the request within a thread.
-     *
-     * @param action   The action to execute.
-     * @param args     The exec() arguments.
-     * @param callback The callback context used when
-     *                 calling back into JavaScript.
-     */
-    static void execute (CordovaPlugin plugin, String action, JSONArray args,
-                  CallbackContext callback)
-    {
-        plugin.cordova.getThreadPool().execute(() -> new BackgroundExt(plugin).execute(action, args, callback));
-    }
 
     /**
      * Executes the request.
@@ -132,16 +99,21 @@ class BackgroundExt {
      * @param args     The exec() arguments.
      * @param callback The callback context used when
      *                 calling back into JavaScript.
+     *
+     * @return Returning false results in a "MethodNotFound" error.
      */
-    private void execute (String action, JSONArray args,
-                          CallbackContext callback)
+    @Override
+    public boolean execute (String action, JSONArray args,
+                            CallbackContext callback)
     {
+        boolean validAction = true;
+
         switch (action)
         {
-            case "batteryoptimizations":
+            case "battery":
                 disableBatteryOptimizations();
                 break;
-            case "webviewoptimizations":
+            case "webview":
                 disableWebViewOptimizations();
                 break;
             case "appstart":
@@ -166,7 +138,17 @@ class BackgroundExt {
                 wakeup();
                 unlock();
                 break;
+            default:
+                validAction = false;
         }
+
+        if (validAction) {
+            callback.success();
+        } else {
+            callback.error("Invalid action: " + action);
+        }
+
+        return validAction;
     }
 
     /**
