@@ -220,7 +220,7 @@ public class BackgroundModeExt extends CordovaPlugin {
         Activity activity = cordova.getActivity();
         PackageManager pm = activity.getPackageManager();
 
-        for (Intent intent : getAppstartIntents())
+        for (Intent intent : getAppStartIntents())
         {
             if (pm.resolveActivity(intent, MATCH_DEFAULT_ONLY) != null)
             {
@@ -418,7 +418,7 @@ public class BackgroundModeExt extends CordovaPlugin {
     /**
      * Returns list of all possible intents to present the app start settings.
      */
-    private List<Intent> getAppstartIntents()
+    private List<Intent> getAppStartIntents()
     {
         return Arrays.asList(
             new Intent().setComponent(new ComponentName("com.miui.securitycenter","com.miui.permcenter.autostart.AutoStartManagementActivity")),
