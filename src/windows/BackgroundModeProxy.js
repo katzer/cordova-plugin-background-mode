@@ -27,7 +27,8 @@ var Uri               = Windows.Foundation.Uri,
     MediaPlaybackList = Windows.Media.Playback.MediaPlaybackList,
     AudioCategory     = Windows.Media.Playback.MediaPlayerAudioCategory,
     MediaPlayer       = Windows.Media.Playback.MediaPlayer,
-    WebUIApplication  = Windows.UI.WebUI.WebUIApplication;
+    WebUIApplication  = Windows.UI.WebUI.WebUIApplication,
+    ExtendedExecution = Windows.ApplicationModel.ExtendedExecution;
 
 /**
  * Activates the background mode. When activated the application
@@ -40,6 +41,29 @@ var Uri               = Windows.Foundation.Uri,
  * @return [ Void ]
  */
 exports.enable = function (success, error) {
+
+  var newSession = new ExtendedExecution.ExtendedExecutionSession();
+  newSession.reason = ExtendedExecution.ExtendedExecutionReason.unspecified;
+  newSession.onrevoked = function (args) {
+      console.log("Revoked!!", args);
+      exports.stopKeepingAwake();
+  }
+
+  newSession.requestExtensionAsync()
+      .then(function (result) {
+          switch (result) {
+              case ExtendedExecution.ExtendedExecutionResult.allowed:
+                  exports.keepAwake();
+                  break;
+              case ExtendedExecution.ExtendedExecutionResult.denied:
+                  console.log("BG session failed :(");
+                  break;
+              default:
+                  break;
+          }
+      }, function (err) {
+          var abc = err.message;
+      });
     success();
 };
 
@@ -63,8 +87,9 @@ exports.disable = function (success, error) {
  * @return [ Void ]
  */
 exports.keepAwake = function () {
-    if (!plugin.isEnabled() || plugin.isActive())
+    if (!plugin.isEnabled() || plugin.isActive()) {
        return;
+    }
 
     exports.configureAudioPlayer();
     exports.audioPlayer.play();
@@ -110,14 +135,11 @@ exports.configureAudioPlayer = function () {
         playList.autoRepeatEnabled = true;
 
         audioPlayer.source        = playList;
-        audioPlayer.autoPlay      = false;
+        audioPlayer.autoPlay      = true;
         audioPlayer.audioCategory = AudioCategory.soundEffects;
         audioPlayer.volume        = 0;
 
     exports.audioPlayer = audioPlayer;
 };
-
-WebUIApplication.addEventListener('enteredbackground', exports.keepAwake, false);
-WebUIApplication.addEventListener('leavingbackground', exports.stopKeepingAwake, false);
 
 cordova.commandProxy.add('BackgroundMode', exports);
