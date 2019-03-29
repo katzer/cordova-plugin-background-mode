@@ -82,7 +82,7 @@ public class BackgroundMode extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         IntentFilter filter = new IntentFilter();
-        filter.addAction("com.backgroundmode.close");
+        filter.addAction("com.backgroundmode.close" + cordova.getContext().getPackageName());
         cordova.getActivity().registerReceiver(receiver, filter);
 
     }
