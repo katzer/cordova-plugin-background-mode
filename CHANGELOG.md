@@ -1,6 +1,13 @@
 ## ChangeLog
-#### Version 0.7.3 (not yet released)
+#### Version 0.7.4
+- Fixed iOS 12.2 crashes
+- Merged original repository Android source updates
+
+#### Version 0.7.3
 - fixed iOS crashes
+- Check if screen is off on Android
+- Wake-up device on Android
+- Unlock device on Android
 
 #### Version 0.7.2 (02.02.2017)
 - Fixed app freeze on iOS using wkwebview-engine
