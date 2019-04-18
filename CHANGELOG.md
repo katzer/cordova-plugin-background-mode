@@ -1,4 +1,8 @@
 ## ChangeLog
+#### Version 0.7.5
+- Fixed onactivate call
+- Merged new Android permissions
+
 #### Version 0.7.4
 - Fixed iOS 12.2 crashes
 - Merged original repository Android source updates

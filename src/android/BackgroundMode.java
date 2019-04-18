@@ -284,7 +284,7 @@ public class BackgroundMode extends CordovaPlugin {
         String str = String.format("%s._setActive(%b)",
                 JS_NAMESPACE, active);
 
-        str = String.format("%s;%s.on%s(%s)",
+        str = String.format("%s;%s.on('%s', %s)",
                 str, JS_NAMESPACE, eventName, params);
 
         str = String.format("%s;%s.fireEvent('%s',%s);",
