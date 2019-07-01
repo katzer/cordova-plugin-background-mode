@@ -249,8 +249,6 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
          str = @"X2Fsd2F5c1J1bnNBdEZvcmVncm91bmRQcmlvcml0eQ==";
        }
        NSData* data = [[NSData alloc] initWithBase64EncodedString:str options:0];
-
-       return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
 /**
