@@ -1,3 +1,9 @@
+## Deprecated by the original author
+
+This fork lives on here: https://bitbucket.org/TheBosZ/cordova-plugin-run-in-background
+
+This readme is left for historical purposes.
+
 
 <p align="left">
     <b><a href="https://github.com/katzer/cordova-plugin-background-mode/tree/example">SAMPLE APP</a> :point_right:</b>
