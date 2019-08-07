@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-background-mode",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Prevent apps from going to sleep in background.",
   "cordova": {
     "id": "cordova-plugin-background-mode",

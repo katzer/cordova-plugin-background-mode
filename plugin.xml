@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-background-mode"
-        version="0.7.2">
+        version="0.7.3">
 
     <name>BackgroundMode</name>
 
