@@ -24,7 +24,6 @@
     <engines>
         <engine name="cordova" version=">=3.0.0" />
         <engine name="android-sdk" version=">=16" />
-        <engine name="windows-sdk" version=">=10.0.14393.0" />
     </engines>
 
     <!-- js -->
