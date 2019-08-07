@@ -91,32 +91,6 @@
             target-dir="src/de/appplant/cordova/plugin/background" />
     </platform>
 
-    <!-- windows
-    <platform name="windows">
-        <config-file target="config.xml" parent="/*">
-            <feature name="BackgroundMode" >
-                <param name="windows-package" value="BackgroundMode"/>
-            </feature>
-        </config-file>
-
-        <config-file target="package.appxmanifest" parent="/Package/Capabilities" device-target="windows">
-            <Capability Name="backgroundMediaPlayback" />
-        </config-file>
-
-        <config-file target="config.xml" parent="/*">
-            <preference name="windows-target-version" value="UAP" />
-            <preference name="uap-target-min-version" value="10.0.14393.0" />
-            <preference name="Windows.Universal-MinVersion" value="10.0.14393.0" />
-            <preference name="Windows.Universal" value="10.0.14393.0" />
-        </config-file>
-
-        <resource-file src="appbeep.wma" target="appbeep.wma" />
-
-        <js-module src="src/windows/BackgroundModeProxy.js" name="BackgroundMode.Proxy">
-            <runs />
-        </js-module>
-    </platform> -->
-
     <!-- browser -->
     <platform name="browser">
         <config-file target="config.xml" parent="/*">
