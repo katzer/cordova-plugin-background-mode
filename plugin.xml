@@ -57,6 +57,8 @@
 
     <!-- android -->
     <platform name="android">
+		<framework src="src/android/bgmode.gradle" custom="true" type="gradleReference"/>
+
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="BackgroundMode">
                 <param name="android-package" value="de.appplant.cordova.plugin.background.BackgroundMode"/>
