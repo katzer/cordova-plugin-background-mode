@@ -254,7 +254,10 @@ public class BackgroundModeExt extends CordovaPlugin {
                     dialog.setMessage("missing text");
                 }
 
-                activity.runOnUiThread(dialog::show);
+
+                activity.runOnUiThread(new Runnable() { @Override public void run() {
+                    dialog.show();
+                }});
 
                 break;
             }
@@ -369,7 +372,7 @@ public class BackgroundModeExt extends CordovaPlugin {
     private void addSreenAndKeyguardFlags()
     {
         getApp().runOnUiThread(new Runnable() { @Override public void run() {
-            getApp().getWindow().addFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD)
+            getApp().getWindow().addFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD),
         }});
     }
 
@@ -389,7 +392,7 @@ public class BackgroundModeExt extends CordovaPlugin {
     static void clearKeyguardFlags (Activity app)
     {
         getApp().runOnUiThread(new Runnable() { @Override public void run() {
-            app.getWindow().clearFlags(FLAG_DISMISS_KEYGUARD)
+            app.getWindow().clearFlags(FLAG_DISMISS_KEYGUARD),
         }});
     }
 
