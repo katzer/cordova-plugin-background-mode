@@ -38,6 +38,8 @@ import android.view.View;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface;
 
+import android.util.Log;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -85,6 +87,7 @@ public class BackgroundModeExt extends CordovaPlugin {
     public boolean execute (String action, JSONArray args,
                             CallbackContext callback)
     {
+        Log.i("BGCORDOVA", "Executing action: '"+action+"'");
         boolean validAction = true;
 
         if(action == "battery") disableBatteryOptimizations();
@@ -105,7 +108,7 @@ public class BackgroundModeExt extends CordovaPlugin {
         if (validAction) {
             callback.success();
         } else {
-            callback.error("Invalid action: " + action);
+            callback.error("Invalid action: " + action + " args: " + args + " callback: " + callback);
         }
 
         return validAction;
