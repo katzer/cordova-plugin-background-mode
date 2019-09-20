@@ -379,7 +379,7 @@ public class BackgroundModeExt extends CordovaPlugin {
      */
     static void clearKeyguardFlags (Activity app)
     {
-        getApp().runOnUiThread(new Runnable() { @Override public void run() {
+        app.runOnUiThread(new Runnable() { @Override public void run() {
             app.getWindow().clearFlags(FLAG_DISMISS_KEYGUARD);
         }});
     }
