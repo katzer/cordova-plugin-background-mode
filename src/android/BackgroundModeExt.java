@@ -239,7 +239,7 @@ public class BackgroundModeExt extends CordovaPlugin {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(activity, Theme_DeviceDefault_Light_Dialog);
 
                 dialog.setPositiveButton(ok, new OnClickListener() { @Override public void onClick(View arg0) {
-                    activity.startActivity(intent)
+                    activity.startActivity(intent);
                 }});
                 dialog.setNegativeButton(cancel, null);
                 dialog.setCancelable(true);
