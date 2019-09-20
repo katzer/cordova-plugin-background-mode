@@ -165,7 +165,8 @@ public class BackgroundModeExt extends CordovaPlugin {
             public void run() {
                 try {
                     Thread.sleep(1000);
-                    getApp().runOnUiThread(() -> {
+                    getApp().runOnUiThread(new Runnable() { @Override public void run() {
+
                         View view = webView.getEngine().getView();
 
                         try {
@@ -175,7 +176,7 @@ public class BackgroundModeExt extends CordovaPlugin {
                         } catch (Exception e){
                             view.dispatchWindowVisibilityChanged(View.VISIBLE);
                         }
-                    });
+                    }});
                 } catch (InterruptedException e) {
                     // do nothing
                 }
@@ -372,7 +373,7 @@ public class BackgroundModeExt extends CordovaPlugin {
     private void addSreenAndKeyguardFlags()
     {
         getApp().runOnUiThread(new Runnable() { @Override public void run() {
-            getApp().getWindow().addFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD),
+            getApp().getWindow().addFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD);
         }});
     }
 
@@ -392,7 +393,7 @@ public class BackgroundModeExt extends CordovaPlugin {
     static void clearKeyguardFlags (Activity app)
     {
         getApp().runOnUiThread(new Runnable() { @Override public void run() {
-            app.getWindow().clearFlags(FLAG_DISMISS_KEYGUARD),
+            app.getWindow().clearFlags(FLAG_DISMISS_KEYGUARD);
         }});
     }
 
