@@ -218,7 +218,7 @@ public class BackgroundModeExt extends CordovaPlugin {
                     break;
                 }
 
-                AlertDialog.Builder dialog = new AlertDialog.Builder(activity, Theme_DeviceDefault_Light_Dialog);
+                final AlertDialog.Builder dialog = new AlertDialog.Builder(activity, Theme_DeviceDefault_Light_Dialog);
 
                 dialog.setPositiveButton(ok, new OnClickListener() { @Override public void onClick(DialogInterface dialog, int which) {
                     activity.startActivity(intent);
