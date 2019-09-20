@@ -35,7 +35,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.content.DialogInterface.OnClickListener;
+import android.content.DialogInterface;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -238,7 +239,7 @@ public class BackgroundModeExt extends CordovaPlugin {
 
                 AlertDialog.Builder dialog = new AlertDialog.Builder(activity, Theme_DeviceDefault_Light_Dialog);
 
-                dialog.setPositiveButton(ok, new OnClickListener() { @Override public void onClick(View arg0) {
+                dialog.setPositiveButton(ok, new OnClickListener() { @Override public void onClick(DialogInterface dialog, int which) {
                     activity.startActivity(intent);
                 }});
                 dialog.setNegativeButton(cancel, null);
