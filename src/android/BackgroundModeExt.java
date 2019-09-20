@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -237,8 +238,10 @@ public class BackgroundModeExt extends CordovaPlugin {
 
                 AlertDialog.Builder dialog = new AlertDialog.Builder(activity, Theme_DeviceDefault_Light_Dialog);
 
-                dialog.setPositiveButton(ok, (o, d) -> activity.startActivity(intent));
-                dialog.setNegativeButton(cancel, (o, d) -> {});
+                dialog.setPositiveButton(ok, new OnClickListener() { @Override public void onClick(View arg0) {
+                    activity.startActivity(intent)
+                }});
+                dialog.setNegativeButton(cancel, null);
                 dialog.setCancelable(true);
 
                 if (spec != null && spec.has("title"))
@@ -383,7 +386,7 @@ public class BackgroundModeExt extends CordovaPlugin {
     private void clearScreenAndKeyguardFlags()
     {
         getApp().runOnUiThread(new Runnable() { @Override public void run() {
-            getApp().runOnUiThread(() -> getApp().getWindow().clearFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD));
+            getApp().getWindow().clearFlags(FLAG_ALLOW_LOCK_WHILE_SCREEN_ON | FLAG_SHOW_WHEN_LOCKED | FLAG_TURN_SCREEN_ON | FLAG_DISMISS_KEYGUARD);
         }});
     }
 
