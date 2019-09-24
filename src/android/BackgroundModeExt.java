@@ -84,9 +84,11 @@ public class BackgroundModeExt extends CordovaPlugin {
      * @return Returning false results in a "MethodNotFound" error.
      */
     @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callback)
+    public boolean execute(String rawAction, JSONArray args, CallbackContext callback)
     {
-        Log.d("BGCORDOVA", "BackgroundModeExt Executing action: '"+action+"'");
+        String action = rawAction.toLowerCase().trim();
+
+        Log.d("BGCORDOVA", "BackgroundModeExt Executing action: '"+action+"' rawAction: '"+rawAction+"'");
 
         if(action == "configure" || action == "enable" || action == "disable") {
             Log.d("BGCORDOVA", "BackgroundModeExt ignored action: '"+action+"'");
