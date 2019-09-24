@@ -247,7 +247,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     private void startService()
     {
-        Log.i("BGCORDOVA", "BackgroundModeExt startService");
+        Log.d("BGCORDOVA", "BackgroundModeExt startService");
         Activity context = cordova.getActivity();
 
         if (isDisabled || isBind)
@@ -272,7 +272,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     private void stopService()
     {
-        Log.i("BGCORDOVA", "BackgroundModeExt stopService");
+        Log.d("BGCORDOVA", "BackgroundModeExt stopService");
         Activity context = cordova.getActivity();
         Intent intent    = new Intent(context, ForegroundService.class);
 
@@ -293,7 +293,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     private void fireEvent (Event event, String params)
     {
-        Log.i("BGCORDOVA", "BackgroundModeExt fireEvent event: '"+event+"' params: '"+params+"'");
+        Log.d("BGCORDOVA", "BackgroundModeExt fireEvent event: '"+event+"' params: '"+params+"'");
         String eventName = event.name().toLowerCase();
         Boolean active   = event == Event.ACTIVATE;
 
