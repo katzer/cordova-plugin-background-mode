@@ -87,8 +87,12 @@ public class BackgroundModeExt extends CordovaPlugin {
     public boolean execute (String action, JSONArray args,
                             CallbackContext callback)
     {
-        Log.i("BGCORDOVA", "Executing action: '"+action+"'");
-        boolean validAction = true;
+        Log.i("BGCORDOVA", "BackgroundModeExt Executing action: '"+action+"'");
+
+        if(action == "configure" || action == "enable" || action == "disable") {
+            Log.i("BGCORDOVA", "BackgroundModeExt ignored action: '"+action+"'");
+            return false;
+        }
 
         if(action == "battery") {
             Log.i("BGCORDOVA", "BackgroundModeExt battery");

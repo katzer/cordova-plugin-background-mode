@@ -93,8 +93,7 @@ public class BackgroundMode extends CordovaPlugin {
     public boolean execute (String action, JSONArray args,
                             CallbackContext callback)
     {
-        Log.i("BGCORDOVA", "Executing action: '"+action+"'");
-        boolean validAction = true;
+        Log.i("BGCORDOVA", "BackgroundMode Executing action: '"+action+"'");
 
         if(action == "configure"){
             JSONObject optJSONObject = args.optJSONObject(0);
