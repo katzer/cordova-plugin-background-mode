@@ -90,16 +90,11 @@ public class BackgroundMode extends CordovaPlugin {
      * @return Returning false results in a "MethodNotFound" error.
      */
     @Override
-    public boolean execute(String rawAction, JSONArray args, CallbackContext callback)
+    public boolean execute(String action, JSONArray args, CallbackContext callback)
     {
-        String action = rawAction.toLowerCase().trim();
+        Log.i("BGCORDOVA", "BackgroundMode Executing action: '"+action+"'");
 
-        Log.i("BGCORDOVA", "BackgroundMode Executing action: '"+action+"' rawAction: '"+rawAction+"'");
-        Log.i("BGCORDOVA", "BackgroundMode Executing action: '"+action+"' rawAction: '"+rawAction+
-                "' action == \"configure\""+(action == "configure")+"  action.equals(\"configure\"): "+(action.equals("configure")));
-
-
-        if(action == "configure"){
+        if(action.equals("configure")){
             JSONObject optJSONObject = args.optJSONObject(0);
             boolean optBoolean = args.optBoolean(1);
 
@@ -110,7 +105,7 @@ public class BackgroundMode extends CordovaPlugin {
             return true;
         }
 
-        if(action == "enable"){
+        if(action.equals("enable")){
 
             Log.i("BGCORDOVA", "BackgroundMode Enable");
 
@@ -119,7 +114,7 @@ public class BackgroundMode extends CordovaPlugin {
             return true;
         }
 
-        if(action == "disable"){
+        if(action.equals("disable")){
 
             Log.i("BGCORDOVA", "BackgroundMode Disable");
             disableMode();

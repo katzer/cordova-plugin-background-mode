@@ -84,74 +84,67 @@ public class BackgroundModeExt extends CordovaPlugin {
      * @return Returning false results in a "MethodNotFound" error.
      */
     @Override
-    public boolean execute(String rawAction, JSONArray args, CallbackContext callback)
+    public boolean execute(String action, JSONArray args, CallbackContext callback)
     {
-        String action = rawAction.toLowerCase().trim();
+        Log.d("BGCORDOVA", "BackgroundModeExt Executing action: '"+action+"'");
 
-        Log.d("BGCORDOVA", "BackgroundModeExt Executing action: '"+action+"' rawAction: '"+rawAction+"'");
-
-        if(action == "configure" || action == "enable" || action == "disable") {
-            Log.d("BGCORDOVA", "BackgroundModeExt ignored action: '"+action+"'");
-            return false;
-        }
-
-        if(action == "battery") {
+        if(action.equals("battery")) {
             Log.d("BGCORDOVA", "BackgroundModeExt battery");
             disableBatteryOptimizations();
             callback.success();
             return true;
         }
 
-        if(action == "webview"){
+        if(action.equals("webview")){
             Log.d("BGCORDOVA", "BackgroundModeExt webview");
             disableWebViewOptimizations();
             callback.success();
             return true;
         }
 
-        if(action == "appstart"){
+        if(action.equals("appstart")){
             Log.d("BGCORDOVA", "BackgroundModeExt appstart");
             openAppStart(args.opt(0));
             callback.success();
             return true;
         }
 
-        if(action == "background"){
+        if(action.equals("background")){
             Log.d("BGCORDOVA", "BackgroundModeExt background");
             moveToBackground();
             callback.success();
             return true;
         }
 
-        if(action == "foreground"){
+        if(action.equals("foreground")){
             Log.d("BGCORDOVA", "BackgroundModeExt foreground");
             moveToBackground();
             callback.success();
             return true;
         }
 
-        if(action == "tasklist"){
+        if(action.equals("tasklist")){
             Log.d("BGCORDOVA", "BackgroundModeExt tasklist");
             excludeFromTaskList();
             callback.success();
             return true;
         }
 
-        if(action == "dimmed"){
+        if(action.equals("dimmed")){
             Log.d("BGCORDOVA", "BackgroundModeExt dimmed");
             isDimmed(callback);
             callback.success();
             return true;
         }
 
-        if(action == "wakeup"){
+        if(action.equals("wakeup")){
             Log.d("BGCORDOVA", "BackgroundModeExt wakeup");
             wakeup();
             callback.success();
             return true;
         }
 
-        if(action == "unlock"){
+        if(action.equals("unlock")){
             Log.d("BGCORDOVA", "BackgroundModeExt unlock");
             wakeup();
             unlock();
