@@ -122,7 +122,7 @@ public class BackgroundMode extends CordovaPlugin {
             return true;
         }
 
-        Log.e("BGCORDOVA", "BackgroundModeExt Invalid action: " + action + " args: " + args + " callback: " + callback );
+        Log.e("BGCORDOVA", "BackgroundMode Invalid action: " + action + " args: " + args + " callback: " + callback );
         callback.error("Invalid action: " + action + " args: " + args + " callback: " + callback);
         return false;
     }
@@ -135,7 +135,7 @@ public class BackgroundMode extends CordovaPlugin {
     @Override
     public void onPause(boolean multitasking)
     {
-        Log.i("BGCORDOVA", "BackgroundModeExt onPause");
+        Log.i("BGCORDOVA", "BackgroundMode onPause");
         try {
             inBackground = true;
             startService();
@@ -149,7 +149,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     @Override
     public void onStop() {
-        Log.i("BGCORDOVA", "BackgroundModeExt onStop");
+        Log.i("BGCORDOVA", "BackgroundMode onStop");
         clearKeyguardFlags(cordova.getActivity());
     }
 
@@ -161,7 +161,7 @@ public class BackgroundMode extends CordovaPlugin {
     @Override
     public void onResume(boolean multitasking)
     {
-        Log.i("BGCORDOVA", "BackgroundModeExt onResume");
+        Log.i("BGCORDOVA", "BackgroundMode onResume");
         inBackground = false;
         stopService();
     }
@@ -247,7 +247,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     private void startService()
     {
-        Log.d("BGCORDOVA", "BackgroundModeExt startService");
+        Log.d("BGCORDOVA", "BackgroundMode startService");
         Activity context = cordova.getActivity();
 
         if (isDisabled || isBind)
@@ -272,7 +272,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     private void stopService()
     {
-        Log.d("BGCORDOVA", "BackgroundModeExt stopService");
+        Log.d("BGCORDOVA", "BackgroundMode stopService");
         Activity context = cordova.getActivity();
         Intent intent    = new Intent(context, ForegroundService.class);
 
@@ -293,7 +293,7 @@ public class BackgroundMode extends CordovaPlugin {
      */
     private void fireEvent (Event event, String params)
     {
-        Log.d("BGCORDOVA", "BackgroundModeExt fireEvent event: '"+event+"' params: '"+params+"'");
+        Log.d("BGCORDOVA", "BackgroundMode fireEvent event: '"+event+"' params: '"+params+"'");
         String eventName = event.name().toLowerCase();
         Boolean active   = event == Event.ACTIVATE;
 
