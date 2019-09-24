@@ -96,18 +96,37 @@ public class BackgroundMode extends CordovaPlugin {
         Log.i("BGCORDOVA", "Executing action: '"+action+"'");
         boolean validAction = true;
 
-        if(action == "configure") configure(args.optJSONObject(0), args.optBoolean(1));
-        else if(action == "enable") enableMode();
-        else if(action == "disable") disableMode();
-        else validAction = false;
+        if(action == "configure"){
+            JSONObject optJSONObject = args.optJSONObject(0);
+            boolean optBoolean = args.optBoolean(1);
 
-        if (validAction) {
+            Log.i("BGCORDOVA", "BackgroundMode Configure optJSONObject: '"+args.optJSONObject(0)+"' optBoolean: '"+optBoolean+"'");
+
+            configure(optJSONObject, optBoolean);
             callback.success();
-        } else {
-            callback.error("Invalid action: " + action + " args: " + args + " callback: " + callback);
+            return true;
         }
 
-        return validAction;
+        if(action == "enable"){
+
+            Log.i("BGCORDOVA", "BackgroundMode Enable");
+
+            enableMode();
+            callback.success();
+            return true;
+        }
+
+        if(action == "disable"){
+
+            Log.i("BGCORDOVA", "BackgroundMode Disable");
+            disableMode();
+            callback.success();
+            return true;
+        }
+
+        Log.e("BGCORDOVA", "BackgroundModeExt Invalid action: " + action + " args: " + args + " callback: " + callback );
+        callback.error("Invalid action: " + action + " args: " + args + " callback: " + callback);
+        return false;
     }
 
     /**
