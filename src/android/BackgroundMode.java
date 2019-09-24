@@ -95,6 +95,8 @@ public class BackgroundMode extends CordovaPlugin {
         String action = rawAction.toLowerCase().trim();
 
         Log.i("BGCORDOVA", "BackgroundMode Executing action: '"+action+"' rawAction: '"+rawAction+"'");
+        Log.i("BGCORDOVA", "BackgroundMode Executing action: '"+action+"' rawAction: '"+rawAction+
+                "' action == \"configure\""+(action == "configure")+"  action.equals(\"configure\"): "+(action.equals("configure")));
 
 
         if(action == "configure"){
