@@ -201,7 +201,7 @@ Made with :yum: from Leipzig
 
 [cordova]: https://cordova.apache.org
 [CLI]: http://cordova.apache.org/docs/en/edge/guide_cli_index.md.html#The%20Command-line%20Interface
-[NPM]: ???
+[NPM]: https://www.npmjs.com/package/cordova-plugin-background-mode
 [changelog]: CHANGELOG.md
 [apache2_license]: http://opensource.org/licenses/Apache-2.0
 [appplant]: http://appplant.de
