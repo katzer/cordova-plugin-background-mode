@@ -1,126 +1,126 @@
 {
-    "prepare_queue": {
-        "installed": [],
-        "uninstalled": []
-    },
-    "config_munge": {
-        "files": {
-            "res/xml/config.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<feature name=\"Badge\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.badge.Badge\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Vibration\"><param name=\"android-package\" value=\"org.apache.cordova.vibration.Vibration\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"BackgroundMode\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.background.BackgroundMode\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"KeepRunning\" value=\"true\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"AndroidLaunchMode\" value=\"singleInstance\" />",
-                            "count": 1
-                        }
-                    ]
-                }
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {
+      "res/xml/config.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<feature name=\"Badge\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.badge.Badge\" /></feature>",
+              "count": 1
             },
-            "AndroidManifest.xml": {
-                "parents": {
-                    "/manifest/application": [
-                        {
-                            "xml": "<service android:name=\"de.appplant.cordova.plugin.background.ForegroundService\" />",
-                            "count": 1
-                        }
-                    ],
-                    "/manifest": [
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.VIBRATE\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.WAKE_LOCK\" />",
-                            "count": 1
-                        }
-                    ]
-                }
+            {
+              "xml": "<feature name=\"Vibration\"><param name=\"android-package\" value=\"org.apache.cordova.vibration.Vibration\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"BackgroundMode\"><param name=\"android-package\" value=\"de.appplant.cordova.plugin.background.BackgroundMode\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<preference name=\"KeepRunning\" value=\"true\" />",
+              "count": 1
+            },
+            {
+              "xml": "<preference name=\"AndroidLaunchMode\" value=\"singleInstance\" />",
+              "count": 1
             }
+          ]
         }
-    },
-    "installed_plugins": {
-        "cordova-plugin-app-event": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
-        },
-        "cordova-plugin-badge": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
-        },
-        "cordova-plugin-console": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
-        },
-        "cordova-plugin-vibration": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
-        },
-        "cordova-plugin-background-mode": {
-            "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+      },
+      "AndroidManifest.xml": {
+        "parents": {
+          "/manifest/application": [
+            {
+              "xml": "<service android:name=\"de.appplant.cordova.plugin.background.ForegroundService\" />",
+              "count": 1
+            }
+          ],
+          "/manifest": [
+            {
+              "xml": "<uses-permission android:name=\"android.permission.VIBRATE\" />",
+              "count": 1
+            },
+            {
+              "xml": "<uses-permission android:name=\"android.permission.WAKE_LOCK\" />",
+              "count": 1
+            }
+          ]
         }
-    },
-    "dependent_plugins": {},
-    "modules": [
-        {
-            "id": "cordova-plugin-badge.Badge",
-            "file": "plugins/cordova-plugin-badge/www/badge.js",
-            "pluginId": "cordova-plugin-badge",
-            "clobbers": [
-                "plugin.notification.badge",
-                "cordova.plugins.notification.badge"
-            ]
-        },
-        {
-            "id": "cordova-plugin-vibration.notification",
-            "file": "plugins/cordova-plugin-vibration/www/vibration.js",
-            "pluginId": "cordova-plugin-vibration",
-            "merges": [
-                "navigator.notification",
-                "navigator"
-            ]
-        },
-        {
-            "id": "cordova-plugin-device.device",
-            "file": "plugins/cordova-plugin-device/www/device.js",
-            "pluginId": "cordova-plugin-device",
-            "clobbers": [
-                "device"
-            ]
-        },
-        {
-            "id": "cordova-plugin-background-mode.BackgroundMode",
-            "file": "plugins/cordova-plugin-background-mode/www/background-mode.js",
-            "pluginId": "cordova-plugin-background-mode",
-            "clobbers": [
-                "cordova.plugins.backgroundMode",
-                "plugin.backgroundMode"
-            ]
-        }
-    ],
-    "plugin_metadata": {
-        "cordova-plugin-app-event": "1.2.0",
-        "cordova-plugin-badge": "0.7.4",
-        "cordova-plugin-console": "1.0.5",
-        "cordova-plugin-vibration": "2.1.3",
-        "cordova-plugin-device": "1.1.4",
-        "cordova-plugin-background-mode": "0.7.2"
+      }
     }
+  },
+  "installed_plugins": {
+    "cordova-plugin-app-event": {
+      "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+    },
+    "cordova-plugin-badge": {
+      "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+    },
+    "cordova-plugin-console": {
+      "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+    },
+    "cordova-plugin-vibration": {
+      "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+    },
+    "cordova-plugin-background-mode": {
+      "PACKAGE_NAME": "de.appplant.cordova.plugin.backgroundmode.example"
+    }
+  },
+  "dependent_plugins": {},
+  "modules": [
+    {
+      "id": "cordova-plugin-badge.Badge",
+      "file": "plugins/cordova-plugin-badge/www/badge.js",
+      "pluginId": "cordova-plugin-badge",
+      "clobbers": [
+        "plugin.notification.badge",
+        "cordova.plugins.notification.badge"
+      ]
+    },
+    {
+      "id": "cordova-plugin-vibration.notification",
+      "file": "plugins/cordova-plugin-vibration/www/vibration.js",
+      "pluginId": "cordova-plugin-vibration",
+      "merges": [
+        "navigator.notification",
+        "navigator"
+      ]
+    },
+    {
+      "id": "cordova-plugin-device.device",
+      "file": "plugins/cordova-plugin-device/www/device.js",
+      "pluginId": "cordova-plugin-device",
+      "clobbers": [
+        "device"
+      ]
+    },
+    {
+      "id": "cordova-plugin-background-mode.BackgroundMode",
+      "file": "plugins/cordova-plugin-background-mode/www/background-mode.js",
+      "pluginId": "cordova-plugin-background-mode",
+      "clobbers": [
+        "cordova.plugins.backgroundMode",
+        "plugin.backgroundMode"
+      ]
+    }
+  ],
+  "plugin_metadata": {
+    "cordova-plugin-app-event": "1.2.0",
+    "cordova-plugin-badge": "0.7.4",
+    "cordova-plugin-console": "1.0.5",
+    "cordova-plugin-vibration": "2.1.3",
+    "cordova-plugin-device": "1.1.4",
+    "cordova-plugin-background-mode": "0.7.2"
+  }
 }
