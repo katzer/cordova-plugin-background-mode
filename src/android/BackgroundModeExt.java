@@ -115,6 +115,9 @@ public class BackgroundModeExt extends CordovaPlugin {
                 wakeup();
                 unlock();
                 break;
+            case "lock":
+                clearScreenAndKeyguardFlags();
+                break;
             default:
                 validAction = false;
         }
