@@ -169,7 +169,7 @@ public class BackgroundModeExt extends CordovaPlugin {
                        
                        try{
 
-                        View view = webView.getInstance().getView();
+                        View view = webView.getEngine().getView();
 
                        }catch(Exception e){
 
