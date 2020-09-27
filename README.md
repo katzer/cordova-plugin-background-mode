@@ -29,21 +29,10 @@ Use the plugin by your own risk!
 ## Installation
 The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on [NPM][npm].
 
-Execute from the projects root folder:
-
-    $ cordova plugin add cordova-plugin-background-mode
-
-Or install a specific version:
-
-    $ cordova plugin add de.appplant.cordova.plugin.background-mode@VERSION
 
 Or install the latest head version:
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-background-mode.git
-
-Or install from local source:
-
-    $ cordova plugin add cordova-plugin-background-mode --searchpath <path>
+    $ cordova plugin add https://github.com/thompsd3/cordova-plugin-background-mode.git
 
 
 ## Usage
