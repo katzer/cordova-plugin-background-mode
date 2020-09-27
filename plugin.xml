@@ -42,7 +42,7 @@
 
         <config-file target="*-Info.plist" parent="UIBackgroundModes">
             <array>
-                <string>remote-notification</string>
+                <string>audio</string>
             </array>
         </config-file>
 
