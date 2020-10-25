@@ -9,7 +9,7 @@
 
     <description>Prevent apps from going to sleep in background.</description>
 
-    <repo>https://github.com/katzer/cordova-plugin-background-mode.git</repo>
+    <repo>https://github.com/leonardo-fernandes/cordova-plugin-background-mode.git</repo>
 
     <keywords>appplant, background</keywords>
 
