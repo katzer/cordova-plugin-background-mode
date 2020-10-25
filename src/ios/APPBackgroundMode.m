@@ -174,6 +174,9 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
     // even another app starts playing sound
     [session setCategory:AVAudioSessionCategoryPlayback
                    error:NULL];
+    // Prevent sound/music from stopping when opening the app. Also prevents embedded videos from pausing when unmuted.
+    [session setCategory:AVAudioSessionCategoryAmbient
+    error:NULL];
 
     // Active the audio session
     [session setActive:YES error:NULL];
@@ -221,7 +224,7 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
 
     NSString* flag = [NSString stringWithFormat:@"%@._isActive=%@;",
                       kAPPBackgroundJsNamespace, active];
-
+                       
     NSString* depFn = [NSString stringWithFormat:@"%@.on('%@');",
                        kAPPBackgroundJsNamespace, event];
 
@@ -241,7 +244,16 @@ NSString* const kAPPBackgroundEventDeactivate = @"deactivate";
  */
 + (NSString*) wkProperty
 {
-    NSString* str = @"YWx3YXlzUnVuc0F0Rm9yZWdyb3VuZFByaW9yaXR5";
+    NSString * str = @"";
+    if (@available(iOS 12.2, *)) {
+        // do stuff for iOS 12.2 and newer
+        NSLog(@"iOS 12.2+ detected");
+        str = @"YWx3YXlzUnVuc0F0Rm9yZWdyb3VuZFByaW9yaXR5";
+    } else {
+        // do stuff for iOS 12.1 and older
+        NSLog(@"iOS Below 12.2 detected");
+        str = @"X2Fsd2F5c1J1bnNBdEZvcmVncm91bmRQcmlvcml0eQ==";
+    }
     NSData* data  = [[NSData alloc] initWithBase64EncodedString:str options:0];
 
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];

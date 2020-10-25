@@ -34,6 +34,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.view.View;
 
 import org.apache.cordova.CallbackContext;
@@ -55,6 +56,7 @@ import static android.content.pm.PackageManager.MATCH_DEFAULT_ONLY;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
+import static android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS;
 import static android.view.WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON;
 import static android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD;
 import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
@@ -90,6 +92,12 @@ public class BackgroundModeExt extends CordovaPlugin {
             case "battery":
                 disableBatteryOptimizations();
                 break;
+            case "batterysettings":
+                openBatterySettings();
+                break;
+            case "optimizationstatus":
+                isIgnoringBatteryOptimizations(callback);
+                break;
             case "webview":
                 disableWebViewOptimizations();
                 break;
@@ -101,6 +109,9 @@ public class BackgroundModeExt extends CordovaPlugin {
                 break;
             case "foreground":
                 moveToForeground();
+                break;
+            case "requestTopPermissions":
+                requestTopPermissions();
                 break;
             case "tasklist":
                 excludeFromTaskList();
@@ -166,7 +177,7 @@ public class BackgroundModeExt extends CordovaPlugin {
                 try {
                     Thread.sleep(1000);
                     getApp().runOnUiThread(() -> {
-                        View view = webView.getEngine().getView();
+                        View view = webView.getView();
 
                         try {
                             Class.forName("org.crosswalk.engine.XWalkCordovaView")
@@ -207,6 +218,53 @@ public class BackgroundModeExt extends CordovaPlugin {
         intent.setData(Uri.parse("package:" + pkgName));
 
         cordova.getActivity().startActivity(intent);
+    }
+
+    /**
+     * Opens the Battery Optimization settings screen
+     */
+    private void openBatterySettings()
+    {
+        if (SDK_INT < M)
+            return;
+
+        Activity activity = cordova.getActivity();
+        Intent intent = new Intent(ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+
+        cordova.getActivity().startActivity(intent);
+    }
+
+    /**
+     * Opens the Battery Optimization settings screen
+     *
+     * @param callback The callback to invoke.
+     */
+    private void isIgnoringBatteryOptimizations(CallbackContext callback)
+    {
+        if (SDK_INT < M)
+            return;
+
+        Activity activity  = cordova.getActivity();
+        String pkgName     = activity.getPackageName();
+        PowerManager pm    = (PowerManager)getService(POWER_SERVICE);
+        boolean isIgnoring = pm.isIgnoringBatteryOptimizations(pkgName);
+        PluginResult res   = new PluginResult(Status.OK, isIgnoring);
+
+        callback.sendPluginResult(res);
+    }
+
+     private void requestTopPermissions() {
+        if (SDK_INT >= M) {
+
+            Activity activity = cordova.getActivity();
+            if (Settings.canDrawOverlays(activity.getApplicationContext())) {
+                return;
+            }
+
+            String pkgName    = activity.getPackageName();
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + pkgName));
+            activity.startActivity(intent);
+        }
     }
 
     /**
