@@ -94,7 +94,9 @@ cordova.plugins.backgroundMode.un('EVENT', function);
 ## Android specifics
 
 ### Transit between application states
-Android allows to programmatically move from foreground to background or vice versa.
+Android allows to programmatically move from foreground to background or vice versa. 
+
+Note: starting with Android 10, you must request the "Draw on Top" permission from the user or the call to `moveToForeground` will silently fail. You can request it with `cordova.plugins.backgroundMode.requestForegroundPermission();`. This permission isn't necessary for `moveToBackground`
 
 ```js
 cordova.plugins.backgroundMode.moveToBackground();
@@ -135,6 +137,37 @@ cordova.plugins.backgroundMode.wakeUp();
 cordova.plugins.backgroundMode.unlock();
 ```
 
+### Request to disable battery optimizations
+Starting in Android 8, apps can be put to sleep to conserve battery. When this happens (usually after 5 minutes or so), the background task is killed. This will cause things like MQTT connections to break.
+
+This method will show a permission prompt for the user (only if the app hasn't been granted permission) to ignore the optimization.
+
+```js
+cordova.plugins.backgroundMode.disableBatteryOptimizations();
+```
+
+You can also open the battery optimization settings menu directly, and get the user to set it manually. This may be a better option for devices which may ignore the prompt above.
+
+```js
+cordova.plugins.backgroundMode.openBatteryOptimizationsSettings();
+```
+
+To check if battery optimizations are disabled for the app:
+
+```js
+cordova.plugins.backgroundMode.isIgnoringBatteryOptimizations(function(isIgnoring) {
+    ...
+})
+```
+
+Additionally, you may find that your JS code begins to run less frequently, or not at all while in the background. This can be due to the webview slowing down its execution due to being in the background. The `disableWebViewOptimizations` function can prevent that, but it's important that it is run _after_ the app goes to the background.
+
+```js
+cordova.plugins.backgroundMode.on('activate', function() {
+    cordova.plugins.backgroundMode.disableWebViewOptimizations();
+});
+```
+
 ### Notification
 To indicate that the app is executing tasks in background and being paused would disrupt the user, the plug-in has to create a notification while in background - like a download progress bar.
 
@@ -145,11 +178,19 @@ The title, text and icon for that notification can be customized as below. Also,
 cordova.plugins.backgroundMode.setDefaults({
     title: String,
     text: String,
-    icon: 'icon' // this will look for icon.png in platforms/android/res/drawable|mipmap
-    color: String // hex format like 'F14F4D'
+    subText: String, // see https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#setSubText(java.lang.CharSequence)
+    icon: 'icon', // this will look for icon.png in platforms/android/res/drawable|mipmap
+    color: String, // hex format like 'F14F4D'
     resume: Boolean,
     hidden: Boolean,
-    bigText: Boolean
+    bigText: Boolean,
+    channelName: String, // Shown when the user views the app's notification settings
+    channelDescription: String, // Shown when the user views the channel's settings
+    allowClose: Boolean, // add a "Close" action to the notification
+    closeIcon: 'power', // An icon shown for the close action
+    closeTitle: 'Close', // The text for the close action
+    showWhen: Boolean, //(Default: true) Show the time since the notification was created
+    visibility: String, // Android only: one of 'private' (default), 'public' or 'secret' (see https://developer.android.com/reference/android/app/Notification.Builder.html#setVisibility(int))
 })
 ```
 
@@ -174,7 +215,7 @@ Various APIs like playing media or tracking GPS position in background might not
 
 ```js
 cordova.plugins.backgroundMode.on('activate', function() {
-   cordova.plugins.backgroundMode.disableWebViewOptimizations(); 
+   cordova.plugins.backgroundMode.disableWebViewOptimizations();
 });
 ```
 
