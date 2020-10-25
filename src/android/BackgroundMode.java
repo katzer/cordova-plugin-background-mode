@@ -179,7 +179,7 @@ public class BackgroundMode extends CordovaPlugin {
     public void onDestroy()
     {
         stopService();
-        android.os.Process.killProcess(android.os.Process.myPid());
+        cordova.getActivity().unregisterReceiver(receiver);
     }
 
     /**
