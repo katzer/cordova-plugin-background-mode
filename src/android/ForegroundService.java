@@ -286,7 +286,11 @@ public class ForegroundService extends Service {
         if (resId == 0) {
             resId = res.getIdentifier("icon", type, pkgName);
         }
-
+ 
+        if (resId == 0) {
+            resId = res.getIdentifier("ic_launcher", type, pkgName);
+        }    
+     
         return resId;
     }
 
