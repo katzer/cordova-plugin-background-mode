@@ -160,7 +160,11 @@ public class BackgroundMode extends CordovaPlugin {
     public void onDestroy()
     {
         stopService();
-        android.os.Process.killProcess(android.os.Process.myPid());
+
+        // The following line has been commented out because it's
+        // killing the app whenever we start a new Activity on top
+        // of the Capacitor one.
+//        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     /**
