@@ -3,26 +3,25 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-background-mode"
-        version="0.7.3">
-
+        version="0.7.8-bf-1.0">
     <name>BackgroundMode</name>
 
-    <description>Prevent apps from going to sleep in background.</description>
+    <description>Prevent apps from going to sleep in background. iOS fix.</description>
 
-    <repo>https://github.com/katzer/cordova-plugin-background-mode.git</repo>
+    <repo>https://github.com/thompsd3/cordova-plugin-background-mode.git</repo>
 
     <keywords>appplant, background</keywords>
 
     <license>Apache 2.0</license>
 
-    <author>Sebastián Katzer</author>
+    <author>Donnie Thompson</author>
 
     <!-- dependencies -->
     <dependency id="cordova-plugin-device" />
 
     <!-- cordova -->
     <engines>
-        <engine name="cordova" version=">=3.0.0" />
+        <engine name="cordova" version=">=5.0.0" />
         <engine name="android-sdk" version=">=16" />
     </engines>
 
@@ -76,6 +75,7 @@
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
         </config-file>
 
         <source-file
