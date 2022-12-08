@@ -133,7 +133,8 @@ public class BackgroundModeExt extends CordovaPlugin {
      */
     private void moveToBackground()
     {
-     moveTaskToBack(true);
+     Activity  app = getApp();
+     app.moveTaskToBack(true);
        /**  Intent intent = new Intent(Intent.ACTION_MAIN);
 
      
