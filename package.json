@@ -22,16 +22,11 @@
     "cordova-android",
     "cordova-browser"
   ],
-  "engines": [
+  "engines": 
     {
-      "name": "cordova",
-      "version": ">=3.0.0"
+     "cordova": ">=3.0.0",
+      "android-sdk": ">=16"
     },
-    {
-      "name": "android-sdk",
-      "version": ">=16"
-    }
-  ],
   "author": "Sebastián Katzer",
   "license": "Apache 2.0",
   "bugs": {
