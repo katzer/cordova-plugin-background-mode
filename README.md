@@ -198,7 +198,7 @@ To add an image asset to be used as a notification icon add a resource file defi
 
 <platform name="android">
   <!-- Add a notification icon image -->
-  <!-- "src" is where the image is from the project root  -->
+  <!-- "src" is where the image is; from the project root  -->
   <!-- "target" needs to be the `drawable` dir inside `platforms/android` and the file name must match the `icon` string given in  `cordova.plugins.backgroundMode.setDefaults` -->
   <resource-file src="res/icon/android/icon.png" target="app/src/main/res/drawable/icon.png"/>
 </platform>
