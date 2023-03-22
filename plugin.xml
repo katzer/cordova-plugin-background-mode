@@ -3,13 +3,13 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-background-mode"
-        version="0.7.3">
+        version="1.0.0">
 
     <name>BackgroundMode</name>
 
     <description>Prevent apps from going to sleep in background.</description>
 
-    <repo>https://github.com/katzer/cordova-plugin-background-mode.git</repo>
+    <repo>https://github.com/nextivity/cordova-plugin-background-mode</repo>
 
     <keywords>appplant, background</keywords>
 
@@ -22,8 +22,7 @@
 
     <!-- cordova -->
     <engines>
-        <engine name="cordova" version=">=3.0.0" />
-        <engine name="android-sdk" version=">=16" />
+        <engine name="cordova-android" version=">=11.0.0"/>
     </engines>
 
     <!-- js -->
