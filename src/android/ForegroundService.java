@@ -97,7 +97,11 @@ public class ForegroundService extends Service {
     public void onCreate()
     {
         super.onCreate();
-        keepAwake();
+        try {
+            keepAwake();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }   
     }
 
     /**
