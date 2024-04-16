@@ -100,7 +100,8 @@ public class ForegroundService extends Service {
         try {
             keepAwake();
         } catch (Exception e) {
-            e.printStackTrace();
+            // Android 12 or higher does not allow the app to start foreground services while running in the background
+            // TODO: handle in Android native build
         }   
     }
 
