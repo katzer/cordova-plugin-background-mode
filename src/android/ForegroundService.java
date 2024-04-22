@@ -97,7 +97,12 @@ public class ForegroundService extends Service {
     public void onCreate()
     {
         super.onCreate();
-        keepAwake();
+        try {
+            keepAwake();
+        } catch (Exception e) {
+            // Race condition on Android 12 or higher not allowing the app to start foreground services if already switched quickly to background
+            // TODO: to be handled in Android V2
+        }   
     }
 
     /**
