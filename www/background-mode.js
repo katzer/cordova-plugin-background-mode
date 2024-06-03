@@ -411,7 +411,7 @@ exports._isActive = false;
 exports._defaults =
 {
     title:   'App is running in background',
-    text:    'Doing heavy tasks.',
+    text:    'Keeping your app interactive.',
     bigText: false,
     resume:  true,
     silent:  false,

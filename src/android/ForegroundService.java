@@ -29,16 +29,21 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.app.NotificationChannel;
+import android.util.Log;
 
 import org.json.JSONObject;
 
 import static android.os.PowerManager.PARTIAL_WAKE_LOCK;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * Puts the service in a foreground state, where the system considers it to be
@@ -46,6 +51,13 @@ import static android.os.PowerManager.PARTIAL_WAKE_LOCK;
  * when low on memory.
  */
 public class ForegroundService extends Service {
+
+    private final String TAG = "Foreground Service";
+    // Get the default notification icon and color from the manifest
+    public final static String NOTIFICATION_ICON_KEY = "com.google.firebase.messaging.default_notification_icon";
+    public final static String NOTIFICATION_COLOR_KEY = "com.google.firebase.messaging.default_notification_color";
+    private int defaultNotificationIcon;
+    private int defaultNotificationColor;
 
     // Fixed ID for the 'foreground' notification
     public static final int NOTIFICATION_ID = -574543954;
@@ -56,7 +68,7 @@ public class ForegroundService extends Service {
 
     // Default text of the background notification
     private static final String NOTIFICATION_TEXT =
-            "Doing heavy tasks.";
+            "Keeping your app interactive.";
 
     // Default icon of the background notification
     private static final String NOTIFICATION_ICON = "icon";
@@ -97,6 +109,16 @@ public class ForegroundService extends Service {
     public void onCreate()
     {
         super.onCreate();
+
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(getApplicationContext().getPackageName(), PackageManager.GET_META_DATA);
+            defaultNotificationIcon = ai.metaData.getInt(NOTIFICATION_ICON_KEY, ai.icon);
+            defaultNotificationColor = ContextCompat.getColor(this, ai.metaData.getInt(NOTIFICATION_COLOR_KEY));
+        }  catch (PackageManager.NameNotFoundException e) {
+            Log.d(TAG, "Failed to load meta-data", e);
+        } catch(Resources.NotFoundException e) {
+            Log.d(TAG, "Failed to load notification color", e);
+        }
         try {
             keepAwake();
         } catch (Exception e) {
@@ -206,7 +228,8 @@ public class ForegroundService extends Service {
                 .setContentTitle(title)
                 .setContentText(text)
                 .setOngoing(true)
-                .setSmallIcon(getIconResId(settings));
+                .setSmallIcon(defaultNotificationIcon)
+                .setColor(defaultNotificationColor);
 
         if(Build.VERSION.SDK_INT >= 26){
                    notification.setChannelId(CHANNEL_ID);
