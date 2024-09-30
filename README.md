@@ -1,3 +1,9 @@
+## Deprecated by the original author
+
+This fork lives on here: https://bitbucket.org/TheBosZ/cordova-plugin-run-in-background
+
+This readme is left for historical purposes.
+
 
 <p align="left">
     <b><a href="https://github.com/katzer/cordova-plugin-background-mode/tree/example">SAMPLE APP</a> :point_right:</b>
@@ -145,11 +151,18 @@ The title, text and icon for that notification can be customized as below. Also,
 cordova.plugins.backgroundMode.setDefaults({
     title: String,
     text: String,
-    icon: 'icon' // this will look for icon.png in platforms/android/res/drawable|mipmap
-    color: String // hex format like 'F14F4D'
+    subText: String, // see https://developer.android.com/reference/android/support/v4/app/NotificationCompat.Builder.html#setSubText(java.lang.CharSequence)
+    icon: 'icon', // this will look for icon.png in platforms/android/res/drawable|mipmap
+    color: String, // hex format like 'F14F4D'
     resume: Boolean,
     hidden: Boolean,
-    bigText: Boolean
+    bigText: Boolean,
+    channelName: String, // Shown when the user views the app's notification settings
+    channelDescription: String, // Shown when the user views the channel's settings
+    allowClose: Boolean, // add a "Close" action to the notification
+    closeIcon: 'power', // An icon shown for the close action
+    closeTitle: 'Close', // The text for the close action
+    showWhen: Boolean //(Default: true) Show the time since the notification was created
 })
 ```
 

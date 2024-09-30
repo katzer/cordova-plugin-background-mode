@@ -22,13 +22,14 @@
 package de.appplant.cordova.plugin.background;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.*;
+import android.os.Bundle;
 import android.os.IBinder;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -74,6 +75,24 @@ public class BackgroundMode extends CordovaPlugin {
         public void onServiceDisconnected (ComponentName name)
         {
             fireEvent(Event.FAILURE, "'service disconnected'");
+        }
+    };
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.backgroundmode.close" + cordova.getContext().getPackageName());
+        cordova.getActivity().registerReceiver(receiver, filter);
+
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            cordova.getActivity().finish();
+
         }
     };
 
