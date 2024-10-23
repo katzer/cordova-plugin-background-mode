@@ -3,8 +3,10 @@
     <b><a href="https://github.com/katzer/cordova-plugin-background-mode/tree/example">SAMPLE APP</a> :point_right:</b>
 </p>
 
-Cordova Background Plugin [![npm version](https://badge.fury.io/js/cordova-plugin-background-mode.svg)](http://badge.fury.io/js/cordova-plugin-background-mode) [![Build Status](https://travis-ci.org/katzer/cordova-plugin-background-mode.svg?branch=master)](https://travis-ci.org/katzer/cordova-plugin-background-mode) [![codebeat badge](https://codebeat.co/badges/49709283-b313-4ced-8630-f520baaec7b5)](https://codebeat.co/projects/github-com-katzer-cordova-plugin-background-mode)
+Cordova Background Plugin iOS Fix [![npm version](https://badge.fury.io/js/cordova-plugin-background-mode.svg)](http://badge.fury.io/js/cordova-plugin-background-mode) [![Build Status](https://travis-ci.org/katzer/cordova-plugin-background-mode.svg?branch=master)](https://travis-ci.org/katzer/cordova-plugin-background-mode) [![codebeat badge](https://codebeat.co/badges/49709283-b313-4ced-8630-f520baaec7b5)](https://codebeat.co/projects/github-com-katzer-cordova-plugin-background-mode)
+Implemented ios 12.2 fix
 =========================
+[cordova-plugin-background-mode](https://github.com/katzer/cordova-plugin-background-mode) fork. Fixed iOS crashes
 
 Plugin for the [Cordova][cordova] framework to perform infinite background execution.
 
@@ -27,21 +29,10 @@ Use the plugin by your own risk!
 ## Installation
 The plugin can be installed via [Cordova-CLI][CLI] and is publicly available on [NPM][npm].
 
-Execute from the projects root folder:
-
-    $ cordova plugin add cordova-plugin-background-mode
-
-Or install a specific version:
-
-    $ cordova plugin add de.appplant.cordova.plugin.background-mode@VERSION
 
 Or install the latest head version:
 
-    $ cordova plugin add https://github.com/katzer/cordova-plugin-background-mode.git
-
-Or install from local source:
-
-    $ cordova plugin add cordova-plugin-background-mode --searchpath <path>
+    $ cordova plugin add https://github.com/thompsd3/cordova-plugin-background-mode.git
 
 
 ## Usage
@@ -90,6 +81,16 @@ To remove an event listeners:
 cordova.plugins.backgroundMode.un('EVENT', function);
 ```
 
+
+## iOS specifics
+
+### Update MainController (hacky for now until I can integrate into plugin)
+Further information can be found in this post https://stackoverflow.com/questions/9660488/ios-avaudioplayer-doesnt-continue-to-next-song-while-in-background
+
+You need this code in either your first view controller's init or viewDidLoad method:
+```c
+[[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+```
 
 ## Android specifics
 
