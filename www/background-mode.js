@@ -292,6 +292,19 @@ exports.unlock = function()
 };
 
 /**
+ * Returns the device to the state before executing unlock.
+ *
+ * @return [ Void ]
+ */
+exports.lock = function()
+{
+    if (this._isAndroid)
+    {
+        cordova.exec(null, null, 'BackgroundModeExt', 'lock', []);
+    }
+};
+
+/**
  * If the mode is enabled or disabled.
  *
  * @return [ Boolean ]
